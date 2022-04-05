@@ -1,0 +1,53 @@
+<div class="container">
+  <div class="row">
+    <div class ="col-2"></div>
+
+    <div class ="col-8" >
+      <a (click)="goBack()" class="back">Back</a>
+      <h1>Complete Action Fields</h1>
+      <span >
+        Step 5 of 6
+      </span>
+ 
+      <form #detailForm="ngForm" class = "p-2" [ngStyle]="{'background-color': actionService.color}" >
+        <h3 class ="text-white">{{action.name}}</h3>
+        <p class ="text-white">{{action.description}}</p>
+
+        <div class="list-group">
+          <div class = "p-2" *ngFor="let detail of details; let i = index">
+            <p class="text-white field-name label">{{detail.name}}</p>
+            <div *ngIf = "!detail.alternatives" class="ingredients-text-field ingredients-text-field-text ingredients-text-field-on-color">
+              <div class="growing-text-area">
+                <input class = "form-control" type="text" [(ngModel)] = "detail.value" name="f{{i}}">
+              </div>
+            </div>
+            <div *ngIf = "detail.alternatives" class="ingredients-text-field ingredients-text-field-text ingredients-text-field-on-color">
+              <div *ngIf ="detail.type == 'entity'" class="growing-text-area">
+                <select class = "form-select" [(ngModel)] = "detail.value" name="f{{i}}"  required>
+                  <option *ngFor="let entity of detail.alternatives" [ngValue]="entity">{{entity.name}}</option>
+                </select>
+              </div>
+
+              <div *ngIf ="detail.type == 'location'" class="growing-text-area">
+                <select class = "form-select" [(ngModel)] = "detail.value" name="l{{i}}" >
+                  <option *ngFor="let location of detail.alternatives" [ngValue]="location">{{location.name}}</option>
+                </select>
+              </div>
+              <!--<div *ngIf = "detail.value == 'Other'"><input type="text" [(ngModel)] = "other_location" placeholder="Type the name of the location" name="other_location" ></div> -->
+
+            </div>
+          </div>
+        </div>
+        <div class ="p-2 mt-3">
+          <button (click) = "completeAction()" class="w-100 btn btn-lg btn-primary" type="submit" [disabled]="!detailForm.form.valid">Create action</button>
+        </div>
+        
+      </form>
+    </div>
+    <div class ="col-2"></div>
+
+  </div>  
+</div>
+
+
+

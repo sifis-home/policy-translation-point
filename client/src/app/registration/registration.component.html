@@ -1,0 +1,68 @@
+<div class="container form-signin">
+  <div class ="row">
+    <div class="col-4"></div>
+
+    <div class="col-4">
+      <form #regForm="ngForm">
+        <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+
+        <div class="form-floating">
+          <input type="text" class = "form-control" id="name" name="name" #name="ngModel" value="" placeholder="Name" [(ngModel)] = "user.name" autofocus="autofocus" autocapitalize="off" autocorrect="off" pattern="[a-zA-Z0-9._- ]*" required>
+          <label for="name">Name</label>
+
+          <div [hidden]="name.valid || name.pristine || name.errors.pattern" class="alert alert-danger">
+            Name is required
+          </div>
+          <div [hidden]="name.valid || name.pristine || name.errors.required" class="alert alert-danger">
+            Wrong format
+          </div>
+        </div>
+
+        <div class="form-floating">
+          <input type="text" class = "form-control" id="user_surname" #surname="ngModel" name="surname" value="" placeholder="Surname" [(ngModel)] = "user.lastName" autofocus="autofocus" autocapitalize="off" autocorrect="off" pattern="[a-zA-Z0-9._- ]*" required>
+          <label for="user_surname">Surname</label>
+
+          <div [hidden]="surname.valid || surname.pristine || surname.errors.pattern" class="alert alert-danger">
+            Surname is required
+          </div>
+          <div [hidden]="surname.valid || surname.pristine || surname.errors.required" class="alert alert-danger">
+            Wrong format
+          </div>
+        </div>
+
+        <div class="form-floating">
+          <input type="text" class = "form-control" id="user_username" #username="ngModel" name="username" value="" placeholder="Username" [(ngModel)] = "user.username" autofocus="autofocus" autocapitalize="off" autocorrect="off" pattern="[a-zA-Z0-9._- ]*" required>
+          <label for="user_username">Username</label>
+
+          <div [hidden]="username.valid || username.pristine || username.errors.pattern" class="alert alert-danger">
+            Username is required
+          </div>
+          <div [hidden]="username.valid || username.pristine || username.errors.required" class="alert alert-danger">
+            Wrong format
+          </div>
+        </div>
+
+        <div class="form-floating">
+          <input type="password" class = "form-control" minlength="5" id="user_password" #password="ngModel" name="password" value="" placeholder="Password" [(ngModel)] = "user.password" autofocus="autofocus" autocapitalize="off" autocorrect="off" pattern="[a-zA-Z0-9._- ]*" required>
+          <label for="password">Password</label>
+
+          <div [hidden]="password.valid || password.pristine || password.errors.minlength" class="alert alert-danger">
+            Password is required
+          </div>
+          <div [hidden]="password.valid || password.pristine || password.errors.required" class="alert alert-danger">
+            Password too short
+          </div>
+        </div>
+
+        <button class="w-100 btn btn-lg btn-primary" type="submit" (click) = "signUp()">Sign up</button>
+
+      </form>
+    </div>
+
+    <div class="col-4"></div>
+  </div>
+</div>
+
+
+
+

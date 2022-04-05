@@ -1,0 +1,28 @@
+
+<div class="container">
+  <div class="row">
+    <div class ="col-2"></div>
+
+    <div class ="col-8">
+      <a (click)="goBack()" class="back">Back</a>
+      <h1>Choose Action</h1>
+      <span >
+        Step 4 of 6
+      </span>
+ 
+      <div>
+        <ul class = "mt-3 list-group list-group-horizontal">
+          <li (click) = "selectAction(action)" class="m-1 list-group-item" *ngFor="let action of actions" [ngStyle]="{'background-color': actionService.color}">
+            <h5 class = "mt-3  text-white">{{action.name}}</h5>
+            <p class = "mt-3  text-white">{{action.description}}</p>
+          </li>
+
+        </ul>
+      </div>
+    </div>
+    <div class ="col-2"></div>
+
+  </div>  
+</div>
+
+

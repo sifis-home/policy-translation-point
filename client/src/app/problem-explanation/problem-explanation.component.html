@@ -1,0 +1,101 @@
+
+
+<div class="container">
+  <div class="row">
+    <div class ="col-2"></div>
+
+    <div class ="col-8">
+      <a (click)="goBack()" class="back">Back</a>     
+    
+      <div *ngIf="inprogress">
+        <h1 style="text-align:center;">STARTING EVENT</h1>
+
+        <div class="card w-50 mx-auto" >
+          <div class="list-group-horizontal">
+            <img class = "m-3" width ="100px" height = "100px" src="assets/images/channels/{{startTrigger.service.image}}" alt="{{startTrigger.service.name}}">
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">WHEN THIS HAPPENS:</h5>
+            <span class="card-text">{{startTrigger.name}}</span>
+            <div *ngIf="startTrigger.details">
+              <div *ngFor="let detail of startTrigger.details;let last = last; let first = first" >
+                <span>{{detail.name}}:</span><span *ngIf="detail.value.name"> {{detail.value.name}}</span><span *ngIf="!detail.value.name"> {{detail.value}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div *ngIf="simulated.length > 0">
+        <div class="d-flex">
+ 
+        <ul class = "mt-3 list-group list-group-horizontal mx-auto">
+          <li class="list-group-item m-1" *ngFor="let rule of simulated">
+            <div class="card" >
+              <div class="list-group-horizontal">
+                <img class = "m-3" width ="50px" height = "50px" src="assets/images/channels/{{rule.trigger.service.image}}" alt="{{rule.trigger.service.name}}">
+                <img class = "m-3" width ="50px" height = "50px" src="assets/images/channels/{{rule.action.service.image}}" alt="{{rule.action.service.name}}">
+              </div>
+              <div class="card-body">
+                <h5 class="card-title">WHEN THIS HAPPENS:</h5>
+                <span class="card-text">{{rule.trigger.name}}</span>
+                <div *ngIf="rule.trigger.details">
+                  <div *ngFor="let detail of rule.trigger.details;let last = last; let first = first" >
+                    <span>{{detail.name}}:</span><span *ngIf="detail.value.name"> {{detail.value.name}}</span><span *ngIf="!detail.value.name"> {{detail.value}}</span>
+                  </div>
+                </div>
+
+                <div *ngIf="problematic[rule.dbId]" style="border: 1px solid #e5e5e5; margin: 0.5em; padding: 0.5em"  [ngStyle]="{'background-color': 'DarkRed' }">
+                  <div class ="text-white" *ngIf = "inconsistent === true">Inconsistent Action</div>
+                  <div class ="text-white" *ngIf = "redundant === true">Redundant Action</div>
+                  <h5 class="mt-3 card-title text-white">THEN EXECUTE THIS:</h5>
+                  <span class="card-text text-white">{{rule.action.name}}</span>
+                  <div *ngIf="rule.action.details">
+                    <div *ngFor="let detail of rule.action.details;let last = last; let first = first" >
+                      <span class ="text-white">{{detail.name}}:</span><span class ="text-white" *ngIf="detail.value.name"> {{detail.value.name}}</span><span class ="text-white" *ngIf="!detail.value.name"> {{detail.value}}</span>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="!problematic[rule.dbId]">
+                  <h5 class="mt-3 card-title">THEN EXECUTE THIS:</h5>
+                  <span class="card-text">{{rule.action.name}}</span>
+                  <div *ngIf="rule.action.details">
+                    <div *ngFor="let detail of rule.action.details;let last = last; let first = first" >
+                      <span>{{detail.name}}:</span><span *ngIf="detail.value.name"> {{detail.value.name}}</span><span *ngIf="!detail.value.name"> {{detail.value}}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <i *ngIf="implies[rule.dbId]" class="fa fa-arrow-right" style="text-align:right;margin-top:.5em;font-size:50px;" aria-hidden="true"></i>
+  
+              </div>
+            </div>
+          </li>
+        </ul>
+        </div>
+      </div>
+
+
+      <div>
+        <div *ngIf="!inprogress">
+          <h4>Click to start a step-by-step simulation of the activated rules!</h4>
+          <div><i class="fa fa-play-circle" style="color: green; margin:.5em;font-size:50px; cursor: pointer;" (click) = "startSimulation(startTrigger)"></i></div>
+        </div>
+  
+        <div *ngIf="inprogress">
+          <i class ="fa fa-step-forward" style="margin:.5em;font-size:30px; cursor: pointer;" (click)="stepSimulation()">Next</i>
+          <i class ="fa fa-stop" style="color: red; margin:.5em;font-size:30px; cursor: pointer;" (click)="stopSimulation()">Stop</i>
+          <i class ="fa fa-remove" style="margin:.5em;font-size:30px; cursor: pointer;" (click)="closeSimulation()">Exit</i>
+        </div>
+      </div>
+     
+    </div>
+    <div class ="col-2"></div>
+
+  </div>  
+</div>
+
+
+
+

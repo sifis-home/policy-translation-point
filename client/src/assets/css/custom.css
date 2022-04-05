@@ -1,0 +1,12 @@
+.popover {
+  max-width: none;
+  font-size: 18px;
+}
+
+.popover-title{
+  font-size: 26px;
+}
+
+.underline-on-hover:hover {
+    text-decoration: underline;
+}
