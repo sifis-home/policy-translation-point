@@ -1,0 +1,411 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#"
+     xml:base="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:ns="http://creativecommons.org/ns#"
+     xmlns:ns1="http://www.w3.org/2003/06/sw-vocab-status/ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:wot="http://xmlns.com/wot/0.1/"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:foaf="http://xmlns.com/foaf/0.1/"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:vann="http://purl.org/vocab/vann/"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:eupont="http://elite.polito.it/ontologies/eupont.owl#"
+     xmlns:sifis-home="http://elite.polito.it/ontologies/sifis-home.owl#">
+    <owl:Ontology rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo">
+        <owl:imports rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#a-calendar1 -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#a-calendar1">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#CalendarTool"/>
+        <eupont:hasService rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#s-caledar-alarm"/>
+        <sifis-home:id>calendar-1</sifis-home:id>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera1-start-audio -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera1-start-audio">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#StartCommand"/>
+        <eupont:allowTo rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl#sifis_record_audio_action"/>
+        <sifis-home:id>camera1-start-audio</sifis-home:id>
+        <sifis-home:type>permit</sifis-home:type>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera1-start-video -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera1-start-video">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#StartCommand"/>
+        <eupont:allowTo rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl#sifis_record_video_action"/>
+        <sifis-home:id>camera1-start-video</sifis-home:id>
+        <sifis-home:type>permit</sifis-home:type>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera1-stop-audio -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera1-stop-audio">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#StopCommand"/>
+        <eupont:allowTo rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl#sifis_dont_record_audio_action"/>
+        <sifis-home:id>camera1-stop-audio</sifis-home:id>
+        <sifis-home:type>deny</sifis-home:type>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera1-stop-video -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera1-stop-video">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#StopCommand"/>
+        <eupont:allowTo rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl#sifis_dont_record_video_action"/>
+        <sifis-home:id>camera1-stop-video</sifis-home:id>
+        <sifis-home:type>deny</sifis-home:type>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera2-start-audio -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera2-start-audio">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#StartCommand"/>
+        <eupont:allowTo rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl#sifis_record_audio_action"/>
+        <sifis-home:id>camera2-start-audio</sifis-home:id>
+        <sifis-home:type>permit</sifis-home:type>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera2-start-video -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera2-start-video">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#StartCommand"/>
+        <eupont:allowTo rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl#sifis_record_video_action"/>
+        <sifis-home:id>camera2-start-video</sifis-home:id>
+        <sifis-home:type>permit</sifis-home:type>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera2-stop-audio -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera2-stop-audio">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#StopCommand"/>
+        <eupont:allowTo rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl#sifis_dont_record_audio_action"/>
+        <sifis-home:id>camera2-stop-video</sifis-home:id>
+        <sifis-home:type>deny</sifis-home:type>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera2-stop-video -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera2-stop-video">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#StopCommand"/>
+        <eupont:allowTo rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl#sifis_dont_record_video_action"/>
+        <sifis-home:id>camera2-stop-video</sifis-home:id>
+        <sifis-home:type>deny</sifis-home:type>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera3-start-audio -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera3-start-audio">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#StartCommand"/>
+        <eupont:allowTo rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl#sifis_record_audio_action"/>
+        <sifis-home:id>camera3-start-audio</sifis-home:id>
+        <sifis-home:type>permit</sifis-home:type>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera3-start-video -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera3-start-video">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#StartCommand"/>
+        <eupont:allowTo rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl#sifis_record_video_action"/>
+        <sifis-home:id>camera3-start-video</sifis-home:id>
+        <sifis-home:type>permit</sifis-home:type>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera3-stop-audio -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera3-stop-audio">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#StopCommand"/>
+        <eupont:allowTo rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl#sifis_dont_record_audio_action"/>
+        <sifis-home:id>camera3-stop-audio</sifis-home:id>
+        <sifis-home:type>deny</sifis-home:type>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera3-stop-video -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera3-stop-video">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#StopCommand"/>
+        <eupont:allowTo rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl#sifis_dont_record_video_action"/>
+        <sifis-home:id>camera3-stop-video</sifis-home:id>
+        <sifis-home:type>deny</sifis-home:type>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-speaker1-start-audio -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-speaker1-start-audio">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#StartCommand"/>
+        <eupont:allowTo rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl#sifis_record_audio_action"/>
+        <sifis-home:id>speaker1-start-audio</sifis-home:id>
+        <sifis-home:type>permit</sifis-home:type>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-speaker1-stop-audio -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-speaker1-stop-audio">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#StopCommand"/>
+        <eupont:allowTo rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl#sifis_dont_record_audio_action"/>
+        <sifis-home:id>speaker1-stop-audio</sifis-home:id>
+        <sifis-home:type>deny</sifis-home:type>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-speaker2-start-audio -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-speaker2-start-audio">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#StartCommand"/>
+        <eupont:allowTo rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl#sifis_record_audio_action"/>
+        <sifis-home:id>speaker2-start-audio</sifis-home:id>
+        <sifis-home:type>permit</sifis-home:type>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-speaker2-stop-audio -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-speaker2-stop-audio">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#StopCommand"/>
+        <eupont:allowTo rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl#sifis_dont_record_audio_action"/>
+        <sifis-home:id>speaker2-stop-audio</sifis-home:id>
+        <sifis-home:type>deny</sifis-home:type>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#d-camera1 -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#d-camera1">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#Camera"/>
+        <eupont:hasService rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#s-camera1-record-audio"/>
+        <eupont:hasService rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#s-camera1-record-video"/>
+        <eupont:position rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#location-livingroom"/>
+        <sifis-home:id>camera-1</sifis-home:id>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#d-camera2 -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#d-camera2">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#Camera"/>
+        <eupont:hasService rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#s-camera2-record-audio"/>
+        <eupont:hasService rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#s-camera2-record-video"/>
+        <eupont:position rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#location-bedroom"/>
+        <sifis-home:id>camera-2</sifis-home:id>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#d-camera3 -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#d-camera3">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#Camera"/>
+        <eupont:hasService rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#s-camera3-record-audio"/>
+        <eupont:hasService rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#s-camera3-record-video"/>
+        <eupont:position rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#location-bedroom"/>
+        <sifis-home:id>camera-3</sifis-home:id>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#d-speaker1 -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#d-speaker1">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#Speaker"/>
+        <eupont:hasService rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#s-speaker1-record-audio"/>
+        <eupont:position rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#location-livingroom"/>
+        <sifis-home:id>speaker-1</sifis-home:id>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#d-speaker2 -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#d-speaker2">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#Speaker"/>
+        <eupont:hasService rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#s-speaker2-record-audio"/>
+        <eupont:position rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#location-bedroom"/>
+        <sifis-home:id>speaker-2</sifis-home:id>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#location-bedroom -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#location-bedroom">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#Location"/>
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#Room"/>
+        <sifis-home:name xml:lang="en">Bedroom</sifis-home:name>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#location-livingroom -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#location-livingroom">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#Location"/>
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#Room"/>
+        <sifis-home:name xml:lang="en">Living Room</sifis-home:name>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#n-calendar1-alarm -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#n-calendar1-alarm">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#TimeNotification"/>
+        <eupont:allowTo rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl#sifis_every_afternoon_trigger"/>
+        <eupont:allowTo rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl#sifis_every_evening_trigger"/>
+        <eupont:allowTo rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl#sifis_every_morning_trigger"/>
+        <eupont:allowTo rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl#sifis_every_night_trigger"/>
+        <sifis-home:id>calendar1-alarm</sifis-home:id>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#ptp-demo -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#ptp-demo">
+        <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#s-caledar-alarm -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#s-caledar-alarm">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#TimerService"/>
+        <eupont:hasNotification rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#n-calendar1-alarm"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#s-camera1-record-audio -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#s-camera1-record-audio">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#AudioRecordingService"/>
+        <eupont:hasCommand rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera1-start-audio"/>
+        <eupont:hasCommand rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera1-stop-audio"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#s-camera1-record-video -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#s-camera1-record-video">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#VideoRecordingService"/>
+        <eupont:hasCommand rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera1-start-video"/>
+        <eupont:hasCommand rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera1-stop-video"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#s-camera2-record-audio -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#s-camera2-record-audio">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#AudioRecordingService"/>
+        <eupont:hasCommand rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera2-start-audio"/>
+        <eupont:hasCommand rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera2-stop-audio"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#s-camera2-record-video -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#s-camera2-record-video">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#VideoRecordingService"/>
+        <eupont:hasCommand rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera2-start-video"/>
+        <eupont:hasCommand rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera2-stop-video"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#s-camera3-record-audio -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#s-camera3-record-audio">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#AudioRecordingService"/>
+        <eupont:hasCommand rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera3-start-audio"/>
+        <eupont:hasCommand rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera3-stop-audio"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#s-camera3-record-video -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#s-camera3-record-video">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#VideoRecordingService"/>
+        <eupont:hasCommand rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera3-start-video"/>
+        <eupont:hasCommand rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-camera3-stop-video"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#s-speaker1-record-audio -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#s-speaker1-record-audio">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#AudioRecordingService"/>
+        <eupont:hasCommand rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-speaker1-start-audio"/>
+        <eupont:hasCommand rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-speaker1-stop-audio"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#s-speaker2-record-audio -->
+
+    <owl:NamedIndividual rdf:about="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#s-speaker2-record-audio">
+        <rdf:type rdf:resource="http://elite.polito.it/ontologies/eupont.owl#AudioRecordingService"/>
+        <eupont:hasCommand rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-speaker2-start-audio"/>
+        <eupont:hasCommand rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl/ptp-demo#c-speaker2-stop-audio"/>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
+
