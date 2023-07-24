@@ -60,6 +60,8 @@ public class DBServiceImpl implements DBService {
 		Dbrule r = new Dbrule();
 		r.setTimestamp(rule.getTimestamp());
 		r.setType(type);
+		r.setEffect(rule.getEffect());
+		r.setSubject(rule.getSubject());
 		User u = userService.findUserByUsername(username);
 		User ruleUser = new User();
 		ruleUser.setId(u.getId());
@@ -185,6 +187,8 @@ public class DBServiceImpl implements DBService {
 		for(Dbrule dbRule : dbRules){
 			Rule rule = new Rule();
 			rule.setDbId(dbRule.getId());
+			rule.setEffect(dbRule.getEffect());
+			rule.setSubject(dbRule.getSubject());
 			Trigger trigger = new Trigger();
 			Action action = new Action();
 			Dbtrigger dbTrigger = dbRule.getTriggers().iterator().next();

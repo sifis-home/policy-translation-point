@@ -9,9 +9,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.Principal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -19,6 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -28,10 +35,17 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.json.JSONObject;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,6 +54,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -57,6 +72,7 @@ import it.polito.elite.sifis.entities.petrinet.Place;
 import it.polito.elite.sifis.entities.petrinet.TriggerPlace;
 import it.polito.elite.sifis.entities.xacml.PolicyType;
 import it.polito.elite.sifis.services.DBService;
+import it.polito.elite.sifis.services.DHTService;
 import it.polito.elite.sifis.services.OWLService;
 import it.polito.elite.sifis.services.PetriNetService;
 import it.polito.elite.sifis.services.UserService;
@@ -77,7 +93,6 @@ public class SifisController {
 	@Autowired
 	XACMLService xacmlService;
 	
-	
 	@Autowired
 	DBService dbService;
 	
@@ -86,6 +101,9 @@ public class SifisController {
 	
 	@Autowired
 	PetriNetService petriNetService;
+	
+	@Autowired
+	DHTService dhtService;
 	
 	@GetMapping(value = "/sifis/triggerservice")
 	public List<Service> getTriggerServices() throws InterruptedException{
@@ -133,8 +151,6 @@ public class SifisController {
 	@GetMapping(value = "/sifis/rule")
 	public List<Rule> getRules(Principal user) throws OWLOntologyCreationException, InterruptedException {
 		List<Rule> rules = dbService.getRulesByType("sifis",user.getName());
-		
-		
 		return rules;
 	}
 	
@@ -153,11 +169,14 @@ public class SifisController {
 				d.setValue(entity);
 			}
 		}
-		for(Detail d : rule.getTrigger().getDetails()){
-			if(d.getType().equals("entity")){
-				ObjectMapper mapper = new ObjectMapper();
-				IoTEntity entity = mapper.convertValue(d.getValue(), IoTEntity.class);
-				d.setValue(entity);
+		
+		if(rule.getTrigger() != null) {
+			for(Detail d : rule.getTrigger().getDetails()){
+				if(d.getType().equals("entity")){
+					ObjectMapper mapper = new ObjectMapper();
+					IoTEntity entity = mapper.convertValue(d.getValue(), IoTEntity.class);
+					d.setValue(entity);
+				}
 			}
 		}
 		Dbrule dbrule = dbService.saveRule(rule, "sifis", user.getName());
@@ -169,15 +188,75 @@ public class SifisController {
 	public void translate(HttpServletResponse response, @RequestBody Rule rule, Principal user) throws OWLOntologyCreationException, InterruptedException, JAXBException, IOException {
 		prop = PropertyFileReader.loadProperties(configFile);
 
+		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+		File policyDir = new File(classloader.getResource(prop.getProperty("policiesDir")).getFile());
+		FileUtils.cleanDirectory(policyDir); 
+		        
+
 		List<PolicyType> policies = xacmlService.translate(rule, user.getName());
 		
 		JAXBContext jaxbContext = JAXBContext.newInstance(PolicyType.class);
 		Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-		
+
 		for(PolicyType policy : policies) {
-		    jaxbMarshaller.marshal(policy, new File(prop.getProperty("baseAddress") + prop.getProperty("policiesDir") + policy.getPolicyId()+ ".xml"));
+			File policyFile = new File(policyDir.getAbsolutePath() + "/" + policy.getPolicyId()+ ".xml");
+		    jaxbMarshaller.marshal(policy, policyFile);
+		    
+		    dhtService.publishPolicy(policyFile, policy);
+
 		}
+	        
 	}
+	
+	@GetMapping(value = "/sifis/download", produces="application/zip")
+	public ResponseEntity<StreamingResponseBody> download(HttpServletResponse response, Principal user) throws IOException {
+		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+		File policyDir = new File(classloader.getResource(prop.getProperty("policiesDir")).getFile());
+	    
+		int BUFFER_SIZE = 1024;
+
+		StreamingResponseBody streamResponseBody = out -> {
+
+			final ZipOutputStream zipOutputStream = new ZipOutputStream(response.getOutputStream());
+			ZipEntry zipEntry = null;
+			InputStream inputStream = null;
+
+			try {
+				for (File file : policyDir.listFiles()) {
+					zipEntry = new ZipEntry(file.getName());
+
+					inputStream = new FileInputStream(file);
+
+					zipOutputStream.putNextEntry(zipEntry);
+					byte[] bytes = new byte[BUFFER_SIZE];
+					int length;
+					while ((length = inputStream.read(bytes)) >= 0) {
+						zipOutputStream.write(bytes, 0, length);
+					}
+
+				}
+				// set zip size in response
+				response.setContentLength((int) (zipEntry != null ? zipEntry.getSize() : 0));
+			} catch (IOException e) {
+			} finally {
+				if (inputStream != null) {
+					inputStream.close();
+				}
+				if (zipOutputStream != null) {
+					zipOutputStream.close();
+				}
+			}
+
+		};
+		
+
+		response.setContentType("application/zip");
+		response.setHeader("Content-Disposition", "attachment; filename=policy.zip");
+		response.addHeader("Pragma", "no-cache");
+		response.addHeader("Expires", "0");
+		return ResponseEntity.ok(streamResponseBody);
+	}
+		
 	
 	@PostMapping(value = "/sifis/check")
 	@ResponseStatus(value = HttpStatus.OK)

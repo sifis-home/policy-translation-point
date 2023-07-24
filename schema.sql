@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 8.0.21)
 # Database: sifis-ptp
-# Generation Time: 2022-01-04 10:34:50 +0000
+# Generation Time: 2023-07-18 15:07:30 +0000
 # ************************************************************
 
 
@@ -15,7 +15,7 @@
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
-SET NAMES utf8;
+SET NAMES utf8mb4;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
@@ -36,18 +36,8 @@ CREATE TABLE `dbaction` (
   KEY `FKd5vfgowbh3hdt1uaba4t7qjwi` (`rule_id`),
   CONSTRAINT `FKd5vfgowbh3hdt1uaba4t7qjwi` FOREIGN KEY (`rule_id`) REFERENCES `dbrule` (`id`),
   CONSTRAINT `FKsl5cmjqqs05opu20pba04bha` FOREIGN KEY (`entity_id`) REFERENCES `dbentity` (`id`)
-); /*ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8mb4_general_ci;*/
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-LOCK TABLES `dbaction` WRITE;
-/*!40000 ALTER TABLE `dbaction` DISABLE KEYS */;
-
-INSERT INTO `dbaction` (`id`, `url`, `entity_id`, `rule_id`)
-VALUES
-	(7,'http://elite.polito.it/ontologies/sifis-home.owl#sifis_dont_record_video_action',NULL,7),
-	(8,'http://elite.polito.it/ontologies/sifis-home.owl#sifis_record_audio_action',NULL,8);
-
-/*!40000 ALTER TABLE `dbaction` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
 # Dump of table dbdetail
@@ -62,25 +52,14 @@ CREATE TABLE `dbdetail` (
   `value` varchar(255) DEFAULT NULL,
   `action_id` bigint DEFAULT NULL,
   `trigger_id` bigint DEFAULT NULL,
+  `valueURL` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK98vv5q2ff5eoewks0mbrqt2lw` (`action_id`),
   KEY `FKcfjqa7dgvs79vnnjwwsifyf52` (`trigger_id`),
   CONSTRAINT `FK98vv5q2ff5eoewks0mbrqt2lw` FOREIGN KEY (`action_id`) REFERENCES `dbaction` (`id`),
   CONSTRAINT `FKcfjqa7dgvs79vnnjwwsifyf52` FOREIGN KEY (`trigger_id`) REFERENCES `dbtrigger` (`id`)
-); /*ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8mb4_general_ci;*/
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-LOCK TABLES `dbdetail` WRITE;
-/*!40000 ALTER TABLE `dbdetail` DISABLE KEYS */;
-
-INSERT INTO `dbdetail` (`id`, `type`, `url`, `value`, `action_id`, `trigger_id`)
-VALUES
-	(13,'location','http://elite.polito.it/ontologies/sifis-home.owl#sifis_location_detail','Bedroom',7,NULL),
-	(14,'value','http://elite.polito.it/ontologies/sifis-home.owl#sifis_hour_interval_detail','-',NULL,7),
-	(15,'location','http://elite.polito.it/ontologies/sifis-home.owl#sifis_location_detail','Entire Home',8,NULL),
-	(16,'value','http://elite.polito.it/ontologies/sifis-home.owl#sifis_hour_interval_detail','-',NULL,8);
-
-/*!40000 ALTER TABLE `dbdetail` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
 # Dump of table dbentity
@@ -95,7 +74,7 @@ CREATE TABLE `dbentity` (
   PRIMARY KEY (`id`),
   KEY `FK4j62tn3hvd09b7pa2n7qyvk6u` (`user_id`),
   CONSTRAINT `FK4j62tn3hvd09b7pa2n7qyvk6u` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
-); /*ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8mb4_general_ci;*/
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
 
@@ -109,21 +88,13 @@ CREATE TABLE `dbrule` (
   `timestamp` bigint DEFAULT NULL,
   `type` varchar(255) DEFAULT NULL,
   `user_id` bigint DEFAULT NULL,
+  `effect` varchar(10) DEFAULT NULL,
+  `subject` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FKrthas252irlmwocm22hevsmlr` (`user_id`),
   CONSTRAINT `FKrthas252irlmwocm22hevsmlr` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
-); /*ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8mb4_general_ci;*/
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-LOCK TABLES `dbrule` WRITE;
-/*!40000 ALTER TABLE `dbrule` DISABLE KEYS */;
-
-INSERT INTO `dbrule` (`id`, `timestamp`, `type`, `user_id`)
-VALUES
-	(7,1641292379688,'sifis',5),
-	(8,1641292396049,'sifis',5);
-
-/*!40000 ALTER TABLE `dbrule` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
 # Dump of table dbtrigger
@@ -141,18 +112,8 @@ CREATE TABLE `dbtrigger` (
   KEY `FK9cacof68w3dr6peeey1n4mxrv` (`rule_id`),
   CONSTRAINT `FK5ndxaxil4q8g9v1pt1qhwokr9` FOREIGN KEY (`entity_id`) REFERENCES `dbentity` (`id`),
   CONSTRAINT `FK9cacof68w3dr6peeey1n4mxrv` FOREIGN KEY (`rule_id`) REFERENCES `dbrule` (`id`)
-); /*ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8mb4_general_ci;*/
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-LOCK TABLES `dbtrigger` WRITE;
-/*!40000 ALTER TABLE `dbtrigger` DISABLE KEYS */;
-
-INSERT INTO `dbtrigger` (`id`, `url`, `entity_id`, `rule_id`)
-VALUES
-	(7,'http://elite.polito.it/ontologies/sifis-home.owl#sifis_every_morning_trigger',NULL,7),
-	(8,'http://elite.polito.it/ontologies/sifis-home.owl#sifis_every_evening_trigger',NULL,8);
-
-/*!40000 ALTER TABLE `dbtrigger` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
 # Dump of table hibernate_sequence
@@ -162,7 +123,7 @@ DROP TABLE IF EXISTS `hibernate_sequence`;
 
 CREATE TABLE `hibernate_sequence` (
   `next_val` bigint DEFAULT NULL
-); /*ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8mb4_general_ci;*/
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 LOCK TABLES `hibernate_sequence` WRITE;
 /*!40000 ALTER TABLE `hibernate_sequence` DISABLE KEYS */;
@@ -184,7 +145,7 @@ CREATE TABLE `role` (
   `role_id` bigint NOT NULL,
   `role` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`role_id`)
-); /*ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8mb4_general_ci;*/
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 LOCK TABLES `role` WRITE;
 /*!40000 ALTER TABLE `role` DISABLE KEYS */;
@@ -212,7 +173,7 @@ CREATE TABLE `user` (
   `username` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `UK_kiqfjabx9puw3p1eg7kily8kg` (`password`)
-); /*ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8mb4_general_ci;*/
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
@@ -237,7 +198,7 @@ CREATE TABLE `user_role` (
   KEY `FKa68196081fvovjhkek5m97n3y` (`role_id`),
   CONSTRAINT `FK859n2jvi8ivhui0rl0esws6o` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`),
   CONSTRAINT `FKa68196081fvovjhkek5m97n3y` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`)
-); /*ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8mb4_general_ci;*/
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 LOCK TABLES `user_role` WRITE;
 /*!40000 ALTER TABLE `user_role` DISABLE KEYS */;

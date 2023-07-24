@@ -33,6 +33,8 @@ public class Dbrule {
 	private List<Dbaction> actions;
 	private Long timestamp;
 	private String type;
+	private String effect;
+	private String subject;
 	
 	public Long getId() {
 		return id;
@@ -70,6 +72,18 @@ public class Dbrule {
 	}
 	public void setTimestamp(Long timestamp) {
 		this.timestamp = timestamp;
+	}
+	public String getEffect() {
+		return effect;
+	}
+	public void setEffect(String effect) {
+		this.effect = effect;
+	}
+	public String getSubject() {
+		return subject;
+	}
+	public void setSubject(String subject) {
+		this.subject = subject;
 	}
 	
 	

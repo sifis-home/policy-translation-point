@@ -55,9 +55,9 @@ import javax.xml.bind.annotation.XmlType;
  * 
  * 
  */
-@XmlRootElement
+@XmlRootElement(name = "Policy")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "PolicyType", propOrder = {
+@XmlType(name = "Policy", propOrder = {
     "description",
     "policyIssuer",
     "policyDefaults",

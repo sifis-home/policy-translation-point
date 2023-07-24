@@ -44,7 +44,9 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "RuleType", propOrder = {
     "description",
     "target",
-    "condition",
+    "preCondition",
+    "ongoingCondition",
+    "postCondition",
     "obligationExpressions",
     "adviceExpressions"
 })
@@ -55,7 +57,11 @@ public class RuleType {
     @XmlElement(name = "Target")
     protected TargetType target;
     @XmlElement(name = "Condition")
-    protected ConditionType condition;
+    protected ConditionType preCondition;
+    @XmlElement(name = "Condition")
+    protected ConditionType ongoingCondition;
+    @XmlElement(name = "Condition")
+    protected ConditionType postCondition;
     @XmlElement(name = "ObligationExpressions")
     protected ObligationExpressionsType obligationExpressions;
     @XmlElement(name = "AdviceExpressions")
@@ -114,27 +120,75 @@ public class RuleType {
     }
 
     /**
-     * Gets the value of the condition property.
+     * Gets the value of the preCondition property.
      * 
      * @return
      *     possible object is
      *     {@link ConditionType }
      *     
      */
-    public ConditionType getCondition() {
-        return condition;
+    public ConditionType getPreCondition() {
+        return preCondition;
     }
 
     /**
-     * Sets the value of the condition property.
+     * Sets the value of the preCondition property.
      * 
      * @param value
      *     allowed object is
      *     {@link ConditionType }
      *     
      */
-    public void setCondition(ConditionType value) {
-        this.condition = value;
+    public void setPreCondition(ConditionType value) {
+        this.preCondition = value;
+    }
+    
+    /**
+     * Gets the value of the ongoingCondition property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link ConditionType }
+     *     
+     */
+    public ConditionType getOngoingCondition() {
+        return ongoingCondition;
+    }
+
+    /**
+     * Sets the value of the ongoingCondition property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ConditionType }
+     *     
+     */
+    public void setOngoingCondition(ConditionType value) {
+        this.ongoingCondition = value;
+    }
+    
+    /**
+     * Gets the value of the postCondition property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link ConditionType }
+     *     
+     */
+    public ConditionType getPostCondition() {
+        return postCondition;
+    }
+
+    /**
+     * Sets the value of the postCondition property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ConditionType }
+     *     
+     */
+    public void setPostCondition(ConditionType value) {
+        this.postCondition = value;
     }
 
     /**

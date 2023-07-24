@@ -16,7 +16,6 @@
      xmlns:terms="http://purl.org/dc/terms/"
      xmlns:eupont="http://elite.polito.it/ontologies/eupont.owl#">
     <owl:Ontology rdf:about="http://elite.polito.it/ontologies/eupont.owl">
-        <owl:imports rdf:resource="http://xmlns.com/foaf/0.1/"/>
         <cc:license>Copyright (c) 2016-2018 Monge Roffarello Alberto
 
         Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
@@ -304,7 +303,6 @@
     <!-- http://elite.polito.it/ontologies/eupont.owl#location -->
 
     <owl:ObjectProperty rdf:about="http://elite.polito.it/ontologies/eupont.owl#location">
-        <owl:equivalentProperty rdf:resource="http://xmlns.com/foaf/0.1/based_near"/>
         <rdfs:label xml:lang="en">location</rdfs:label>
     </owl:ObjectProperty>
     
@@ -390,7 +388,14 @@
     <!-- http://elite.polito.it/ontologies/eupont.owl#offerDetail -->
 
     <owl:ObjectProperty rdf:about="http://elite.polito.it/ontologies/eupont.owl#offerDetail">
-        <rdfs:domain rdf:resource="http://elite.polito.it/ontologies/eupont.owl#Trigger"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://elite.polito.it/ontologies/eupont.owl#Action"/>
+                    <rdf:Description rdf:about="http://elite.polito.it/ontologies/eupont.owl#Trigger"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
         <rdfs:range rdf:resource="http://elite.polito.it/ontologies/eupont.owl#Detail"/>
         <rdfs:label xml:lang="en">offerDetail</rdfs:label>
     </owl:ObjectProperty>
@@ -481,12 +486,6 @@
         <rdfs:range rdf:resource="http://elite.polito.it/ontologies/eupont.owl#Agent"/>
         <rdfs:label xml:lang="en">who</rdfs:label>
     </owl:ObjectProperty>
-    
-
-
-    <!-- http://xmlns.com/foaf/0.1/based_near -->
-
-    <rdf:Description rdf:about="http://xmlns.com/foaf/0.1/based_near"/>
     
 
 
@@ -6866,24 +6865,24 @@
 
     <!-- http://www.w3.org/2003/01/geo/wgs84_pos#SpatialThing -->
 
-    <rdf:Description rdf:about="http://www.w3.org/2003/01/geo/wgs84_pos#SpatialThing">
+    <owl:Class rdf:about="http://www.w3.org/2003/01/geo/wgs84_pos#SpatialThing">
         <rdfs:comment xml:lang="en">Anything with spatial extent, i.e. size, shape, or position. e.g. people, places, bowling balls, as well as abstract areas like cubes.</rdfs:comment>
         <rdfs:isDefinedBy>http://www.w3.org/2003/01/geo/wgs84_pos#</rdfs:isDefinedBy>
-    </rdf:Description>
+    </owl:Class>
     
 
 
     <!-- http://xmlns.com/foaf/0.1/Agent -->
 
-    <rdf:Description rdf:about="http://xmlns.com/foaf/0.1/Agent"/>
+    <owl:Class rdf:about="http://xmlns.com/foaf/0.1/Agent"/>
     
 
 
     <!-- http://xmlns.com/foaf/0.1/Person -->
 
-    <rdf:Description rdf:about="http://xmlns.com/foaf/0.1/Person">
+    <owl:Class rdf:about="http://xmlns.com/foaf/0.1/Person">
         <rdfs:subClassOf rdf:resource="http://www.w3.org/2003/01/geo/wgs84_pos#SpatialThing"/>
-    </rdf:Description>
+    </owl:Class>
     
 
 

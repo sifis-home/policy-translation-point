@@ -18,7 +18,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.semanticweb.HermiT.Reasoner;
@@ -44,11 +43,8 @@ import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.search.EntitySearcher;
 import org.semanticweb.owlapi.util.AutoIRIMapper;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
-import org.semanticweb.owlapi.util.InferredObjectPropertyAxiomGenerator;
 import org.semanticweb.owlapi.util.OWLEntityRemover;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import it.polito.elite.sifis.SifisApplication;
 import it.polito.elite.sifis.entities.db.Dbentity;
 import it.polito.elite.sifis.entities.owl.Action;
 import it.polito.elite.sifis.entities.owl.Command;
@@ -138,11 +134,32 @@ public class OWLServiceImpl implements OWLService{
 		logger.info("Load ontology from file: " + ontologyUrl);
 
 		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+		InputStream ontologyF = classloader.getResourceAsStream(prop.getProperty("ontologyDir") + ontologyUrl);		
+
+		File ontologyDir = new File(classloader.getResource(prop.getProperty("ontologyDir")).getFile());
+		manager.getIRIMappers().add(new AutoIRIMapper(ontologyDir, true));
+		
+		OWLOntology ontology =  manager.loadOntologyFromOntologyDocument(ontologyF);
+		return ontology;
+	}
+	
+	/**
+	 * This method loads an ontology from a local file
+	 * 
+	 * @param ontologyUrl URL of the base ontology
+	 * @return OWLOntology
+	 * @throws OWLOntologyCreationException
+	 */
+	public OWLOntology loadFromFile(String ontologyUrl,String username) throws OWLOntologyCreationException {
+		logger.info("Load ontology from file: " + ontologyUrl);
+
+		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
 		InputStream ontologyF = classloader.getResourceAsStream(prop.getProperty("ontologyDir") + ontologyUrl);
 
-		//File ontologyF = new File(prop.getProperty("ontologyDir") + ontologyUrl);
-		
-		manager.getIRIMappers().add(new AutoIRIMapper(new File(/*prop.getProperty("baseAddress") + */prop.getProperty("ontologyDir")), true));
+		File ontologyDir = new File(classloader.getResource(prop.getProperty("ontologyDir")).getFile());
+		manager.getIRIMappers().add(new AutoIRIMapper(ontologyDir, true));
+
+	
 		OWLOntology ontology =  manager.loadOntologyFromOntologyDocument(ontologyF);
 		logger.info("Ontology succesfully loaded");
 		return ontology;
@@ -301,7 +318,7 @@ public class OWLServiceImpl implements OWLService{
 					service.setURL(owlService.getIRI().toString());
 					service.setId(prefix.getShortForm(owlService.getIRI()).substring(1));
 					
-					try{service.setName(reasoner.getDataPropertyValues(owlService,name).iterator().next().getLiteral());}catch(Throwable t){}
+					try{service.setName(reasoner.getDataPropertyValues(owlService,name).iterator().next().getLiteral() + " Triggers");}catch(Throwable t){}
 					try{service.setWebId(Long.valueOf(reasoner.getDataPropertyValues(owlService,id).iterator().next().getLiteral()));}catch(Throwable t){}
 					try{service.setColor(reasoner.getDataPropertyValues(owlService,color).iterator().next().getLiteral());}catch(Throwable t){}
 					try{service.setImage(reasoner.getDataPropertyValues(owlService,image).iterator().next().getLiteral());}catch(Throwable t){}
@@ -359,7 +376,7 @@ public class OWLServiceImpl implements OWLService{
 					Service service = new Service();
 					service.setURL(owlService.getIRI().toString());
 					service.setId(prefix.getShortForm(owlService.getIRI()).substring(1));
-					try{service.setName(reasoner.getDataPropertyValues(owlService,name).iterator().next().getLiteral());}catch(Throwable t){}
+					try{service.setName(reasoner.getDataPropertyValues(owlService,name).iterator().next().getLiteral() + " Actions");}catch(Throwable t){}
 					try{service.setWebId(Long.valueOf(reasoner.getDataPropertyValues(owlService,id).iterator().next().getLiteral()));}catch(Throwable t){}
 					try{service.setColor(reasoner.getDataPropertyValues(owlService,color).iterator().next().getLiteral());}catch(Throwable t){}
 					try{service.setImage(reasoner.getDataPropertyValues(owlService,image).iterator().next().getLiteral());}catch(Throwable t){}
@@ -405,7 +422,7 @@ public class OWLServiceImpl implements OWLService{
 					service.setURL(owlService.getIRI().toString());
 					service.setId(prefix.getShortForm(owlService.getIRI()).substring(1));
 					
-					try{service.setName(reasoner.getDataPropertyValues(owlService,name).iterator().next().getLiteral());}catch(Throwable t){}
+					try{service.setName(reasoner.getDataPropertyValues(owlService,name).iterator().next().getLiteral() + " Triggers");}catch(Throwable t){}
 					try{service.setWebId(Long.valueOf(reasoner.getDataPropertyValues(owlService,id).iterator().next().getLiteral()));}catch(Throwable t){}
 					try{service.setColor(reasoner.getDataPropertyValues(owlService,color).iterator().next().getLiteral());}catch(Throwable t){}
 					try{service.setImage(reasoner.getDataPropertyValues(owlService,image).iterator().next().getLiteral());}catch(Throwable t){}
@@ -614,6 +631,8 @@ public class OWLServiceImpl implements OWLService{
 	
 				for(OWLNamedIndividual owlService : owlServices){
 					
+					Set<OWLObjectProperty> x = this.baseOntology.getObjectPropertiesInSignature();
+
 					if(reasoner.getObjectPropertyValues(owlService, offerAction).getFlattened().size() > 0)
 						add = true;
 					
@@ -621,7 +640,7 @@ public class OWLServiceImpl implements OWLService{
 					service.setURL(owlService.getIRI().toString());
 					service.setId(prefix.getShortForm(owlService.getIRI()).substring(1));
 					
-					try{service.setName(reasoner.getDataPropertyValues(owlService,name).iterator().next().getLiteral());}catch(Throwable t){}
+					try{service.setName(reasoner.getDataPropertyValues(owlService,name).iterator().next().getLiteral() + " Actions");}catch(Throwable t){}
 					try{service.setWebId(Long.valueOf(reasoner.getDataPropertyValues(owlService,id).iterator().next().getLiteral()));}catch(Throwable t){}
 					try{service.setColor(reasoner.getDataPropertyValues(owlService,color).iterator().next().getLiteral());}catch(Throwable t){}
 					try{service.setImage(reasoner.getDataPropertyValues(owlService,image).iterator().next().getLiteral());}catch(Throwable t){}
@@ -806,6 +825,7 @@ public class OWLServiceImpl implements OWLService{
 	@Override
 	public IoTEntity getIoTEntityByUrl(String url, String username) throws OWLOntologyCreationException {
 		OWLDataProperty name = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + "name"));
+		OWLDataProperty id = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + "id"));
 
 		OWLReasoner userReasoner = this.userReasoners.get(username);
 		
@@ -822,7 +842,8 @@ public class OWLServiceImpl implements OWLService{
 		OWLNamedIndividual owlEntity = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(url));
 		IoTEntity e = new IoTEntity();
 		try{e.setName(userReasoner.getDataPropertyValues(owlEntity,name).iterator().next().getLiteral());}catch(Throwable t){}
-		e.setId(this.prefix.getShortForm(owlEntity.getIRI()).substring(1));
+		try{e.setId(userReasoner.getDataPropertyValues(owlEntity,id).iterator().next().getLiteral());}catch(Throwable t){}
+
 		e.setURL(owlEntity.getIRI().toString());				
 		List<Service> services = this.getServicesByIoTEntity(e.getURL(),username);
 		Set<String> servicesURLS = new HashSet<String>();
@@ -830,7 +851,7 @@ public class OWLServiceImpl implements OWLService{
 			servicesURLS.add(this.prefix.getShortForm(IRI.create(service.getURL())).substring(1));
 		e.setServices(servicesURLS);
 		try{
-			e.setType(this.prefix.getShortForm(userReasoner.getTypes(owlEntity, true).getFlattened().iterator().next()).replace("eupont:", ""));
+			e.setType(this.prefix.getShortForm(userReasoner.getTypes(owlEntity, true).getFlattened().iterator().next()).replace("eupont:", "").toLowerCase());
 		}catch(Throwable t) {}
 		return e;
 	}
@@ -849,7 +870,6 @@ public class OWLServiceImpl implements OWLService{
 		OWLDataProperty id = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + "id"));
 		OWLDataProperty type = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + "type"));
 
-		
 		OWLReasoner userReasoner = this.userReasoners.get(username);
 		
 		if(userReasoner == null){
@@ -858,13 +878,16 @@ public class OWLServiceImpl implements OWLService{
 			if(userOntology == null)
 				userOntology = this.loadFromFile(username + ".owl");
 			this.prefix.setPrefix(username + ":", userIRI + "#");
+			
 			userReasoner = this.initHermiTReasoner(userOntology);
+			
 			this.userReasoners.put(username, userReasoner);
 		}
 		
 		userReasoner.precomputeInferences(InferenceType.values());
 		
 		Set<OWLNamedIndividual> owlCommands = userReasoner.getObjectPropertyValues(owlAction, reproduceBy).getFlattened();
+		
 		for (OWLNamedIndividual owlCommand : owlCommands) {
 			
 			//getIoTEntity
@@ -872,7 +895,7 @@ public class OWLServiceImpl implements OWLService{
 			OWLNamedIndividual owlEntity = userReasoner.getObjectPropertyValues(owlService, isOfEntity).getFlattened().iterator().next();
 
 			//check IoTEntitiy position
-			if(location != null) {
+			if(location != null && ! location.getName().equals("Entire Home")) {
 				try{
 					OWLNamedIndividual owlLocation = userReasoner.getObjectPropertyValues(owlEntity, position).getFlattened().iterator().next();
 					if(owlLocation != null && ! owlLocation.getIRI().toString().equals(location.getURL()))
@@ -1528,6 +1551,23 @@ public class OWLServiceImpl implements OWLService{
 			if(reasoner != null) this.reasoners.put(reasoner);
 		}
 		return classes;		
+	}
+
+	@Override
+	public List<String> getDirectClasses(String individualURL) throws InterruptedException {
+		OWLReasoner reasoner = this.reasoners.take();
+		List<String> classes = new LinkedList<String>();
+		try{
+			OWLNamedIndividual owlIndividual = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(individualURL));
+			Set<OWLClass> owlClasses = reasoner.getTypes(owlIndividual, true).getFlattened();
+			for(OWLClass owlClass : owlClasses){
+				classes.add(owlClass.getIRI().toString());
+			}
+
+		}finally{
+			if(reasoner != null) this.reasoners.put(reasoner);
+		}
+		return classes;
 	}
 
 

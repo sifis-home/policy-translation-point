@@ -11,7 +11,10 @@ package it.polito.elite.sifis.entities.xacml;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -40,6 +43,10 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class ConditionType {
 
+    @XmlAttribute(name = "DecisionTime", required = true)
+    @XmlSchemaType(name = "anyURI")
+    protected String decisionTime;
+	
     @XmlElementRef(name = "Expression", namespace = "urn:oasis:names:tc:xacml:3.0:core:schema:wd-17", type = JAXBElement.class)
 	public JAXBElement<?> expression;
 
@@ -77,6 +84,30 @@ public class ConditionType {
      */
     public void setExpression(JAXBElement<?> value) {
         this.expression = value;
+    }
+    
+    /**
+     * Gets the value of the DecisionTime property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getDecisionTime() {
+        return decisionTime;
+    }
+
+    /**
+     * Sets the value of the DecisionTime property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDecisionTime(String value) {
+        this.decisionTime = value;
     }
 
 }

@@ -10,6 +10,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import it.polito.elite.sifis.services.CustomUserDetailsService;
 import it.polito.elite.sifis.services.DBService;
 import it.polito.elite.sifis.services.DBServiceImpl;
+import it.polito.elite.sifis.services.DHTService;
+import it.polito.elite.sifis.services.DHTServiceImpl;
 import it.polito.elite.sifis.services.OWLService;
 import it.polito.elite.sifis.services.OWLServiceImpl;
 import it.polito.elite.sifis.services.PetriNetService;
@@ -42,6 +44,11 @@ public class RootConfig {
 	@Bean
 	public XACMLService MyXACMLService() {
 		return new XACMLServiceImpl();
+	}
+	
+	@Bean
+	public DHTService MyDHTService() {
+		return new DHTServiceImpl();
 	}
 	
 	@Bean

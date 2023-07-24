@@ -80,6 +80,7 @@ public interface OWLService {
 	
 	void registerDemoPlot() throws OWLOntologyCreationException, OWLOntologyStorageException,
 	FileNotFoundException, InterruptedException;
+	List<String> getDirectClasses(String individualURL) throws InterruptedException;
 	
 
 
