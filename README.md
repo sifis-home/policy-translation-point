@@ -1,7 +1,5 @@
 # Policy Translation Point (PTP)
 
-
-
 PTP translates high-level security policies like “Do not record sound in the living room tonight” into low-level policies in a [XACML](https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=xacml) formalism. Furthermore, PTP detects potential conflicts linke redundancies and inconsistencies between high-level policies.
 
 ## HTTP APIs
@@ -49,10 +47,17 @@ The SQL schema should now be created, you can exit from the container by hitting
 ### 2 - Build and Deploy the Web Application
 After setting up the Docker environment, you have to build the docker image for the `ptp-server` container.
 
+First, run this command to generate the required Maven files and folders:
+```
+mvn -N wrapper:wrapper .
+```
+Then, use this command to build the image:
+
 ```
 $ docker build -t ptp-server .
 ```
-Then, you can finally run the `ptp-server` container:
+
+Finally, you can run the `ptp-server` container:
 ```
 $ docker run -d -p 8080:8080 --name ptp-server --network ptp-network ptp-server
 ```
