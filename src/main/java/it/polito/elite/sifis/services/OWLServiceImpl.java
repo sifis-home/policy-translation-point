@@ -553,6 +553,8 @@ public class OWLServiceImpl implements OWLService{
 			OWLObjectProperty offerDetail = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix("eupont:") + "offerDetail"));
 			OWLDataProperty name = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + "name"));
 			OWLDataProperty type = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getPrefix("eupont:") + "type"));
+			OWLDataProperty type2 = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getPrefix("eupont:") + "type"));
+
 			Set<OWLNamedIndividual> owlDetails = reasoner.getObjectPropertyValues(owlTrigger, offerDetail).getFlattened();
 			
 			
@@ -571,6 +573,9 @@ public class OWLServiceImpl implements OWLService{
 				try{detail.setName(reasoner.getDataPropertyValues(owlDetail,name).iterator().next().getLiteral());}catch(Throwable t){}
 				String detailType = null;
 				try{detailType = reasoner.getDataPropertyValues(owlDetail,type).iterator().next().getLiteral();}catch(Throwable t){}
+				if(detailType == null)
+					try{detailType = reasoner.getDataPropertyValues(owlDetail,type2).iterator().next().getLiteral();}catch(Throwable t){}
+
 				detail.setType(detailType);
 				
 				if(detailType.equals("entity")){
@@ -769,6 +774,8 @@ public class OWLServiceImpl implements OWLService{
 			OWLObjectProperty offerDetail = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix("eupont:") + "offerDetail"));
 			OWLDataProperty name = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + "name"));
 			OWLDataProperty type = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getPrefix("eupont:") + "type"));
+			OWLDataProperty type2 = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getPrefix("eupont:") + "type"));
+
 			Set<OWLNamedIndividual> owlDetails = reasoner.getObjectPropertyValues(owlAction, offerDetail).getFlattened();
 			
 			Set<Object> entities = new HashSet<Object>();
@@ -784,6 +791,10 @@ public class OWLServiceImpl implements OWLService{
 				try{detail.setName(reasoner.getDataPropertyValues(owlDetail,name).iterator().next().getLiteral());}catch(Throwable t){}
 				String detailType = null;
 				try{detailType = reasoner.getDataPropertyValues(owlDetail,type).iterator().next().getLiteral();}catch(Throwable t){}
+				if(detailType == null)
+					try{detailType = reasoner.getDataPropertyValues(owlDetail,type2).iterator().next().getLiteral();}catch(Throwable t){}
+
+				
 				detail.setType(detailType);
 				
 				if(detailType.equals("entity")){
@@ -853,6 +864,8 @@ public class OWLServiceImpl implements OWLService{
 		try{
 			e.setType(this.prefix.getShortForm(userReasoner.getTypes(owlEntity, true).getFlattened().iterator().next()).replace("eupont:", "").toLowerCase());
 		}catch(Throwable t) {}
+		
+	
 		return e;
 	}
 	
@@ -869,6 +882,7 @@ public class OWLServiceImpl implements OWLService{
 
 		OWLDataProperty id = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + "id"));
 		OWLDataProperty type = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + "type"));
+		OWLDataProperty type2 = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getPrefix("eupont:") + "type"));
 
 		OWLReasoner userReasoner = this.userReasoners.get(username);
 		
@@ -909,7 +923,10 @@ public class OWLServiceImpl implements OWLService{
 			command.setURL(this.prefix.getShortForm(owlCommand.getIRI()).substring(1));
 			try{command.setId(userReasoner.getDataPropertyValues(owlCommand,id).iterator().next().getLiteral());}catch(Throwable t){}
 			try{command.setType(userReasoner.getDataPropertyValues(owlCommand,type).iterator().next().getLiteral());}catch(Throwable t){}
-
+			if(command.getType() == null) {
+				try{command.setType(userReasoner.getDataPropertyValues(owlCommand,type2).iterator().next().getLiteral());}catch(Throwable t){}
+			}
+			
 			command.setEntitiy(this.getIoTEntityByUrl(owlEntity.getIRI().toString(), username));
 			
 			commands.add(command);

@@ -30,8 +30,6 @@ public class DHTServiceImpl implements DHTService {
 	public DHTServiceImpl() {
 		prop = PropertyFileReader.loadProperties(configFile);
         this.restTemplate = new RestTemplate();
-        
-
 	}
 
 	@Override

@@ -109,10 +109,29 @@ public class XACMLServiceImpl implements XACMLService {
 	}
 	
 	private PolicyType getInstallationPolicy(EffectType effect, String subject, Trigger trigger, Command command, String type, Boolean allActions) {
-		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 		PolicyType myPolicy = new PolicyType();
+		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+		String policyName = "installation_";
+		
+		if (allActions)
+			policyName += "any_action";
+		else if(command != null && command.getType() != null)
+			policyName += command.getType();
+		
+		if(type != null) {
+        	myPolicy.setTarget(getExecutionTarget(null, subject, type));
+        	policyName += "_";
+        	policyName += type;
+        }
+        else {
+        	myPolicy.setTarget(getExecutionTarget(command.getEntitiy(), subject, null));
+        	policyName += "_";
+        	policyName += command.getEntitiy().getId();
+        }
+		
+        myPolicy.setPolicyId(policyName + "_" + String.valueOf(timestamp.getTime()));
+
 	    myPolicy.setDescription("XACML policy for SIFIS-Home - " + timestamp.getTime());
-        myPolicy.setPolicyId(String.valueOf(timestamp.getTime()));
         myPolicy.setRuleCombiningAlgId("urn:oasis:names:tc:xacml:3.0:rule-combining-algorithm:permit-unless-deny");
         
         myPolicy.setVersion("3.0");
@@ -130,24 +149,41 @@ public class XACMLServiceImpl implements XACMLService {
 	
 	
 	private PolicyType getExecutionPolicy(EffectType effect, String subject, Trigger trigger, Command command, String type, Boolean allActions) {
-		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 		PolicyType myPolicy = new PolicyType();
+
+		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+		String policyName = "execution_";
+		
+		if (allActions)
+			policyName += "any_action";
+		else if(command != null && command.getType() != null)
+			policyName += command.getType();
+		
+		if(type != null) {
+        	myPolicy.setTarget(getExecutionTarget(null, subject, type));
+        	policyName += "_";
+        	policyName += type;
+        }
+        else {
+        	myPolicy.setTarget(getExecutionTarget(command.getEntitiy(), subject, null));
+        	policyName += "_";
+        	policyName += command.getEntitiy().getId();
+        }
+		
 	    myPolicy.setDescription("XACML policy for SIFIS-Home - " + timestamp.getTime());
-        myPolicy.setPolicyId(String.valueOf(timestamp.getTime()));
         myPolicy.setRuleCombiningAlgId("urn:oasis:names:tc:xacml:3.0:rule-combining-algorithm:deny-unless-permit");
         
         myPolicy.setVersion("3.0");
-        
-        if(type != null)
-        	myPolicy.setTarget(getExecutionTarget(null, subject, type));
-        else
-        	myPolicy.setTarget(getExecutionTarget(command.getEntitiy(), subject, null));
-
+       
         List<Object> rules = new ArrayList<Object>();
         rules.add(getExecutionRule(effect, subject, trigger, command, allActions));
+       
         rules.add(getDefaultDenyRule());
         myPolicy.combinerParametersOrRuleCombinerParametersOrVariableDefinition = rules;
-		
+        
+        
+        myPolicy.setPolicyId(String.valueOf(policyName + "_" + timestamp.getTime()));
+
 		return myPolicy;
 	}
 	

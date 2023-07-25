@@ -253,7 +253,6 @@
         <eupont:allowTo rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl#sifis_all_lighting_actions"/>
         <eupont:allowTo rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl#sifis_turn_off_lights_action"/>
         <eupont:type>turn_off</eupont:type>
-        <sifis-home:id>lamp_3-turn-off</sifis-home:id>
     </owl:NamedIndividual>
     
 
@@ -265,7 +264,6 @@
         <eupont:allowTo rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl#sifis_all_lighting_actions"/>
         <eupont:allowTo rdf:resource="http://elite.polito.it/ontologies/sifis-home.owl#sifis_turn_on_lights_action"/>
         <eupont:type>turn_on</eupont:type>
-        <sifis-home:id>lamp_3-turn-on</sifis-home:id>
     </owl:NamedIndividual>
     
 
