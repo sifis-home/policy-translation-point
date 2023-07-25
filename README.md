@@ -49,7 +49,7 @@ After setting up the Docker environment, you have to build the docker image for 
 
 First, run this command to generate the required Maven files and folders:
 ```
-mvn -N wrapper:wrapper .
+mvn -N wrapper:wrapper
 ```
 Then, use this command to build the image:
 
