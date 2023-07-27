@@ -24,7 +24,6 @@ SET NAMES utf8mb4;
 # Dump of table dbaction
 # ------------------------------------------------------------
 
-CREATE DATABASE sifis_ptp;
 USE sifis_ptp;
 
 DROP TABLE IF EXISTS `dbaction`;
