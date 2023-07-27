@@ -19,7 +19,7 @@ jobs:
         ]
 
     env:
-      DB_DATABASE: sifis-ptp
+      DB_DATABASE: sifis_ptp
       DB_USER: root
       DB_PASSWORD: root
 
