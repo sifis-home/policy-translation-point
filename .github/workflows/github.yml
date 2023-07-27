@@ -48,7 +48,7 @@ jobs:
         id: jacoco
         uses: cicirello/jacoco-badge-generator@v2
         with:
-          jacoco-csv-file: coverage/target/site/jacoco-aggregate/jacoco.csv
+          jacoco-csv-file: target/site/jacoco/jacoco.csv
 
       - name: Log coverage percentage 
         if: ${{ matrix.java-version == '11.0.x' }}
@@ -58,14 +58,14 @@ jobs:
       - name: Move the badge to jacoco folder
         if: ${{ matrix.java-version == '11.0.x' }}
         run: |
-          mv .github/badges/*.svg coverage/target/site/jacoco-aggregate/
+          mv .github/badges/*.svg target/site/jacoco/
 
       - name: Deploy Jacoco code coverage reports to gh-pages
         uses: JamesIves/github-pages-deploy-action@v4
         if: ${{ matrix.java-version == '11.0.x' }}
         with:
           clean: true
-          folder: coverage/target/site/jacoco-aggregate
+          folder: target/site/jacoco
           target-folder: reports
           branch: gh-pages
 
