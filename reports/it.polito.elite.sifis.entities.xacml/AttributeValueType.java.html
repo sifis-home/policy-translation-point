@@ -53,7 +53,7 @@ import org.w3c.dom.Element;
 @XmlSeeAlso({
     AttributeAssignmentType.class
 })
-<span class="nc" id="L56">public class AttributeValueType {</span>
+<span class="fc" id="L56">public class AttributeValueType {</span>
 
     @XmlMixed
     @XmlAnyElement(lax = true)
@@ -61,7 +61,7 @@ import org.w3c.dom.Element;
     @XmlAttribute(name = &quot;DataType&quot;, required = true)
     @XmlSchemaType(name = &quot;anyURI&quot;)
     protected String dataType;
-<span class="nc" id="L64">    @XmlAnyAttribute</span>
+<span class="fc" id="L64">    @XmlAnyAttribute</span>
     private Map&lt;QName, String&gt; otherAttributes = new HashMap&lt;QName, String&gt;();
 
     /**
@@ -116,8 +116,8 @@ import org.w3c.dom.Element;
      *     
      */
     public void setDataType(String value) {
-<span class="nc" id="L119">        this.dataType = value;</span>
-<span class="nc" id="L120">    }</span>
+<span class="fc" id="L119">        this.dataType = value;</span>
+<span class="fc" id="L120">    }</span>
 
     /**
      * Gets a map that contains attributes that aren't bound to any typed property on this class.

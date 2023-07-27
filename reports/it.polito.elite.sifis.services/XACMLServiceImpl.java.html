@@ -39,22 +39,22 @@ import it.polito.elite.sifis.entities.xacml.TargetType;
 	@Override
 	public List&lt;PolicyType&gt; translate(Rule rule, String username) throws OWLOntologyCreationException, InterruptedException {
 		
-<span class="nc" id="L42">		List&lt;PolicyType&gt; policies = new ArrayList&lt;PolicyType&gt;();</span>
+<span class="fc" id="L42">		List&lt;PolicyType&gt; policies = new ArrayList&lt;PolicyType&gt;();</span>
 		
 		//extract location
-<span class="nc" id="L45">		Location loc = null;</span>
-<span class="nc bnc" id="L46" title="All 2 branches missed.">		for(Detail d : rule.getAction().getDetails()) {</span>
-<span class="nc bnc" id="L47" title="All 2 branches missed.">			if (d.getType().equals(&quot;location&quot;)) {</span>
-<span class="nc" id="L48">				loc = new Location();</span>
-<span class="nc" id="L49">				loc.setName(((java.util.LinkedHashMap)d.getValue()).get(&quot;name&quot;).toString());</span>
-<span class="nc" id="L50">				loc.setURL(((java.util.LinkedHashMap)d.getValue()).get(&quot;url&quot;).toString());</span>
+<span class="fc" id="L45">		Location loc = null;</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">		for(Detail d : rule.getAction().getDetails()) {</span>
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">			if (d.getType().equals(&quot;location&quot;)) {</span>
+<span class="fc" id="L48">				loc = new Location();</span>
+<span class="fc" id="L49">				loc.setName(((java.util.LinkedHashMap)d.getValue()).get(&quot;name&quot;).toString());</span>
+<span class="fc" id="L50">				loc.setURL(((java.util.LinkedHashMap)d.getValue()).get(&quot;url&quot;).toString());</span>
 			}
-<span class="nc" id="L52">		}</span>
+<span class="fc" id="L52">		}</span>
 		
-<span class="nc" id="L54">		Set&lt;Command&gt; commands = owlService.getCommands(rule.getAction(),loc,username);</span>
+<span class="fc" id="L54">		Set&lt;Command&gt; commands = owlService.getCommands(rule.getAction(),loc,username);</span>
 		
 
-<span class="nc bnc" id="L57" title="All 2 branches missed.">		if(loc.getName().equals(&quot;Entire Home&quot;)) {</span>
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">		if(loc.getName().equals(&quot;Entire Home&quot;)) {</span>
 			//extract device type
 <span class="nc" id="L59">			Command c = commands.iterator().next();</span>
 <span class="nc" id="L60">			String type = c.getEntitiy().getType();</span>
@@ -82,11 +82,11 @@ import it.polito.elite.sifis.entities.xacml.TargetType;
 					break;
 			}
 <span class="nc" id="L84">		}else{</span>
-<span class="nc" id="L85">			Boolean allActions = false;</span>
-<span class="nc bnc" id="L86" title="All 2 branches missed.">			if(rule.getAction().getId().equals(&quot;Action&quot;))</span>
+<span class="fc" id="L85">			Boolean allActions = false;</span>
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">			if(rule.getAction().getId().equals(&quot;Action&quot;))</span>
 <span class="nc" id="L87">				allActions = true;</span>
-<span class="nc bnc" id="L88" title="All 2 branches missed.">			for(Command command : commands) {</span>
-<span class="nc bnc" id="L89" title="All 3 branches missed.">				switch (rule.getEffect()) {</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">			for(Command command : commands) {</span>
+<span class="pc bpc" id="L89" title="2 of 3 branches missed.">				switch (rule.getEffect()) {</span>
 					case &quot;Permit&quot;:
 <span class="nc bnc" id="L91" title="All 2 branches missed.">						if(rule.getSubject().equals(&quot;marketplace&quot;))</span>
 <span class="nc" id="L92">							policies.add(getInstallationPolicy(EffectType.PERMIT, rule.getSubject(), rule.getTrigger(), command, null, allActions));</span>
@@ -94,8 +94,8 @@ import it.polito.elite.sifis.entities.xacml.TargetType;
 <span class="nc" id="L94">							policies.add(getExecutionPolicy(EffectType.PERMIT, rule.getSubject(), rule.getTrigger(), command, null, allActions));</span>
 <span class="nc" id="L95">						break;</span>
 					case &quot;Deny&quot;:
-<span class="nc bnc" id="L97" title="All 2 branches missed.">						if(rule.getSubject().equals(&quot;marketplace&quot;))</span>
-<span class="nc" id="L98">							policies.add(getInstallationPolicy(EffectType.DENY, rule.getSubject(), rule.getTrigger(), command, null, allActions));</span>
+<span class="pc bpc" id="L97" title="1 of 2 branches missed.">						if(rule.getSubject().equals(&quot;marketplace&quot;))</span>
+<span class="fc" id="L98">							policies.add(getInstallationPolicy(EffectType.DENY, rule.getSubject(), rule.getTrigger(), command, null, allActions));</span>
 						else
 <span class="nc" id="L100">							policies.add(getExecutionPolicy(EffectType.DENY, rule.getSubject(), rule.getTrigger(), command, null, allActions));</span>
 <span class="nc" id="L101">						break;</span>
@@ -103,48 +103,48 @@ import it.polito.elite.sifis.entities.xacml.TargetType;
 						break;
 				}	
 				
-<span class="nc" id="L106">			}</span>
+<span class="fc" id="L106">			}</span>
 		}
-<span class="nc" id="L108">		return policies;</span>
+<span class="fc" id="L108">		return policies;</span>
 	}
 	
 	private PolicyType getInstallationPolicy(EffectType effect, String subject, Trigger trigger, Command command, String type, Boolean allActions) {
-<span class="nc" id="L112">		PolicyType myPolicy = new PolicyType();</span>
-<span class="nc" id="L113">		Timestamp timestamp = new Timestamp(System.currentTimeMillis());</span>
-<span class="nc" id="L114">		String policyName = &quot;installation_&quot;;</span>
+<span class="fc" id="L112">		PolicyType myPolicy = new PolicyType();</span>
+<span class="fc" id="L113">		Timestamp timestamp = new Timestamp(System.currentTimeMillis());</span>
+<span class="fc" id="L114">		String policyName = &quot;installation_&quot;;</span>
 		
-<span class="nc bnc" id="L116" title="All 2 branches missed.">		if (allActions)</span>
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">		if (allActions)</span>
 <span class="nc" id="L117">			policyName += &quot;any_action&quot;;</span>
-<span class="nc bnc" id="L118" title="All 4 branches missed.">		else if(command != null &amp;&amp; command.getType() != null)</span>
-<span class="nc" id="L119">			policyName += command.getType();</span>
+<span class="pc bpc" id="L118" title="2 of 4 branches missed.">		else if(command != null &amp;&amp; command.getType() != null)</span>
+<span class="fc" id="L119">			policyName += command.getType();</span>
 		
-<span class="nc bnc" id="L121" title="All 2 branches missed.">		if(type != null) {</span>
+<span class="pc bpc" id="L121" title="1 of 2 branches missed.">		if(type != null) {</span>
 <span class="nc" id="L122">        	myPolicy.setTarget(getExecutionTarget(null, subject, type));</span>
 <span class="nc" id="L123">        	policyName += &quot;_&quot;;</span>
 <span class="nc" id="L124">        	policyName += type;</span>
         }
         else {
-<span class="nc" id="L127">        	myPolicy.setTarget(getExecutionTarget(command.getEntitiy(), subject, null));</span>
-<span class="nc" id="L128">        	policyName += &quot;_&quot;;</span>
-<span class="nc" id="L129">        	policyName += command.getEntitiy().getId();</span>
+<span class="fc" id="L127">        	myPolicy.setTarget(getExecutionTarget(command.getEntitiy(), subject, null));</span>
+<span class="fc" id="L128">        	policyName += &quot;_&quot;;</span>
+<span class="fc" id="L129">        	policyName += command.getEntitiy().getId();</span>
         }
 		
-<span class="nc" id="L132">        myPolicy.setPolicyId(policyName + &quot;_&quot; + String.valueOf(timestamp.getTime()));</span>
+<span class="fc" id="L132">        myPolicy.setPolicyId(policyName + &quot;_&quot; + String.valueOf(timestamp.getTime()));</span>
 
-<span class="nc" id="L134">	    myPolicy.setDescription(&quot;XACML policy for SIFIS-Home - &quot; + timestamp.getTime());</span>
-<span class="nc" id="L135">        myPolicy.setRuleCombiningAlgId(&quot;urn:oasis:names:tc:xacml:3.0:rule-combining-algorithm:permit-unless-deny&quot;);</span>
+<span class="fc" id="L134">	    myPolicy.setDescription(&quot;XACML policy for SIFIS-Home - &quot; + timestamp.getTime());</span>
+<span class="fc" id="L135">        myPolicy.setRuleCombiningAlgId(&quot;urn:oasis:names:tc:xacml:3.0:rule-combining-algorithm:permit-unless-deny&quot;);</span>
         
-<span class="nc" id="L137">        myPolicy.setVersion(&quot;3.0&quot;);</span>
+<span class="fc" id="L137">        myPolicy.setVersion(&quot;3.0&quot;);</span>
         
-<span class="nc" id="L139">        myPolicy.setTarget(getInstallationTarget(subject));</span>
+<span class="fc" id="L139">        myPolicy.setTarget(getInstallationTarget(subject));</span>
 
-<span class="nc" id="L141">        List&lt;Object&gt; rules = new ArrayList&lt;Object&gt;();</span>
+<span class="fc" id="L141">        List&lt;Object&gt; rules = new ArrayList&lt;Object&gt;();</span>
         
-<span class="nc" id="L143">        rules.add(getInstallationRule(effect, subject, trigger, command, type, allActions));</span>
-<span class="nc" id="L144">        rules.add(getDefaultPermitRule());</span>
-<span class="nc" id="L145">        myPolicy.combinerParametersOrRuleCombinerParametersOrVariableDefinition = rules;</span>
+<span class="fc" id="L143">        rules.add(getInstallationRule(effect, subject, trigger, command, type, allActions));</span>
+<span class="fc" id="L144">        rules.add(getDefaultPermitRule());</span>
+<span class="fc" id="L145">        myPolicy.combinerParametersOrRuleCombinerParametersOrVariableDefinition = rules;</span>
 		
-<span class="nc" id="L147">		return myPolicy;</span>
+<span class="fc" id="L147">		return myPolicy;</span>
 	}
 	
 	
@@ -189,98 +189,98 @@ import it.polito.elite.sifis.entities.xacml.TargetType;
 	
 	private TargetType getInstallationTarget(String subject) {
 		
-<span class="nc" id="L192">		TargetType target = new TargetType();</span>
-<span class="nc" id="L193">		List&lt;AnyOfType&gt; anyOfs = new ArrayList&lt;AnyOfType&gt;();</span>
-<span class="nc" id="L194">		List&lt;AllOfType&gt; allOfs = new ArrayList&lt;AllOfType&gt;();</span>
-<span class="nc" id="L195">		AllOfType allOf = new AllOfType();</span>
-<span class="nc" id="L196">		AnyOfType anyOf = new AnyOfType();</span>
-<span class="nc" id="L197">		List&lt;MatchType&gt; matches = new ArrayList&lt;MatchType&gt;();</span>
+<span class="fc" id="L192">		TargetType target = new TargetType();</span>
+<span class="fc" id="L193">		List&lt;AnyOfType&gt; anyOfs = new ArrayList&lt;AnyOfType&gt;();</span>
+<span class="fc" id="L194">		List&lt;AllOfType&gt; allOfs = new ArrayList&lt;AllOfType&gt;();</span>
+<span class="fc" id="L195">		AllOfType allOf = new AllOfType();</span>
+<span class="fc" id="L196">		AnyOfType anyOf = new AnyOfType();</span>
+<span class="fc" id="L197">		List&lt;MatchType&gt; matches = new ArrayList&lt;MatchType&gt;();</span>
         
-<span class="nc" id="L199">        matches.add(getSubjectMatch(subject));</span>
-<span class="nc" id="L200">        matches.add(getActionMatch(&quot;install&quot;));</span>
+<span class="fc" id="L199">        matches.add(getSubjectMatch(subject));</span>
+<span class="fc" id="L200">        matches.add(getActionMatch(&quot;install&quot;));</span>
 
-<span class="nc" id="L202">        allOf.match = matches;</span>
-<span class="nc" id="L203">        allOfs.add(allOf);</span>
-<span class="nc" id="L204">        anyOf.allOf = allOfs;</span>
-<span class="nc" id="L205">        anyOfs.add(anyOf);</span>
-<span class="nc" id="L206">        target.anyOf = anyOfs;</span>
+<span class="fc" id="L202">        allOf.match = matches;</span>
+<span class="fc" id="L203">        allOfs.add(allOf);</span>
+<span class="fc" id="L204">        anyOf.allOf = allOfs;</span>
+<span class="fc" id="L205">        anyOfs.add(anyOf);</span>
+<span class="fc" id="L206">        target.anyOf = anyOfs;</span>
         
-<span class="nc" id="L208">        return target;</span>
+<span class="fc" id="L208">        return target;</span>
 	}
 
 	private TargetType getExecutionTarget(IoTEntity entity, String subject, String type) {
 		
-<span class="nc" id="L213">		TargetType target = new TargetType();</span>
-<span class="nc" id="L214">		List&lt;AnyOfType&gt; anyOfs = new ArrayList&lt;AnyOfType&gt;();</span>
-<span class="nc" id="L215">		List&lt;AllOfType&gt; allOfs = new ArrayList&lt;AllOfType&gt;();</span>
-<span class="nc" id="L216">		AllOfType allOf = new AllOfType();</span>
-<span class="nc" id="L217">		AnyOfType anyOf = new AnyOfType();</span>
-<span class="nc" id="L218">		List&lt;MatchType&gt; matches = new ArrayList&lt;MatchType&gt;();</span>
+<span class="fc" id="L213">		TargetType target = new TargetType();</span>
+<span class="fc" id="L214">		List&lt;AnyOfType&gt; anyOfs = new ArrayList&lt;AnyOfType&gt;();</span>
+<span class="fc" id="L215">		List&lt;AllOfType&gt; allOfs = new ArrayList&lt;AllOfType&gt;();</span>
+<span class="fc" id="L216">		AllOfType allOf = new AllOfType();</span>
+<span class="fc" id="L217">		AnyOfType anyOf = new AnyOfType();</span>
+<span class="fc" id="L218">		List&lt;MatchType&gt; matches = new ArrayList&lt;MatchType&gt;();</span>
         
-<span class="nc" id="L220">        matches.add(getSubjectMatch(subject));</span>
+<span class="fc" id="L220">        matches.add(getSubjectMatch(subject));</span>
         
-<span class="nc bnc" id="L222" title="All 2 branches missed.">        if(entity != null)</span>
-<span class="nc" id="L223">        	matches.add(getResourceMatch(entity));</span>
+<span class="pc bpc" id="L222" title="1 of 2 branches missed.">        if(entity != null)</span>
+<span class="fc" id="L223">        	matches.add(getResourceMatch(entity));</span>
 <span class="nc bnc" id="L224" title="All 2 branches missed.">        else if(type != null)</span>
 <span class="nc" id="L225">        	matches.add(getTypeMatch(type));</span>
 
-<span class="nc" id="L227">        allOf.match = matches;</span>
-<span class="nc" id="L228">        allOfs.add(allOf);</span>
-<span class="nc" id="L229">        anyOf.allOf = allOfs;</span>
-<span class="nc" id="L230">        anyOfs.add(anyOf);</span>
-<span class="nc" id="L231">        target.anyOf = anyOfs;</span>
+<span class="fc" id="L227">        allOf.match = matches;</span>
+<span class="fc" id="L228">        allOfs.add(allOf);</span>
+<span class="fc" id="L229">        anyOf.allOf = allOfs;</span>
+<span class="fc" id="L230">        anyOfs.add(anyOf);</span>
+<span class="fc" id="L231">        target.anyOf = anyOfs;</span>
         
-<span class="nc" id="L233">        return target;</span>
+<span class="fc" id="L233">        return target;</span>
 	}
 	
 	public static MatchType getSubjectMatch(String subject) {
-<span class="nc" id="L237">        MatchType match = new MatchType();</span>
+<span class="fc" id="L237">        MatchType match = new MatchType();</span>
         
         //ATTRIBUTE VALUE
-<span class="nc" id="L240">      	AttributeValueType av = new AttributeValueType();</span>
-<span class="nc" id="L241">      	List&lt;Object&gt; ids = new ArrayList&lt;Object&gt;();</span>
-<span class="nc" id="L242">      	ids.add(subject);</span>
-<span class="nc" id="L243">      	av.content = new ArrayList&lt;Object&gt;(ids);</span>
-<span class="nc" id="L244">      	av.setDataType(&quot;http://www.w3.org/2001/XMLSchema#string&quot;);</span>
-<span class="nc" id="L245">        match.setAttributeValue(av);</span>
+<span class="fc" id="L240">      	AttributeValueType av = new AttributeValueType();</span>
+<span class="fc" id="L241">      	List&lt;Object&gt; ids = new ArrayList&lt;Object&gt;();</span>
+<span class="fc" id="L242">      	ids.add(subject);</span>
+<span class="fc" id="L243">      	av.content = new ArrayList&lt;Object&gt;(ids);</span>
+<span class="fc" id="L244">      	av.setDataType(&quot;http://www.w3.org/2001/XMLSchema#string&quot;);</span>
+<span class="fc" id="L245">        match.setAttributeValue(av);</span>
         
         //MATCH ID
-<span class="nc" id="L248">        match.setMatchId(&quot;urn:oasis:names:tc:xacml:1.0:function:string-equal&quot;);</span>
+<span class="fc" id="L248">        match.setMatchId(&quot;urn:oasis:names:tc:xacml:1.0:function:string-equal&quot;);</span>
         
         //ATTRIBUTE DESIGNATOR
-<span class="nc" id="L251">        AttributeDesignatorType ad = new AttributeDesignatorType();</span>
-<span class="nc" id="L252">      	ad.setAttributeId(&quot;urn:oasis:names:tc:xacml:1.0:subject:subject-id&quot;);</span>
-<span class="nc" id="L253">      	ad.setCategory(&quot;urn:oasis:names:tc:xacml:1.0:subject-category:access-subject&quot;);</span>
-<span class="nc" id="L254">      	ad.setDataType(&quot;http://www.w3.org/2001/XMLSchema#string&quot;);</span>
-<span class="nc" id="L255">      	ad.setMustBePresent(true);</span>
-<span class="nc" id="L256">        match.setAttributeDesignator(ad);</span>
+<span class="fc" id="L251">        AttributeDesignatorType ad = new AttributeDesignatorType();</span>
+<span class="fc" id="L252">      	ad.setAttributeId(&quot;urn:oasis:names:tc:xacml:1.0:subject:subject-id&quot;);</span>
+<span class="fc" id="L253">      	ad.setCategory(&quot;urn:oasis:names:tc:xacml:1.0:subject-category:access-subject&quot;);</span>
+<span class="fc" id="L254">      	ad.setDataType(&quot;http://www.w3.org/2001/XMLSchema#string&quot;);</span>
+<span class="fc" id="L255">      	ad.setMustBePresent(true);</span>
+<span class="fc" id="L256">        match.setAttributeDesignator(ad);</span>
         
-<span class="nc" id="L258">        return match;</span>
+<span class="fc" id="L258">        return match;</span>
 	}
 	
 	public static MatchType getResourceMatch(IoTEntity entity) {
-<span class="nc" id="L262">        MatchType match = new MatchType();</span>
+<span class="fc" id="L262">        MatchType match = new MatchType();</span>
                 
         //ATTRIBUTE VALUE
-<span class="nc" id="L265">        AttributeValueType av = new AttributeValueType();</span>
-<span class="nc" id="L266">        List&lt;Object&gt; ids = new ArrayList&lt;Object&gt;();</span>
-<span class="nc" id="L267">        ids.add(entity.getId());</span>
-<span class="nc" id="L268">        av.content = new ArrayList&lt;Object&gt;(ids);</span>
-<span class="nc" id="L269">        av.setDataType(&quot;http://www.w3.org/2001/XMLSchema#string&quot;);</span>
-<span class="nc" id="L270">        match.setAttributeValue(av);</span>
+<span class="fc" id="L265">        AttributeValueType av = new AttributeValueType();</span>
+<span class="fc" id="L266">        List&lt;Object&gt; ids = new ArrayList&lt;Object&gt;();</span>
+<span class="fc" id="L267">        ids.add(entity.getId());</span>
+<span class="fc" id="L268">        av.content = new ArrayList&lt;Object&gt;(ids);</span>
+<span class="fc" id="L269">        av.setDataType(&quot;http://www.w3.org/2001/XMLSchema#string&quot;);</span>
+<span class="fc" id="L270">        match.setAttributeValue(av);</span>
         
         //MATCH ID
-<span class="nc" id="L273">        match.setMatchId(&quot;urn:oasis:names:tc:xacml:1.0:function:string-equal&quot;);</span>
+<span class="fc" id="L273">        match.setMatchId(&quot;urn:oasis:names:tc:xacml:1.0:function:string-equal&quot;);</span>
         
         //ATTRIBUTE DESIGNATOR
-<span class="nc" id="L276">        AttributeDesignatorType ad = new AttributeDesignatorType();</span>
-<span class="nc" id="L277">        ad.setAttributeId(&quot;urn:oasis:names:tc:xacml:1.0:resource:resource-id&quot;);</span>
-<span class="nc" id="L278">        ad.setCategory(&quot;urn:oasis:names:tc:xacml:3.0:attribute-category:resource&quot;);</span>
-<span class="nc" id="L279">        ad.setDataType(&quot;http://www.w3.org/2001/XMLSchema#string&quot;);</span>
-<span class="nc" id="L280">        ad.setMustBePresent(true);</span>
-<span class="nc" id="L281">        match.setAttributeDesignator(ad);</span>
+<span class="fc" id="L276">        AttributeDesignatorType ad = new AttributeDesignatorType();</span>
+<span class="fc" id="L277">        ad.setAttributeId(&quot;urn:oasis:names:tc:xacml:1.0:resource:resource-id&quot;);</span>
+<span class="fc" id="L278">        ad.setCategory(&quot;urn:oasis:names:tc:xacml:3.0:attribute-category:resource&quot;);</span>
+<span class="fc" id="L279">        ad.setDataType(&quot;http://www.w3.org/2001/XMLSchema#string&quot;);</span>
+<span class="fc" id="L280">        ad.setMustBePresent(true);</span>
+<span class="fc" id="L281">        match.setAttributeDesignator(ad);</span>
         
-<span class="nc" id="L283">        return match;</span>
+<span class="fc" id="L283">        return match;</span>
 	}
 	
 	public static MatchType getTypeMatch(String type) {
@@ -309,28 +309,28 @@ import it.polito.elite.sifis.entities.xacml.TargetType;
 	}
 	
 	public static MatchType getActionMatch(String action) {
-<span class="nc" id="L312">        MatchType match = new MatchType();</span>
+<span class="fc" id="L312">        MatchType match = new MatchType();</span>
                 
         //ATTRIBUTE VALUE
-<span class="nc" id="L315">        AttributeValueType av = new AttributeValueType();</span>
-<span class="nc" id="L316">        List&lt;Object&gt; ids = new ArrayList&lt;Object&gt;();</span>
-<span class="nc" id="L317">        ids.add(action);</span>
-<span class="nc" id="L318">        av.content = new ArrayList&lt;Object&gt;(ids);</span>
-<span class="nc" id="L319">        av.setDataType(&quot;http://www.w3.org/2001/XMLSchema#string&quot;);</span>
-<span class="nc" id="L320">        match.setAttributeValue(av);</span>
+<span class="fc" id="L315">        AttributeValueType av = new AttributeValueType();</span>
+<span class="fc" id="L316">        List&lt;Object&gt; ids = new ArrayList&lt;Object&gt;();</span>
+<span class="fc" id="L317">        ids.add(action);</span>
+<span class="fc" id="L318">        av.content = new ArrayList&lt;Object&gt;(ids);</span>
+<span class="fc" id="L319">        av.setDataType(&quot;http://www.w3.org/2001/XMLSchema#string&quot;);</span>
+<span class="fc" id="L320">        match.setAttributeValue(av);</span>
         
         //MATCH ID
-<span class="nc" id="L323">        match.setMatchId(&quot;urn:oasis:names:tc:xacml:1.0:function:string-equal&quot;);</span>
+<span class="fc" id="L323">        match.setMatchId(&quot;urn:oasis:names:tc:xacml:1.0:function:string-equal&quot;);</span>
         
         //ATTRIBUTE DESIGNATOR
-<span class="nc" id="L326">        AttributeDesignatorType ad = new AttributeDesignatorType();</span>
-<span class="nc" id="L327">        ad.setAttributeId(&quot;urn:oasis:names:tc:xacml:1.0:action:action-id&quot;);</span>
-<span class="nc" id="L328">        ad.setCategory(&quot;urn:oasis:names:tc:xacml:3.0:attribute-category:action&quot;);</span>
-<span class="nc" id="L329">        ad.setDataType(&quot;http://www.w3.org/2001/XMLSchema#string&quot;);</span>
-<span class="nc" id="L330">        ad.setMustBePresent(true);</span>
-<span class="nc" id="L331">        match.setAttributeDesignator(ad);</span>
+<span class="fc" id="L326">        AttributeDesignatorType ad = new AttributeDesignatorType();</span>
+<span class="fc" id="L327">        ad.setAttributeId(&quot;urn:oasis:names:tc:xacml:1.0:action:action-id&quot;);</span>
+<span class="fc" id="L328">        ad.setCategory(&quot;urn:oasis:names:tc:xacml:3.0:attribute-category:action&quot;);</span>
+<span class="fc" id="L329">        ad.setDataType(&quot;http://www.w3.org/2001/XMLSchema#string&quot;);</span>
+<span class="fc" id="L330">        ad.setMustBePresent(true);</span>
+<span class="fc" id="L331">        match.setAttributeDesignator(ad);</span>
         
-<span class="nc" id="L333">        return match;</span>
+<span class="fc" id="L333">        return match;</span>
 	}
 	
 	public static RuleType getDefaultDenyRule() {
@@ -345,39 +345,39 @@ import it.polito.elite.sifis.entities.xacml.TargetType;
 	}
 	
 	public static RuleType getDefaultPermitRule() {
-<span class="nc" id="L348">		RuleType rule = new RuleType();</span>
-<span class="nc" id="L349">		rule.setEffect(EffectType.PERMIT);</span>
-<span class="nc" id="L350">		TargetType target = new TargetType();</span>
-<span class="nc" id="L351">        rule.setTarget(target);</span>
-<span class="nc" id="L352">		rule.setRuleId(&quot;default-permit&quot;);</span>
-<span class="nc" id="L353">		rule.setDescription(&quot;Default Permit&quot;);</span>
+<span class="fc" id="L348">		RuleType rule = new RuleType();</span>
+<span class="fc" id="L349">		rule.setEffect(EffectType.PERMIT);</span>
+<span class="fc" id="L350">		TargetType target = new TargetType();</span>
+<span class="fc" id="L351">        rule.setTarget(target);</span>
+<span class="fc" id="L352">		rule.setRuleId(&quot;default-permit&quot;);</span>
+<span class="fc" id="L353">		rule.setDescription(&quot;Default Permit&quot;);</span>
 
-<span class="nc" id="L355">		return rule;</span>
+<span class="fc" id="L355">		return rule;</span>
 	}
 	
 	public static RuleType getInstallationRule(EffectType effect, String subject, Trigger trigger, Command command, String type, Boolean allActions){
-<span class="nc" id="L359">        Timestamp timestamp = new Timestamp(System.currentTimeMillis());</span>
-<span class="nc" id="L360">        RuleType rule = new RuleType();</span>
-<span class="nc" id="L361">		rule.setRuleId(String.valueOf(timestamp.getTime()));</span>
-<span class="nc" id="L362">		rule.setEffect(effect);</span>
+<span class="fc" id="L359">        Timestamp timestamp = new Timestamp(System.currentTimeMillis());</span>
+<span class="fc" id="L360">        RuleType rule = new RuleType();</span>
+<span class="fc" id="L361">		rule.setRuleId(String.valueOf(timestamp.getTime()));</span>
+<span class="fc" id="L362">		rule.setEffect(effect);</span>
 		
-<span class="nc" id="L364">		TargetType target = new TargetType();</span>
+<span class="fc" id="L364">		TargetType target = new TargetType();</span>
         
-<span class="nc" id="L366">        rule.setTarget(target);</span>
+<span class="fc" id="L366">        rule.setTarget(target);</span>
         
-<span class="nc bnc" id="L368" title="All 4 branches missed.">        if(type != null &amp;&amp; allActions)</span>
+<span class="pc bpc" id="L368" title="3 of 4 branches missed.">        if(type != null &amp;&amp; allActions)</span>
 <span class="nc" id="L369">            rule.setPreCondition(getTypeCondition(type, &quot;pre&quot;));</span>
-<span class="nc bnc" id="L370" title="All 2 branches missed.">        else if(!allActions)</span>
-<span class="nc" id="L371">            rule.setPreCondition(getActionCondition(command, &quot;pre&quot;));        </span>
+<span class="pc bpc" id="L370" title="1 of 2 branches missed.">        else if(!allActions)</span>
+<span class="fc" id="L371">            rule.setPreCondition(getActionCondition(command, &quot;pre&quot;));        </span>
         	
         
-<span class="nc bnc" id="L374" title="All 2 branches missed.">        if (trigger.getId().equals(&quot;sifis_always_trigger&quot;))</span>
+<span class="pc bpc" id="L374" title="1 of 2 branches missed.">        if (trigger.getId().equals(&quot;sifis_always_trigger&quot;))</span>
 <span class="nc" id="L375">        	rule.setOngoingCondition(getEnvironmentCondition(&quot;ongoing&quot;));</span>
         else
-<span class="nc" id="L377">        	rule.setOngoingCondition(getTriggerCondition(trigger, &quot;ongoing&quot;));</span>
+<span class="fc" id="L377">        	rule.setOngoingCondition(getTriggerCondition(trigger, &quot;ongoing&quot;));</span>
 
-<span class="nc" id="L379">        rule.setPostCondition(getSubjectCondition(subject, &quot;post&quot;));</span>
-<span class="nc" id="L380">        return rule;</span>
+<span class="fc" id="L379">        rule.setPostCondition(getSubjectCondition(subject, &quot;post&quot;));</span>
+<span class="fc" id="L380">        return rule;</span>
 	} 
 	
 	public static RuleType getExecutionRule(EffectType effect, String subject, Trigger trigger, Command command, Boolean allActions){
@@ -569,170 +569,170 @@ import it.polito.elite.sifis.entities.xacml.TargetType;
 	}
 	
 	public static ConditionType getSubjectCondition(String subject, String decisionTime) {
-<span class="nc" id="L572">		ConditionType condition = new ConditionType();</span>
-<span class="nc" id="L573">		condition.setDecisionTime(decisionTime);</span>
+<span class="fc" id="L572">		ConditionType condition = new ConditionType();</span>
+<span class="fc" id="L573">		condition.setDecisionTime(decisionTime);</span>
 		
 		//ATTRIBUTE DESIGNATOR
-<span class="nc" id="L576">		AttributeDesignatorType ad = new AttributeDesignatorType();</span>
-<span class="nc" id="L577">		ad.setAttributeId(&quot;urn:oasis:names:tc:xacml:1.0:subject:subject-id&quot;);</span>
-<span class="nc" id="L578">		ad.setCategory(&quot;urn:oasis:names:tc:xacml:1.0:subject-category:access-subject&quot;);</span>
-<span class="nc" id="L579">		ad.setDataType(&quot;http://www.w3.org/2001/XMLSchema#string&quot;);</span>
-<span class="nc" id="L580">		ad.setMustBePresent(true);</span>
+<span class="fc" id="L576">		AttributeDesignatorType ad = new AttributeDesignatorType();</span>
+<span class="fc" id="L577">		ad.setAttributeId(&quot;urn:oasis:names:tc:xacml:1.0:subject:subject-id&quot;);</span>
+<span class="fc" id="L578">		ad.setCategory(&quot;urn:oasis:names:tc:xacml:1.0:subject-category:access-subject&quot;);</span>
+<span class="fc" id="L579">		ad.setDataType(&quot;http://www.w3.org/2001/XMLSchema#string&quot;);</span>
+<span class="fc" id="L580">		ad.setMustBePresent(true);</span>
 		
 		//VALUE
-<span class="nc" id="L583">		AttributeValueType value = new AttributeValueType();</span>
-<span class="nc" id="L584">		List&lt;Object&gt; ids = new ArrayList&lt;Object&gt;();</span>
-<span class="nc" id="L585">		ids.add(subject);</span>
-<span class="nc" id="L586">		value.content = new ArrayList&lt;Object&gt;(ids);</span>
-<span class="nc" id="L587">		value.setDataType(&quot;http://www.w3.org/2001/XMLSchema#string&quot;);</span>
+<span class="fc" id="L583">		AttributeValueType value = new AttributeValueType();</span>
+<span class="fc" id="L584">		List&lt;Object&gt; ids = new ArrayList&lt;Object&gt;();</span>
+<span class="fc" id="L585">		ids.add(subject);</span>
+<span class="fc" id="L586">		value.content = new ArrayList&lt;Object&gt;(ids);</span>
+<span class="fc" id="L587">		value.setDataType(&quot;http://www.w3.org/2001/XMLSchema#string&quot;);</span>
 		
-<span class="nc" id="L589">		ObjectFactory factory = new ObjectFactory();</span>
-<span class="nc" id="L590">	    JAXBElement&lt;?&gt; expItem = factory.createAttributeDesignator(ad);</span>
-<span class="nc" id="L591">	    List&lt;JAXBElement&lt;?&gt;&gt; expressions = new ArrayList&lt;JAXBElement&lt;?&gt;&gt;();  </span>
-<span class="nc" id="L592">	    expressions.add(expItem);</span>
-<span class="nc" id="L593">	    ApplyType applyDesignator = new ApplyType();</span>
-<span class="nc" id="L594">	    applyDesignator.setFunctionId(&quot;urn:oasis:names:tc:xacml:1.0:function:string-one-and-only&quot;);</span>
-<span class="nc" id="L595">	    applyDesignator.expression = expressions;</span>
+<span class="fc" id="L589">		ObjectFactory factory = new ObjectFactory();</span>
+<span class="fc" id="L590">	    JAXBElement&lt;?&gt; expItem = factory.createAttributeDesignator(ad);</span>
+<span class="fc" id="L591">	    List&lt;JAXBElement&lt;?&gt;&gt; expressions = new ArrayList&lt;JAXBElement&lt;?&gt;&gt;();  </span>
+<span class="fc" id="L592">	    expressions.add(expItem);</span>
+<span class="fc" id="L593">	    ApplyType applyDesignator = new ApplyType();</span>
+<span class="fc" id="L594">	    applyDesignator.setFunctionId(&quot;urn:oasis:names:tc:xacml:1.0:function:string-one-and-only&quot;);</span>
+<span class="fc" id="L595">	    applyDesignator.expression = expressions;</span>
 	        
-<span class="nc" id="L597">	    JAXBElement&lt;?&gt; item1 = factory.createApply(applyDesignator);</span>
-<span class="nc" id="L598">	    JAXBElement&lt;?&gt; item2 = factory.createAttributeValue(value);</span>
+<span class="fc" id="L597">	    JAXBElement&lt;?&gt; item1 = factory.createApply(applyDesignator);</span>
+<span class="fc" id="L598">	    JAXBElement&lt;?&gt; item2 = factory.createAttributeValue(value);</span>
 
-<span class="nc" id="L600">	    List&lt;JAXBElement&lt;?&gt;&gt; expressionsExt = new ArrayList&lt;JAXBElement&lt;?&gt;&gt;();  </span>
-<span class="nc" id="L601">	    expressionsExt.add(item1);</span>
-<span class="nc" id="L602">	    expressionsExt.add(item2);</span>
+<span class="fc" id="L600">	    List&lt;JAXBElement&lt;?&gt;&gt; expressionsExt = new ArrayList&lt;JAXBElement&lt;?&gt;&gt;();  </span>
+<span class="fc" id="L601">	    expressionsExt.add(item1);</span>
+<span class="fc" id="L602">	    expressionsExt.add(item2);</span>
 	        
 	    //EXTERNAL APPLY
-<span class="nc" id="L605">	    ApplyType externalDesignator = new ApplyType();</span>
-<span class="nc" id="L606">	    externalDesignator.setFunctionId(&quot;urn:oasis:names:tc:xacml:1.0:function:string-equal&quot;);</span>
-<span class="nc" id="L607">	    externalDesignator.expression = expressionsExt;</span>
+<span class="fc" id="L605">	    ApplyType externalDesignator = new ApplyType();</span>
+<span class="fc" id="L606">	    externalDesignator.setFunctionId(&quot;urn:oasis:names:tc:xacml:1.0:function:string-equal&quot;);</span>
+<span class="fc" id="L607">	    externalDesignator.expression = expressionsExt;</span>
 	    
-<span class="nc" id="L609">	    List&lt;JAXBElement&lt;?&gt;&gt; expressionsRoot = new ArrayList&lt;JAXBElement&lt;?&gt;&gt;();  </span>
-<span class="nc" id="L610">	    expressionsRoot.addAll(externalDesignator.getExpression());</span>
+<span class="fc" id="L609">	    List&lt;JAXBElement&lt;?&gt;&gt; expressionsRoot = new ArrayList&lt;JAXBElement&lt;?&gt;&gt;();  </span>
+<span class="fc" id="L610">	    expressionsRoot.addAll(externalDesignator.getExpression());</span>
 
 	    //ROOT APPLY
-<span class="nc" id="L613">	    ApplyType rootDesignator = new ApplyType();</span>
-<span class="nc" id="L614">	    rootDesignator.setFunctionId(&quot;urn:oasis:names:tc:xacml:1.0:function:and&quot;);</span>
-<span class="nc" id="L615">	    rootDesignator.expression = expressionsRoot;</span>
+<span class="fc" id="L613">	    ApplyType rootDesignator = new ApplyType();</span>
+<span class="fc" id="L614">	    rootDesignator.setFunctionId(&quot;urn:oasis:names:tc:xacml:1.0:function:and&quot;);</span>
+<span class="fc" id="L615">	    rootDesignator.expression = expressionsRoot;</span>
 	    
 	  
-<span class="nc" id="L618">	    JAXBElement&lt;?&gt; conditionInner = factory.createApply(rootDesignator);</span>
-<span class="nc" id="L619">	    condition.expression = conditionInner;</span>
+<span class="fc" id="L618">	    JAXBElement&lt;?&gt; conditionInner = factory.createApply(rootDesignator);</span>
+<span class="fc" id="L619">	    condition.expression = conditionInner;</span>
 	    
-<span class="nc" id="L621">	    return condition;</span>
+<span class="fc" id="L621">	    return condition;</span>
 				
 	}
 	
 	public static ConditionType getActionCondition(Command command, String decisionTime) {
-<span class="nc" id="L626">		ConditionType condition = new ConditionType();</span>
-<span class="nc" id="L627">		condition.setDecisionTime(decisionTime);</span>
+<span class="fc" id="L626">		ConditionType condition = new ConditionType();</span>
+<span class="fc" id="L627">		condition.setDecisionTime(decisionTime);</span>
 
 		//ATTRIBUTE DESIGNATOR
-<span class="nc" id="L630">		AttributeDesignatorType ad = new AttributeDesignatorType();</span>
-<span class="nc" id="L631">		ad.setAttributeId(&quot;urn:oasis:names:tc:xacml:1.0:action:action-id&quot;);</span>
-<span class="nc" id="L632">		ad.setCategory(&quot;urn:oasis:names:tc:xacml:3.0:attribute-category:action&quot;);</span>
-<span class="nc" id="L633">		ad.setDataType(&quot;http://www.w3.org/2001/XMLSchema#string&quot;);</span>
-<span class="nc" id="L634">		ad.setMustBePresent(true);</span>
+<span class="fc" id="L630">		AttributeDesignatorType ad = new AttributeDesignatorType();</span>
+<span class="fc" id="L631">		ad.setAttributeId(&quot;urn:oasis:names:tc:xacml:1.0:action:action-id&quot;);</span>
+<span class="fc" id="L632">		ad.setCategory(&quot;urn:oasis:names:tc:xacml:3.0:attribute-category:action&quot;);</span>
+<span class="fc" id="L633">		ad.setDataType(&quot;http://www.w3.org/2001/XMLSchema#string&quot;);</span>
+<span class="fc" id="L634">		ad.setMustBePresent(true);</span>
 		
 		//VALUE
-<span class="nc" id="L637">		AttributeValueType value = new AttributeValueType();</span>
-<span class="nc" id="L638">		List&lt;Object&gt; ids = new ArrayList&lt;Object&gt;();</span>
-<span class="nc" id="L639">		ids.add(command.getType());</span>
-<span class="nc" id="L640">		value.content = new ArrayList&lt;Object&gt;(ids);</span>
-<span class="nc" id="L641">		value.setDataType(&quot;http://www.w3.org/2001/XMLSchema#string&quot;);     </span>
+<span class="fc" id="L637">		AttributeValueType value = new AttributeValueType();</span>
+<span class="fc" id="L638">		List&lt;Object&gt; ids = new ArrayList&lt;Object&gt;();</span>
+<span class="fc" id="L639">		ids.add(command.getType());</span>
+<span class="fc" id="L640">		value.content = new ArrayList&lt;Object&gt;(ids);</span>
+<span class="fc" id="L641">		value.setDataType(&quot;http://www.w3.org/2001/XMLSchema#string&quot;);     </span>
 		
-<span class="nc" id="L643">		ObjectFactory factory = new ObjectFactory();</span>
-<span class="nc" id="L644">	    JAXBElement&lt;?&gt; expItem = factory.createAttributeDesignator(ad);</span>
-<span class="nc" id="L645">	    List&lt;JAXBElement&lt;?&gt;&gt; expressions = new ArrayList&lt;JAXBElement&lt;?&gt;&gt;();  </span>
-<span class="nc" id="L646">	    expressions.add(expItem);</span>
-<span class="nc" id="L647">	    ApplyType applyDesignator = new ApplyType();</span>
-<span class="nc" id="L648">	    applyDesignator.setFunctionId(&quot;urn:oasis:names:tc:xacml:1.0:function:string-one-and-only&quot;);</span>
-<span class="nc" id="L649">	    applyDesignator.expression = expressions;</span>
+<span class="fc" id="L643">		ObjectFactory factory = new ObjectFactory();</span>
+<span class="fc" id="L644">	    JAXBElement&lt;?&gt; expItem = factory.createAttributeDesignator(ad);</span>
+<span class="fc" id="L645">	    List&lt;JAXBElement&lt;?&gt;&gt; expressions = new ArrayList&lt;JAXBElement&lt;?&gt;&gt;();  </span>
+<span class="fc" id="L646">	    expressions.add(expItem);</span>
+<span class="fc" id="L647">	    ApplyType applyDesignator = new ApplyType();</span>
+<span class="fc" id="L648">	    applyDesignator.setFunctionId(&quot;urn:oasis:names:tc:xacml:1.0:function:string-one-and-only&quot;);</span>
+<span class="fc" id="L649">	    applyDesignator.expression = expressions;</span>
 	        
-<span class="nc" id="L651">	    JAXBElement&lt;?&gt; item1 = factory.createApply(applyDesignator);</span>
-<span class="nc" id="L652">	    JAXBElement&lt;?&gt; item2 = factory.createAttributeValue(value);</span>
+<span class="fc" id="L651">	    JAXBElement&lt;?&gt; item1 = factory.createApply(applyDesignator);</span>
+<span class="fc" id="L652">	    JAXBElement&lt;?&gt; item2 = factory.createAttributeValue(value);</span>
 
-<span class="nc" id="L654">	    List&lt;JAXBElement&lt;?&gt;&gt; expressionsExt = new ArrayList&lt;JAXBElement&lt;?&gt;&gt;();  </span>
-<span class="nc" id="L655">	    expressionsExt.add(item1);</span>
-<span class="nc" id="L656">	    expressionsExt.add(item2);</span>
+<span class="fc" id="L654">	    List&lt;JAXBElement&lt;?&gt;&gt; expressionsExt = new ArrayList&lt;JAXBElement&lt;?&gt;&gt;();  </span>
+<span class="fc" id="L655">	    expressionsExt.add(item1);</span>
+<span class="fc" id="L656">	    expressionsExt.add(item2);</span>
 	        
 	    //EXTERNAL APPLY
-<span class="nc" id="L659">	    ApplyType externalDesignator = new ApplyType();</span>
-<span class="nc" id="L660">	    externalDesignator.setFunctionId(&quot;urn:oasis:names:tc:xacml:1.0:function:string-equal&quot;);</span>
-<span class="nc" id="L661">	    externalDesignator.expression = expressionsExt;</span>
+<span class="fc" id="L659">	    ApplyType externalDesignator = new ApplyType();</span>
+<span class="fc" id="L660">	    externalDesignator.setFunctionId(&quot;urn:oasis:names:tc:xacml:1.0:function:string-equal&quot;);</span>
+<span class="fc" id="L661">	    externalDesignator.expression = expressionsExt;</span>
 	    
-<span class="nc" id="L663">	    List&lt;JAXBElement&lt;?&gt;&gt; expressionsRoot = new ArrayList&lt;JAXBElement&lt;?&gt;&gt;();  </span>
-<span class="nc" id="L664">	    expressionsRoot.addAll(externalDesignator.getExpression());</span>
+<span class="fc" id="L663">	    List&lt;JAXBElement&lt;?&gt;&gt; expressionsRoot = new ArrayList&lt;JAXBElement&lt;?&gt;&gt;();  </span>
+<span class="fc" id="L664">	    expressionsRoot.addAll(externalDesignator.getExpression());</span>
 
 	    //ROOT APPLY
-<span class="nc" id="L667">	    ApplyType rootDesignator = new ApplyType();</span>
-<span class="nc" id="L668">	    rootDesignator.setFunctionId(&quot;urn:oasis:names:tc:xacml:1.0:function:and&quot;);</span>
-<span class="nc" id="L669">	    rootDesignator.expression = expressionsRoot;</span>
+<span class="fc" id="L667">	    ApplyType rootDesignator = new ApplyType();</span>
+<span class="fc" id="L668">	    rootDesignator.setFunctionId(&quot;urn:oasis:names:tc:xacml:1.0:function:and&quot;);</span>
+<span class="fc" id="L669">	    rootDesignator.expression = expressionsRoot;</span>
 	    
 	  
-<span class="nc" id="L672">	    JAXBElement&lt;?&gt; conditionInner = factory.createApply(rootDesignator);</span>
-<span class="nc" id="L673">	    condition.expression = conditionInner;</span>
+<span class="fc" id="L672">	    JAXBElement&lt;?&gt; conditionInner = factory.createApply(rootDesignator);</span>
+<span class="fc" id="L673">	    condition.expression = conditionInner;</span>
 		
-<span class="nc" id="L675">	    return condition;</span>
+<span class="fc" id="L675">	    return condition;</span>
 	}
 
 	public static ConditionType getTriggerCondition(Trigger trigger, String decisionTime) {
 		
-<span class="nc" id="L680">		ConditionType condition = new ConditionType();</span>
-<span class="nc" id="L681">		condition.setDecisionTime(decisionTime);</span>
+<span class="fc" id="L680">		ConditionType condition = new ConditionType();</span>
+<span class="fc" id="L681">		condition.setDecisionTime(decisionTime);</span>
 
 		//ATTRIBUTE DESIGNATOR
-<span class="nc" id="L684">		AttributeDesignatorType ad = new AttributeDesignatorType();</span>
-<span class="nc" id="L685">        List&lt;JAXBElement&lt;?&gt;&gt; expressionsExt = new ArrayList&lt;JAXBElement&lt;?&gt;&gt;();  </span>
-<span class="nc" id="L686">        ObjectFactory factory = new ObjectFactory();</span>
+<span class="fc" id="L684">		AttributeDesignatorType ad = new AttributeDesignatorType();</span>
+<span class="fc" id="L685">        List&lt;JAXBElement&lt;?&gt;&gt; expressionsExt = new ArrayList&lt;JAXBElement&lt;?&gt;&gt;();  </span>
+<span class="fc" id="L686">        ObjectFactory factory = new ObjectFactory();</span>
         JAXBElement&lt;?&gt; expItem;
         List&lt;JAXBElement&lt;?&gt;&gt; expressions;
-<span class="nc" id="L689">        ApplyType applyDesignator = new ApplyType();</span>
-<span class="nc" id="L690">        ApplyType externalDesignator = new ApplyType();</span>
+<span class="fc" id="L689">        ApplyType applyDesignator = new ApplyType();</span>
+<span class="fc" id="L690">        ApplyType externalDesignator = new ApplyType();</span>
 
         JAXBElement&lt;?&gt; item1;
         JAXBElement&lt;?&gt; item2;
         JAXBElement&lt;?&gt; item3;
-<span class="nc bnc" id="L695" title="All 3 branches missed.">		switch(trigger.getService().getId()) {</span>
+<span class="pc bpc" id="L695" title="2 of 3 branches missed.">		switch(trigger.getService().getId()) {</span>
 			case &quot;sifis_time&quot;:
-<span class="nc" id="L697">		        ad.setAttributeId(&quot;urn:oasis:names:tc:xacml:1.0:environment:current-time&quot;);</span>
-<span class="nc" id="L698">		        ad.setCategory(&quot;urn:oasis:names:tc:xacml:3.0:attribute-category:environment&quot;);</span>
-<span class="nc" id="L699">		        ad.setDataType(&quot;http://www.w3.org/2001/XMLSchema#time&quot;);</span>
-<span class="nc" id="L700">		        ad.setMustBePresent(true);</span>
+<span class="fc" id="L697">		        ad.setAttributeId(&quot;urn:oasis:names:tc:xacml:1.0:environment:current-time&quot;);</span>
+<span class="fc" id="L698">		        ad.setCategory(&quot;urn:oasis:names:tc:xacml:3.0:attribute-category:environment&quot;);</span>
+<span class="fc" id="L699">		        ad.setDataType(&quot;http://www.w3.org/2001/XMLSchema#time&quot;);</span>
+<span class="fc" id="L700">		        ad.setMustBePresent(true);</span>
 		        
 		        //TIME 1
-<span class="nc" id="L703">				AttributeValueType time1 = new AttributeValueType();</span>
-<span class="nc" id="L704">		        List&lt;Object&gt; ids = new ArrayList&lt;Object&gt;();</span>
-<span class="nc" id="L705">		        ids.add(extractFrom(trigger));</span>
-<span class="nc" id="L706">		        time1.content = new ArrayList&lt;Object&gt;(ids);</span>
-<span class="nc" id="L707">		        time1.setDataType(&quot;http://www.w3.org/2001/XMLSchema#time&quot;);</span>
+<span class="fc" id="L703">				AttributeValueType time1 = new AttributeValueType();</span>
+<span class="fc" id="L704">		        List&lt;Object&gt; ids = new ArrayList&lt;Object&gt;();</span>
+<span class="fc" id="L705">		        ids.add(extractFrom(trigger));</span>
+<span class="fc" id="L706">		        time1.content = new ArrayList&lt;Object&gt;(ids);</span>
+<span class="fc" id="L707">		        time1.setDataType(&quot;http://www.w3.org/2001/XMLSchema#time&quot;);</span>
 				
 				//TIME 2
-<span class="nc" id="L710">		        AttributeValueType time2 = new AttributeValueType();</span>
-<span class="nc" id="L711">		        ids = new ArrayList&lt;Object&gt;();</span>
-<span class="nc" id="L712">		        ids.add(extractTo(trigger));</span>
-<span class="nc" id="L713">		        time2.content = new ArrayList&lt;Object&gt;(ids);</span>
-<span class="nc" id="L714">		        time2.setDataType(&quot;http://www.w3.org/2001/XMLSchema#time&quot;);</span>
+<span class="fc" id="L710">		        AttributeValueType time2 = new AttributeValueType();</span>
+<span class="fc" id="L711">		        ids = new ArrayList&lt;Object&gt;();</span>
+<span class="fc" id="L712">		        ids.add(extractTo(trigger));</span>
+<span class="fc" id="L713">		        time2.content = new ArrayList&lt;Object&gt;(ids);</span>
+<span class="fc" id="L714">		        time2.setDataType(&quot;http://www.w3.org/2001/XMLSchema#time&quot;);</span>
 		        
-<span class="nc" id="L716">		        expItem = factory.createAttributeDesignator(ad);</span>
-<span class="nc" id="L717">		        expressions = new ArrayList&lt;JAXBElement&lt;?&gt;&gt;();  </span>
-<span class="nc" id="L718">		        expressions.add(expItem);</span>
-<span class="nc" id="L719">		        applyDesignator.setFunctionId(&quot;urn:oasis:names:tc:xacml:1.0:function:time-one-and-only&quot;);</span>
-<span class="nc" id="L720">		        applyDesignator.expression = expressions;</span>
+<span class="fc" id="L716">		        expItem = factory.createAttributeDesignator(ad);</span>
+<span class="fc" id="L717">		        expressions = new ArrayList&lt;JAXBElement&lt;?&gt;&gt;();  </span>
+<span class="fc" id="L718">		        expressions.add(expItem);</span>
+<span class="fc" id="L719">		        applyDesignator.setFunctionId(&quot;urn:oasis:names:tc:xacml:1.0:function:time-one-and-only&quot;);</span>
+<span class="fc" id="L720">		        applyDesignator.expression = expressions;</span>
 		        
 		        
-<span class="nc" id="L723">		        item1 = factory.createApply(applyDesignator);</span>
-<span class="nc" id="L724">		        item2 = factory.createAttributeValue(time1);</span>
-<span class="nc" id="L725">		        item3 = factory.createAttributeValue(time2);</span>
+<span class="fc" id="L723">		        item1 = factory.createApply(applyDesignator);</span>
+<span class="fc" id="L724">		        item2 = factory.createAttributeValue(time1);</span>
+<span class="fc" id="L725">		        item3 = factory.createAttributeValue(time2);</span>
 
-<span class="nc" id="L727">		        expressionsExt.add(item1);</span>
-<span class="nc" id="L728">		        expressionsExt.add(item2);</span>
-<span class="nc" id="L729">		        expressionsExt.add(item3);</span>
+<span class="fc" id="L727">		        expressionsExt.add(item1);</span>
+<span class="fc" id="L728">		        expressionsExt.add(item2);</span>
+<span class="fc" id="L729">		        expressionsExt.add(item3);</span>
 		        
 		        //EXTERNAL APPLY
-<span class="nc" id="L732">		        externalDesignator.setFunctionId(&quot;urn:oasis:names:tc:xacml:2.0:function:time-in-range&quot;);</span>
-<span class="nc" id="L733">		        externalDesignator.expression = expressionsExt;</span>
+<span class="fc" id="L732">		        externalDesignator.setFunctionId(&quot;urn:oasis:names:tc:xacml:2.0:function:time-in-range&quot;);</span>
+<span class="fc" id="L733">		        externalDesignator.expression = expressionsExt;</span>
 		        
-<span class="nc" id="L735">		        break;</span>
+<span class="fc" id="L735">		        break;</span>
 		        
 			case &quot;sifis_windows&quot;:
 <span class="nc" id="L738">				ad.setAttributeId(&quot;eu:sifis-home:1.0:environment:all-windows-in-bedroom-closed&quot;);</span>
@@ -772,19 +772,19 @@ import it.polito.elite.sifis.entities.xacml.TargetType;
 		}
 		
        
-<span class="nc" id="L775">        JAXBElement&lt;?&gt; conditionInner = factory.createApply(externalDesignator);</span>
+<span class="fc" id="L775">        JAXBElement&lt;?&gt; conditionInner = factory.createApply(externalDesignator);</span>
         
-<span class="nc" id="L777">        condition.expression = conditionInner;</span>
+<span class="fc" id="L777">        condition.expression = conditionInner;</span>
         
-<span class="nc" id="L779">        return condition;</span>
+<span class="fc" id="L779">        return condition;</span>
 	}
 
 
 
 	private static String extractFrom(Trigger trigger) {
-<span class="nc bnc" id="L785" title="All 2 branches missed.">		for(Detail detail : trigger.getDetails()){</span>
-<span class="nc bnc" id="L786" title="All 4 branches missed.">			if(detail.getValue()!= null &amp;&amp; detail.getName().trim().contains(&quot;from&quot;)){</span>
-<span class="nc" id="L787">				return detail.getValue() + &quot;:00:00+01:00&quot;;</span>
+<span class="pc bpc" id="L785" title="1 of 2 branches missed.">		for(Detail detail : trigger.getDetails()){</span>
+<span class="pc bpc" id="L786" title="2 of 4 branches missed.">			if(detail.getValue()!= null &amp;&amp; detail.getName().trim().contains(&quot;from&quot;)){</span>
+<span class="fc" id="L787">				return detail.getValue() + &quot;:00:00+01:00&quot;;</span>
 			}
 <span class="nc" id="L789">		}</span>
 <span class="nc" id="L790">		return &quot;N.A.&quot;;</span>
@@ -793,11 +793,11 @@ import it.polito.elite.sifis.entities.xacml.TargetType;
 
 
 	private static String extractTo(Trigger trigger) {
-<span class="nc bnc" id="L796" title="All 2 branches missed.">		for(Detail detail : trigger.getDetails()){</span>
-<span class="nc bnc" id="L797" title="All 4 branches missed.">			if(detail.getValue()!= null &amp;&amp; detail.getName().trim().contains(&quot;to&quot;)){</span>
-<span class="nc" id="L798">				return detail.getValue() + &quot;:00:00+01:00&quot;;</span>
+<span class="pc bpc" id="L796" title="1 of 2 branches missed.">		for(Detail detail : trigger.getDetails()){</span>
+<span class="pc bpc" id="L797" title="1 of 4 branches missed.">			if(detail.getValue()!= null &amp;&amp; detail.getName().trim().contains(&quot;to&quot;)){</span>
+<span class="fc" id="L798">				return detail.getValue() + &quot;:00:00+01:00&quot;;</span>
 			}
-<span class="nc" id="L800">		}</span>
+<span class="fc" id="L800">		}</span>
 <span class="nc" id="L801">		return &quot;N.A.&quot;;</span>
 	}
 	

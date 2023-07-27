@@ -28,19 +28,19 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;/pre&gt;
  * 
  */
-<span class="nc" id="L31">@XmlType(name = &quot;EffectType&quot;)</span>
+<span class="fc" id="L31">@XmlType(name = &quot;EffectType&quot;)</span>
 @XmlEnum
 public enum EffectType {
 
-<span class="nc" id="L35">    @XmlEnumValue(&quot;Permit&quot;)</span>
+<span class="fc" id="L35">    @XmlEnumValue(&quot;Permit&quot;)</span>
     PERMIT(&quot;Permit&quot;),
-<span class="nc" id="L37">    @XmlEnumValue(&quot;Deny&quot;)</span>
+<span class="fc" id="L37">    @XmlEnumValue(&quot;Deny&quot;)</span>
     DENY(&quot;Deny&quot;);
     private final String value;
 
-<span class="nc" id="L41">    EffectType(String v) {</span>
-<span class="nc" id="L42">        value = v;</span>
-<span class="nc" id="L43">    }</span>
+<span class="fc" id="L41">    EffectType(String v) {</span>
+<span class="fc" id="L42">        value = v;</span>
+<span class="fc" id="L43">    }</span>
 
     public String value() {
 <span class="nc" id="L46">        return value;</span>

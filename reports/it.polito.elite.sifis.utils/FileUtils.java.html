@@ -8,14 +8,14 @@ import java.io.InputStreamReader;
 <span class="nc" id="L8">public class FileUtils {</span>
 	
 	public static String readFromInputStream(InputStream inputStream) throws IOException {
-<span class="nc" id="L11">		StringBuilder resultStringBuilder = new StringBuilder();</span>
-<span class="nc" id="L12">		try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {</span>
+<span class="fc" id="L11">		StringBuilder resultStringBuilder = new StringBuilder();</span>
+<span class="fc" id="L12">		try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {</span>
 			String line;
-<span class="nc bnc" id="L14" title="All 2 branches missed.">			while ((line = br.readLine()) != null) {</span>
-<span class="nc" id="L15">				resultStringBuilder.append(line).append(&quot;\n&quot;);</span>
+<span class="fc bfc" id="L14" title="All 2 branches covered.">			while ((line = br.readLine()) != null) {</span>
+<span class="fc" id="L15">				resultStringBuilder.append(line).append(&quot;\n&quot;);</span>
 			}
 		}
-<span class="nc" id="L18">		return resultStringBuilder.toString();</span>
+<span class="fc" id="L18">		return resultStringBuilder.toString();</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

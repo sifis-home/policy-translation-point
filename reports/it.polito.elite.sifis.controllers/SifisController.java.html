@@ -107,28 +107,28 @@ import it.polito.elite.sifis.utils.PropertyFileReader;
 	
 	@GetMapping(value = &quot;/sifis/triggerservice&quot;)
 	public List&lt;Service&gt; getTriggerServices() throws InterruptedException{
-<span class="nc" id="L110">		Collection&lt;Service&gt; services = owlService.getTriggerServices();</span>
-<span class="nc" id="L111">		List&lt;Service&gt; serviceList = new LinkedList&lt;Service&gt;(services);</span>
-<span class="nc" id="L112">		Collections.sort(serviceList);</span>
-<span class="nc" id="L113">		return serviceList;</span>
+<span class="fc" id="L110">		Collection&lt;Service&gt; services = owlService.getTriggerServices();</span>
+<span class="fc" id="L111">		List&lt;Service&gt; serviceList = new LinkedList&lt;Service&gt;(services);</span>
+<span class="fc" id="L112">		Collections.sort(serviceList);</span>
+<span class="fc" id="L113">		return serviceList;</span>
 	}
 	
 	@GetMapping(value = &quot;/sifis/triggerservice/{service}/triggers&quot;)
 	public List&lt;Trigger&gt; getTriggers(@PathVariable String service, Principal user) throws InterruptedException, OWLOntologyCreationException{
-<span class="nc" id="L118">		return new LinkedList&lt;Trigger&gt;(owlService.getTriggers(service, user.getName()));</span>
+<span class="fc" id="L118">		return new LinkedList&lt;Trigger&gt;(owlService.getTriggers(service, user.getName()));</span>
 	}
 	
 	@GetMapping(value = &quot;/sifis/triggerservice/{service}/triggers/{trigger}/details&quot;)
 	public List&lt;Detail&gt; getTriggerDetails(@PathVariable String service, @PathVariable String trigger, Principal user) throws OWLOntologyCreationException, InterruptedException{
-<span class="nc" id="L123">		return new LinkedList&lt;Detail&gt;(owlService.getTriggerDetails(null, service, trigger, user.getName()));</span>
+<span class="fc" id="L123">		return new LinkedList&lt;Detail&gt;(owlService.getTriggerDetails(null, service, trigger, user.getName()));</span>
 	}
 	
 	@GetMapping(value = &quot;/sifis/actionservice&quot;)
 	public List&lt;Service&gt; getActionServices() throws InterruptedException{
-<span class="nc" id="L128">		Collection&lt;Service&gt; services = owlService.getActionServices();</span>
-<span class="nc" id="L129">		List&lt;Service&gt; serviceList = new LinkedList&lt;Service&gt;(services);</span>
-<span class="nc" id="L130">		Collections.sort(serviceList);</span>
-<span class="nc" id="L131">		return serviceList;</span>
+<span class="fc" id="L128">		Collection&lt;Service&gt; services = owlService.getActionServices();</span>
+<span class="fc" id="L129">		List&lt;Service&gt; serviceList = new LinkedList&lt;Service&gt;(services);</span>
+<span class="fc" id="L130">		Collections.sort(serviceList);</span>
+<span class="fc" id="L131">		return serviceList;</span>
 	}
 	
 	@GetMapping(value = &quot;/sifis/actionservice/{service}/actions&quot;)
@@ -138,7 +138,7 @@ import it.polito.elite.sifis.utils.PropertyFileReader;
 	
 	@GetMapping(value = &quot;/sifis/actionservice/{service}/actions/{action}/details&quot;)
 	public List&lt;Detail&gt; getActionDetails(@PathVariable String service, @PathVariable String action, Principal user) throws OWLOntologyCreationException, InterruptedException{
-<span class="nc" id="L141">		return new LinkedList&lt;Detail&gt;(owlService.getActionDetails(null, service, action, user.getName()));</span>
+<span class="fc" id="L141">		return new LinkedList&lt;Detail&gt;(owlService.getActionDetails(null, service, action, user.getName()));</span>
 	}
 	
 	@DeleteMapping(value = &quot;/sifis/rule/{ruleId}&quot;)
@@ -150,8 +150,8 @@ import it.polito.elite.sifis.utils.PropertyFileReader;
 	
 	@GetMapping(value = &quot;/sifis/rule&quot;)
 	public List&lt;Rule&gt; getRules(Principal user) throws OWLOntologyCreationException, InterruptedException {
-<span class="nc" id="L153">		List&lt;Rule&gt; rules = dbService.getRulesByType(&quot;sifis&quot;,user.getName());</span>
-<span class="nc" id="L154">		return rules;</span>
+<span class="fc" id="L153">		List&lt;Rule&gt; rules = dbService.getRulesByType(&quot;sifis&quot;,user.getName());</span>
+<span class="fc" id="L154">		return rules;</span>
 	}
 	
 	@GetMapping(value = &quot;/sifis/rule/trigger&quot;)
@@ -162,51 +162,51 @@ import it.polito.elite.sifis.utils.PropertyFileReader;
 	@PostMapping(value = &quot;/sifis/rule&quot;)
 	@ResponseStatus(value = HttpStatus.OK)
 	public void saveRule(@RequestBody Rule rule, Principal user) throws OWLOntologyCreationException{
-<span class="nc bnc" id="L165" title="All 2 branches missed.">		for(Detail d : rule.getAction().getDetails()){</span>
-<span class="nc bnc" id="L166" title="All 2 branches missed.">			if(d.getType().equals(&quot;entity&quot;)){</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">		for(Detail d : rule.getAction().getDetails()){</span>
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">			if(d.getType().equals(&quot;entity&quot;)){</span>
 <span class="nc" id="L167">				ObjectMapper mapper = new ObjectMapper();</span>
 <span class="nc" id="L168">				IoTEntity entity = mapper.convertValue(d.getValue(), IoTEntity.class);</span>
 <span class="nc" id="L169">				d.setValue(entity);</span>
 			}
-<span class="nc" id="L171">		}</span>
+<span class="fc" id="L171">		}</span>
 		
-<span class="nc bnc" id="L173" title="All 2 branches missed.">		if(rule.getTrigger() != null) {</span>
-<span class="nc bnc" id="L174" title="All 2 branches missed.">			for(Detail d : rule.getTrigger().getDetails()){</span>
-<span class="nc bnc" id="L175" title="All 2 branches missed.">				if(d.getType().equals(&quot;entity&quot;)){</span>
+<span class="pc bpc" id="L173" title="1 of 2 branches missed.">		if(rule.getTrigger() != null) {</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">			for(Detail d : rule.getTrigger().getDetails()){</span>
+<span class="pc bpc" id="L175" title="1 of 2 branches missed.">				if(d.getType().equals(&quot;entity&quot;)){</span>
 <span class="nc" id="L176">					ObjectMapper mapper = new ObjectMapper();</span>
 <span class="nc" id="L177">					IoTEntity entity = mapper.convertValue(d.getValue(), IoTEntity.class);</span>
 <span class="nc" id="L178">					d.setValue(entity);</span>
 				}
-<span class="nc" id="L180">			}</span>
+<span class="fc" id="L180">			}</span>
 		}
-<span class="nc" id="L182">		Dbrule dbrule = dbService.saveRule(rule, &quot;sifis&quot;, user.getName());</span>
-<span class="nc" id="L183">		rule.setDbId(dbrule.getId());</span>
-<span class="nc" id="L184">	}</span>
+<span class="fc" id="L182">		Dbrule dbrule = dbService.saveRule(rule, &quot;sifis&quot;, user.getName());</span>
+<span class="fc" id="L183">		rule.setDbId(dbrule.getId());</span>
+<span class="fc" id="L184">	}</span>
 	
 	@PostMapping(value = &quot;/sifis/translate&quot;)
 	@ResponseStatus(value = HttpStatus.OK)
 	public void translate(HttpServletResponse response, @RequestBody Rule rule, Principal user) throws OWLOntologyCreationException, InterruptedException, JAXBException, IOException {
-<span class="nc" id="L189">		prop = PropertyFileReader.loadProperties(configFile);</span>
+<span class="fc" id="L189">		prop = PropertyFileReader.loadProperties(configFile);</span>
 
-<span class="nc" id="L191">		ClassLoader classloader = Thread.currentThread().getContextClassLoader();</span>
-<span class="nc" id="L192">		File policyDir = new File(classloader.getResource(prop.getProperty(&quot;policiesDir&quot;)).getFile());</span>
-<span class="nc" id="L193">		FileUtils.cleanDirectory(policyDir); </span>
+<span class="fc" id="L191">		ClassLoader classloader = Thread.currentThread().getContextClassLoader();</span>
+<span class="fc" id="L192">		File policyDir = new File(classloader.getResource(prop.getProperty(&quot;policiesDir&quot;)).getFile());</span>
+<span class="fc" id="L193">		FileUtils.cleanDirectory(policyDir); </span>
 		        
 
-<span class="nc" id="L196">		List&lt;PolicyType&gt; policies = xacmlService.translate(rule, user.getName());</span>
+<span class="fc" id="L196">		List&lt;PolicyType&gt; policies = xacmlService.translate(rule, user.getName());</span>
 		
-<span class="nc" id="L198">		JAXBContext jaxbContext = JAXBContext.newInstance(PolicyType.class);</span>
-<span class="nc" id="L199">		Marshaller jaxbMarshaller = jaxbContext.createMarshaller();</span>
+<span class="fc" id="L198">		JAXBContext jaxbContext = JAXBContext.newInstance(PolicyType.class);</span>
+<span class="fc" id="L199">		Marshaller jaxbMarshaller = jaxbContext.createMarshaller();</span>
 
-<span class="nc bnc" id="L201" title="All 2 branches missed.">		for(PolicyType policy : policies) {</span>
-<span class="nc" id="L202">			File policyFile = new File(policyDir.getAbsolutePath() + &quot;/&quot; + policy.getPolicyId()+ &quot;.xml&quot;);</span>
-<span class="nc" id="L203">		    jaxbMarshaller.marshal(policy, policyFile);</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">		for(PolicyType policy : policies) {</span>
+<span class="fc" id="L202">			File policyFile = new File(policyDir.getAbsolutePath() + &quot;/&quot; + policy.getPolicyId()+ &quot;.xml&quot;);</span>
+<span class="fc" id="L203">		    jaxbMarshaller.marshal(policy, policyFile);</span>
 		    
-<span class="nc" id="L205">		    dhtService.publishPolicy(policyFile, policy);</span>
+<span class="fc" id="L205">		    dhtService.publishPolicy(policyFile, policy);</span>
 
-<span class="nc" id="L207">		}</span>
+<span class="fc" id="L207">		}</span>
 	        
-<span class="nc" id="L209">	}</span>
+<span class="fc" id="L209">	}</span>
 	
 	@GetMapping(value = &quot;/sifis/download&quot;, produces=&quot;application/zip&quot;)
 	public ResponseEntity&lt;StreamingResponseBody&gt; download(HttpServletResponse response, Principal user) throws IOException {

@@ -4,7 +4,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-<span class="nc" id="L7">public class Service implements Comparable&lt;Service&gt;{</span>
+<span class="fc" id="L7">public class Service implements Comparable&lt;Service&gt;{</span>
 	private String URL;
 	private String id;
 	private String name;
@@ -15,62 +15,62 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 	private Set&lt;Action&gt; actions;
 	
 	public String getURL() {
-<span class="nc" id="L18">		return URL;</span>
+<span class="fc" id="L18">		return URL;</span>
 	}
 	public void setURL(String uRL) {
-<span class="nc" id="L21">		URL = uRL;</span>
-<span class="nc" id="L22">	}</span>
+<span class="fc" id="L21">		URL = uRL;</span>
+<span class="fc" id="L22">	}</span>
 	public String getId() {
-<span class="nc" id="L24">		return id;</span>
+<span class="fc" id="L24">		return id;</span>
 	}
 	public void setId(String id) {
-<span class="nc" id="L27">		this.id = id;</span>
-<span class="nc" id="L28">	}</span>
+<span class="fc" id="L27">		this.id = id;</span>
+<span class="fc" id="L28">	}</span>
 	public Set&lt;Trigger&gt; getTriggers() {
-<span class="nc" id="L30">		return triggers;</span>
+<span class="fc" id="L30">		return triggers;</span>
 	}
 	public void setTriggers(Set&lt;Trigger&gt; triggers) {
-<span class="nc" id="L33">		this.triggers = triggers;</span>
-<span class="nc" id="L34">	}</span>
+<span class="fc" id="L33">		this.triggers = triggers;</span>
+<span class="fc" id="L34">	}</span>
 	public Set&lt;Action&gt; getActions() {
-<span class="nc" id="L36">		return actions;</span>
+<span class="fc" id="L36">		return actions;</span>
 	}
 	public void setActions(Set&lt;Action&gt; actions) {
-<span class="nc" id="L39">		this.actions = actions;</span>
-<span class="nc" id="L40">	}</span>
+<span class="fc" id="L39">		this.actions = actions;</span>
+<span class="fc" id="L40">	}</span>
 	public String getName() {
-<span class="nc" id="L42">		return name;</span>
+<span class="fc" id="L42">		return name;</span>
 	}
 	public void setName(String name) {
-<span class="nc" id="L45">		this.name = name;</span>
-<span class="nc" id="L46">	}</span>
+<span class="fc" id="L45">		this.name = name;</span>
+<span class="fc" id="L46">	}</span>
 	public String getColor() {
-<span class="nc" id="L48">		return color;</span>
+<span class="fc" id="L48">		return color;</span>
 	}
 	public void setColor(String color) {
-<span class="nc" id="L51">		this.color = color;</span>
-<span class="nc" id="L52">	}</span>
+<span class="fc" id="L51">		this.color = color;</span>
+<span class="fc" id="L52">	}</span>
 	public Long getWebId() {
-<span class="nc" id="L54">		return webId;</span>
+<span class="fc" id="L54">		return webId;</span>
 	}
 	public void setWebId(Long webId) {
-<span class="nc" id="L57">		this.webId = webId;</span>
-<span class="nc" id="L58">	}</span>
+<span class="fc" id="L57">		this.webId = webId;</span>
+<span class="fc" id="L58">	}</span>
 	public String getImage() {
-<span class="nc" id="L60">		return image;</span>
+<span class="fc" id="L60">		return image;</span>
 	}
 	public void setImage(String image) {
-<span class="nc" id="L63">		this.image = image;</span>
-<span class="nc" id="L64">	}</span>
+<span class="fc" id="L63">		this.image = image;</span>
+<span class="fc" id="L64">	}</span>
 	
 	@JsonIgnore
 	@Override
 	public int compareTo(Service o) {
-<span class="nc bnc" id="L69" title="All 2 branches missed.">		if(this.webId &gt; o.webId)</span>
-<span class="nc" id="L70">			return 1;</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">		if(this.webId &gt; o.webId)</span>
+<span class="fc" id="L70">			return 1;</span>
 		else{
-<span class="nc bnc" id="L72" title="All 2 branches missed.">			if(this.webId &lt; o.webId)</span>
-<span class="nc" id="L73">				return -1;</span>
+<span class="pc bpc" id="L72" title="1 of 2 branches missed.">			if(this.webId &lt; o.webId)</span>
+<span class="fc" id="L73">				return -1;</span>
 			else
 <span class="nc" id="L75">				return 0;</span>
 		}
@@ -78,10 +78,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 	@JsonIgnore
 	@Override
 	public int hashCode() {
-<span class="nc" id="L81">		final int prime = 31;</span>
-<span class="nc" id="L82">		int result = 1;</span>
-<span class="nc bnc" id="L83" title="All 2 branches missed.">		result = prime * result + ((URL == null) ? 0 : URL.hashCode());</span>
-<span class="nc" id="L84">		return result;</span>
+<span class="fc" id="L81">		final int prime = 31;</span>
+<span class="fc" id="L82">		int result = 1;</span>
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">		result = prime * result + ((URL == null) ? 0 : URL.hashCode());</span>
+<span class="fc" id="L84">		return result;</span>
 	}
 	@JsonIgnore
 	@Override

@@ -35,47 +35,47 @@ public class DHTServiceImpl implements DHTService {
 	@Override
 	public String publishPolicy(File policyFile, PolicyType policy) throws IOException {
 		
-<span class="nc" id="L38">		InputStream inputStream = new FileInputStream(policyFile);</span>
-<span class="nc" id="L39">	    String policyStr = it.polito.elite.sifis.utils.FileUtils.readFromInputStream(inputStream);</span>
-<span class="nc" id="L40">		Timestamp timestamp = new Timestamp(System.currentTimeMillis());</span>
+<span class="fc" id="L38">		InputStream inputStream = new FileInputStream(policyFile);</span>
+<span class="fc" id="L39">	    String policyStr = it.polito.elite.sifis.utils.FileUtils.readFromInputStream(inputStream);</span>
+<span class="fc" id="L40">		Timestamp timestamp = new Timestamp(System.currentTimeMillis());</span>
 
-<span class="nc" id="L42">	    JSONObject message = new JSONObject();</span>
-<span class="nc" id="L43">	    message.put(&quot;purpose&quot;, &quot;ADD_POLICY&quot;);</span>
-<span class="nc" id="L44">	    message.put(&quot;message_id&quot;, UUID.randomUUID());</span>
-<span class="nc" id="L45">	    message.put(&quot;policy&quot;,  Base64.getEncoder().encodeToString(policyStr.getBytes()));</span>
-<span class="nc" id="L46">	    message.put(&quot;policy_id&quot;, policy.getPolicyId());</span>
+<span class="fc" id="L42">	    JSONObject message = new JSONObject();</span>
+<span class="fc" id="L43">	    message.put(&quot;purpose&quot;, &quot;ADD_POLICY&quot;);</span>
+<span class="fc" id="L44">	    message.put(&quot;message_id&quot;, UUID.randomUUID());</span>
+<span class="fc" id="L45">	    message.put(&quot;policy&quot;,  Base64.getEncoder().encodeToString(policyStr.getBytes()));</span>
+<span class="fc" id="L46">	    message.put(&quot;policy_id&quot;, policy.getPolicyId());</span>
 	    
-<span class="nc" id="L48">	    JSONObject messageExt = new JSONObject();</span>
-<span class="nc" id="L49">	    messageExt.put(&quot;message&quot;, message);</span>
+<span class="fc" id="L48">	    JSONObject messageExt = new JSONObject();</span>
+<span class="fc" id="L49">	    messageExt.put(&quot;message&quot;, message);</span>
 
-<span class="nc" id="L51">	    JSONObject command = new JSONObject();</span>
-<span class="nc" id="L52">	    command.put(&quot;command_type&quot;, &quot;pap-command&quot;);</span>
-<span class="nc" id="L53">	    command.put(&quot;id&quot;, &quot;pap-&quot;+UUID.randomUUID());</span>
-<span class="nc" id="L54">	    command.put(&quot;topic_name&quot;, &quot;topic-name&quot;);</span>
-<span class="nc" id="L55">	    command.put(&quot;topic_uuid&quot;, &quot;topic-uuid-the-ucs-is-subscribed-to&quot;);</span>
-<span class="nc" id="L56">	    command.put(&quot;value&quot;, messageExt);</span>
+<span class="fc" id="L51">	    JSONObject command = new JSONObject();</span>
+<span class="fc" id="L52">	    command.put(&quot;command_type&quot;, &quot;pap-command&quot;);</span>
+<span class="fc" id="L53">	    command.put(&quot;id&quot;, &quot;pap-&quot;+UUID.randomUUID());</span>
+<span class="fc" id="L54">	    command.put(&quot;topic_name&quot;, &quot;topic-name&quot;);</span>
+<span class="fc" id="L55">	    command.put(&quot;topic_uuid&quot;, &quot;topic-uuid-the-ucs-is-subscribed-to&quot;);</span>
+<span class="fc" id="L56">	    command.put(&quot;value&quot;, messageExt);</span>
 	    
-<span class="nc" id="L58">	    JSONObject value = new JSONObject();</span>
-<span class="nc" id="L59">	    value.put(&quot;timestamp&quot;, timestamp.getTime());</span>
-<span class="nc" id="L60">	    value.put(&quot;command&quot;, command);</span>
+<span class="fc" id="L58">	    JSONObject value = new JSONObject();</span>
+<span class="fc" id="L59">	    value.put(&quot;timestamp&quot;, timestamp.getTime());</span>
+<span class="fc" id="L60">	    value.put(&quot;command&quot;, command);</span>
 	    
-<span class="nc" id="L62">	    JSONObject request = new JSONObject();</span>
-<span class="nc" id="L63">	    request.put(&quot;value&quot;, value);</span>
+<span class="fc" id="L62">	    JSONObject request = new JSONObject();</span>
+<span class="fc" id="L63">	    request.put(&quot;value&quot;, value);</span>
 	    
-<span class="nc" id="L65">	    JSONObject toSend = new JSONObject();</span>
-<span class="nc" id="L66">	    toSend.put(&quot;RequestPubMessage&quot;, request);</span>
+<span class="fc" id="L65">	    JSONObject toSend = new JSONObject();</span>
+<span class="fc" id="L66">	    toSend.put(&quot;RequestPubMessage&quot;, request);</span>
 	    
-<span class="nc" id="L68">	    HttpHeaders headers = new HttpHeaders();</span>
-<span class="nc" id="L69">	    headers.setContentType(MediaType.APPLICATION_JSON);</span>
+<span class="fc" id="L68">	    HttpHeaders headers = new HttpHeaders();</span>
+<span class="fc" id="L69">	    headers.setContentType(MediaType.APPLICATION_JSON);</span>
 	    
-<span class="nc" id="L71">	    HttpEntity&lt;String&gt; req = </span>
-<span class="nc" id="L72">	    	      new HttpEntity&lt;String&gt;(toSend.toString(), headers);</span>
+<span class="fc" id="L71">	    HttpEntity&lt;String&gt; req = </span>
+<span class="fc" id="L72">	    	      new HttpEntity&lt;String&gt;(toSend.toString(), headers);</span>
 	    
 	    try {
 <span class="nc" id="L75">		    String res = restTemplate.postForObject(prop.getProperty(&quot;dhtEndpoint&quot;) + &quot;pub&quot;, req, String.class);</span>
 <span class="nc" id="L76">		    return res;</span>
-<span class="nc" id="L77">	    } catch(Throwable t) {</span>
-<span class="nc" id="L78">	    	return null;</span>
+<span class="fc" id="L77">	    } catch(Throwable t) {</span>
+<span class="fc" id="L78">	    	return null;</span>
 	    }
 	}
 

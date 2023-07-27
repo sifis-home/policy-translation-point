@@ -30,23 +30,23 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;/pre&gt;
  * 
  */
-<span class="nc" id="L33">@XmlType(name = &quot;DecisionType&quot;)</span>
+<span class="fc" id="L33">@XmlType(name = &quot;DecisionType&quot;)</span>
 @XmlEnum
 public enum DecisionType {
 
-<span class="nc" id="L37">    @XmlEnumValue(&quot;Permit&quot;)</span>
+<span class="fc" id="L37">    @XmlEnumValue(&quot;Permit&quot;)</span>
     PERMIT(&quot;Permit&quot;),
-<span class="nc" id="L39">    @XmlEnumValue(&quot;Deny&quot;)</span>
+<span class="fc" id="L39">    @XmlEnumValue(&quot;Deny&quot;)</span>
     DENY(&quot;Deny&quot;),
-<span class="nc" id="L41">    @XmlEnumValue(&quot;Indeterminate&quot;)</span>
+<span class="fc" id="L41">    @XmlEnumValue(&quot;Indeterminate&quot;)</span>
     INDETERMINATE(&quot;Indeterminate&quot;),
-<span class="nc" id="L43">    @XmlEnumValue(&quot;NotApplicable&quot;)</span>
+<span class="fc" id="L43">    @XmlEnumValue(&quot;NotApplicable&quot;)</span>
     NOT_APPLICABLE(&quot;NotApplicable&quot;);
     private final String value;
 
-<span class="nc" id="L47">    DecisionType(String v) {</span>
-<span class="nc" id="L48">        value = v;</span>
-<span class="nc" id="L49">    }</span>
+<span class="fc" id="L47">    DecisionType(String v) {</span>
+<span class="fc" id="L48">        value = v;</span>
+<span class="fc" id="L49">    }</span>
 
     public String value() {
 <span class="nc" id="L52">        return value;</span>
