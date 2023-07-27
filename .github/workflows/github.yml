@@ -15,12 +15,7 @@ jobs:
     strategy:
       matrix:
         java-version: [
-          '8.0.x',
           '11.0.x',
-          '12.0.x',
-          '13.0.x',
-          '14.0.x',
-          '15.0.x',
         ]
 
     steps:
@@ -38,25 +33,25 @@ jobs:
           ./scripts/build-ptp.sh --with-mysql
 
       - name: Generate Jacoco Badge
-        if: ${{ matrix.java-version == '8.0.x' }}
+        if: ${{ matrix.java-version == '11.0.x' }}
         id: jacoco
         uses: cicirello/jacoco-badge-generator@v2
         with:
           jacoco-csv-file: coverage/target/site/jacoco-aggregate/jacoco.csv
 
       - name: Log coverage percentage
-        if: ${{ matrix.java-version == '8.0.x' }}
+        if: ${{ matrix.java-version == '11.0.x' }}
         run: |
           echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
 
       - name: Move the badge to jacoco folder
-        if: ${{ matrix.java-version == '8.0.x' }}
+        if: ${{ matrix.java-version == '11.0.x' }}
         run: |
           mv .github/badges/*.svg coverage/target/site/jacoco-aggregate/
 
       - name: Deploy Jacoco code coverage reports to gh-pages
         uses: JamesIves/github-pages-deploy-action@v4
-        if: ${{ matrix.java-version == '8.0.x' }}
+        if: ${{ matrix.java-version == '11.0.x' }}
         with:
           clean: true
           folder: coverage/target/site/jacoco-aggregate
