@@ -1,3 +1,5 @@
+[![coverage](https://raw.githubusercontent.com/sifis-home/policy-translation-point/gh-pages/reports/jacoco.svg 'Code Coverage')](https://sifis-home.github.io/policy-translation-point/reports/index.html)
+
 # Policy Translation Point (PTP)
 
 PTP translates high-level security policies like “Do not record sound in the living room tonight” into low-level policies in a [XACML](https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=xacml) formalism. Furthermore, PTP detects potential conflicts linke redundancies and inconsistencies between high-level policies.
