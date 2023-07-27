@@ -3,16 +3,16 @@
 public class Token {
 
     /** Represents the expression t*/
-<span class="nc" id="L6">    private String initialMarkingExpression = &quot;&quot;;</span>
+<span class="pc" id="L6">    private String initialMarkingExpression = &quot;&quot;;</span>
     /** Represents the colour of the token*/
     private Object object;
     /** Represents the timestamp of the token*/
-<span class="nc" id="L10">    private long timestamp = 0;</span>
+<span class="pc" id="L10">    private long timestamp = 0;</span>
 
     /** Creates a new token*/
-<span class="nc" id="L13">    public Token(Object object) {</span>
-<span class="nc" id="L14">        this.object = object;</span>
-<span class="nc" id="L15">    }</span>
+<span class="fc" id="L13">    public Token(Object object) {</span>
+<span class="fc" id="L14">        this.object = object;</span>
+<span class="fc" id="L15">    }</span>
 
     /** Creates a new token with a timestamp*/
 <span class="nc" id="L18">    public Token(Object object, long timestamp) {</span>
@@ -32,12 +32,12 @@ public class Token {
      * */
     @Override
     public boolean equals(Object obj) {
-<span class="nc" id="L35">        Token objToken = (Token) obj;</span>
-<span class="nc bnc" id="L36" title="All 2 branches missed.">        if (objToken.getTimestamp() == timestamp &amp;&amp;</span>
+<span class="fc" id="L35">        Token objToken = (Token) obj;</span>
+<span class="pc bpc" id="L36" title="1 of 2 branches missed.">        if (objToken.getTimestamp() == timestamp &amp;&amp;</span>
                 //same color?
-<span class="nc bnc" id="L38" title="All 2 branches missed.">                objToken.getObject().getClass().getName().equals(this.object.getClass().getName()) &amp;&amp;</span>
-<span class="nc bnc" id="L39" title="All 2 branches missed.">                this.object.equals(objToken.getObject())) {</span>
-<span class="nc" id="L40">            return true;</span>
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">                objToken.getObject().getClass().getName().equals(this.object.getClass().getName()) &amp;&amp;</span>
+<span class="pc bpc" id="L39" title="1 of 2 branches missed.">                this.object.equals(objToken.getObject())) {</span>
+<span class="fc" id="L40">            return true;</span>
         } else {
 <span class="nc" id="L42">            return false;</span>
         }
@@ -73,7 +73,7 @@ public class Token {
      * @return the object
      */
     public Object getObject() {
-<span class="nc" id="L76">        return object;</span>
+<span class="fc" id="L76">        return object;</span>
     }
 
     /**
@@ -87,7 +87,7 @@ public class Token {
      * @return the timestamp
      */
     public long getTimestamp() {
-<span class="nc" id="L90">        return timestamp;</span>
+<span class="fc" id="L90">        return timestamp;</span>
     }
 
     /**
@@ -108,7 +108,7 @@ public class Token {
      * @param initialMarkintExpression the initialMarkintExpression to set
      */
     public void setInitialMarkingtExpression(String initialMarkintExpression) {
-<span class="nc" id="L111">        this.initialMarkingExpression = initialMarkintExpression;</span>
-<span class="nc" id="L112">    }</span>
+<span class="fc" id="L111">        this.initialMarkingExpression = initialMarkintExpression;</span>
+<span class="fc" id="L112">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

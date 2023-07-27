@@ -4,23 +4,23 @@
 public abstract class NetObject {
 
     /** Latest id assigned to a net object*/
-<span class="nc" id="L7">    public static long LATEST_ID = 0;</span>
+<span class="fc" id="L7">    public static long LATEST_ID = 0;</span>
     /** Id of this net object*/
     protected String id;
     /** Label of this net object*/
-<span class="nc" id="L11">    protected String label = &quot;&quot;;</span>
+<span class="fc" id="L11">    protected String label = &quot;&quot;;</span>
 
     /** Constructor that assigns the LATEST_ID to this object and increments it by 1*/
-<span class="nc" id="L14">    public NetObject() {</span>
-<span class="nc" id="L15">        this.id = &quot;&quot; + LATEST_ID;</span>
-<span class="nc" id="L16">        LATEST_ID++;</span>
-<span class="nc" id="L17">    }</span>
+<span class="fc" id="L14">    public NetObject() {</span>
+<span class="fc" id="L15">        this.id = &quot;&quot; + LATEST_ID;</span>
+<span class="fc" id="L16">        LATEST_ID++;</span>
+<span class="fc" id="L17">    }</span>
 
     /**
      * @return the id
      */
     public String getId() {
-<span class="nc" id="L23">        return id;</span>
+<span class="fc" id="L23">        return id;</span>
     }
 
     /**
@@ -34,17 +34,17 @@ public abstract class NetObject {
      * @return the label
      */
     public String getLabel() {
-<span class="nc bnc" id="L37" title="All 2 branches missed.">        if (label.equals(&quot;&quot;)) {</span>
-<span class="nc" id="L38">            label = id;</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        if (label.equals(&quot;&quot;)) {</span>
+<span class="fc" id="L38">            label = id;</span>
         }
-<span class="nc" id="L40">        return label;</span>
+<span class="fc" id="L40">        return label;</span>
     }
 
     /**
      * @param label the label to set
      */
     public void setLabel(String label) {
-<span class="nc" id="L47">        this.label = label;</span>
-<span class="nc" id="L48">    }</span>
+<span class="fc" id="L47">        this.label = label;</span>
+<span class="fc" id="L48">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

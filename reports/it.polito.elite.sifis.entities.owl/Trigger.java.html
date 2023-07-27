@@ -61,41 +61,41 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 <span class="fc" id="L61">		final int prime = 31;</span>
 <span class="fc" id="L62">		int result = 1;</span>
 <span class="pc bpc" id="L63" title="1 of 2 branches missed.">		result = prime * result + ((URL == null) ? 0 : URL.hashCode());</span>
-<span class="pc bpc" id="L64" title="1 of 2 branches missed.">		result = prime * result + ((details == null) ? 0 : details.hashCode());</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">		result = prime * result + ((details == null) ? 0 : details.hashCode());</span>
 <span class="pc bpc" id="L65" title="1 of 2 branches missed.">		result = prime * result + ((service == null) ? 0 : service.hashCode());</span>
 <span class="fc" id="L66">		return result;</span>
 	}
 	@JsonIgnore
 	@Override
 	public boolean equals(Object obj) {
-<span class="nc bnc" id="L71" title="All 2 branches missed.">		if (this == obj)</span>
-<span class="nc" id="L72">			return true;</span>
-<span class="nc bnc" id="L73" title="All 2 branches missed.">		if (obj == null)</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">		if (this == obj)</span>
+<span class="fc" id="L72">			return true;</span>
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">		if (obj == null)</span>
 <span class="nc" id="L74">			return false;</span>
-<span class="nc bnc" id="L75" title="All 2 branches missed.">		if (getClass() != obj.getClass())</span>
+<span class="pc bpc" id="L75" title="1 of 2 branches missed.">		if (getClass() != obj.getClass())</span>
 <span class="nc" id="L76">			return false;</span>
-<span class="nc" id="L77">		Trigger other = (Trigger) obj;</span>
-<span class="nc bnc" id="L78" title="All 2 branches missed.">		if (URL == null) {</span>
+<span class="fc" id="L77">		Trigger other = (Trigger) obj;</span>
+<span class="pc bpc" id="L78" title="1 of 2 branches missed.">		if (URL == null) {</span>
 <span class="nc bnc" id="L79" title="All 2 branches missed.">			if (other.URL != null)</span>
 <span class="nc" id="L80">				return false;</span>
-<span class="nc bnc" id="L81" title="All 2 branches missed.">		} else if (!URL.equals(other.URL))</span>
+<span class="pc bpc" id="L81" title="1 of 2 branches missed.">		} else if (!URL.equals(other.URL))</span>
 <span class="nc" id="L82">			return false;</span>
-<span class="nc bnc" id="L83" title="All 2 branches missed.">		if (details == null) {</span>
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">		if (details == null) {</span>
 <span class="nc bnc" id="L84" title="All 2 branches missed.">			if (other.details != null)</span>
 <span class="nc" id="L85">				return false;</span>
-<span class="nc bnc" id="L86" title="All 2 branches missed.">		} else if (!details.equals(other.details))</span>
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">		} else if (!details.equals(other.details))</span>
 <span class="nc" id="L87">			return false;</span>
-<span class="nc bnc" id="L88" title="All 2 branches missed.">		if (service == null) {</span>
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">		if (service == null) {</span>
 <span class="nc bnc" id="L89" title="All 2 branches missed.">			if (other.service != null)</span>
 <span class="nc" id="L90">				return false;</span>
-<span class="nc bnc" id="L91" title="All 2 branches missed.">		} else if (!service.equals(other.service))</span>
+<span class="pc bpc" id="L91" title="1 of 2 branches missed.">		} else if (!service.equals(other.service))</span>
 <span class="nc" id="L92">			return false;</span>
-<span class="nc" id="L93">		return true;</span>
+<span class="fc" id="L93">		return true;</span>
 	}
 	@JsonIgnore
 	@Override
 	public String toString() {
-<span class="nc" id="L98">		return &quot;Trigger [id=&quot; + id + &quot;, details=&quot; + details + &quot;]&quot;;</span>
+<span class="fc" id="L98">		return &quot;Trigger [id=&quot; + id + &quot;, details=&quot; + details + &quot;]&quot;;</span>
 	}
 	
 }

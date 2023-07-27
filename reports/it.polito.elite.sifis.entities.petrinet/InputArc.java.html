@@ -5,20 +5,20 @@ import java.util.Iterator;
 public class InputArc extends Arc implements Inscription {
 
     /** Text string that represents the expression this arc will evaluate by default. */
-<span class="nc" id="L8">    private String evaluateText = &quot;getTokenSet().size()&gt;0&quot;;</span>
+<span class="pc" id="L8">    private String evaluateText = &quot;getTokenSet().size()&gt;0&quot;;</span>
     /** Text string that represents the expression this arc will execute by default. */
-<span class="nc" id="L10">    private String executeText = &quot;1&quot;;</span>
+<span class="pc" id="L10">    private String executeText = &quot;1&quot;;</span>
 
     /** Petri Net pointer **/
     private PetriNet net;
     
     /** Constructor to create an input arc. */
-<span class="nc" id="L16">    public InputArc(PetriNet net, Place place, Transition transition) {</span>
-<span class="nc" id="L17">    	this.net = net;</span>
-<span class="nc" id="L18">        this.id = &quot;i&quot; + this.id;</span>
-<span class="nc" id="L19">        this.place = place;</span>
-<span class="nc" id="L20">        this.transition = transition;</span>
-<span class="nc" id="L21">    }</span>
+<span class="fc" id="L16">    public InputArc(PetriNet net, Place place, Transition transition) {</span>
+<span class="fc" id="L17">    	this.net = net;</span>
+<span class="fc" id="L18">        this.id = &quot;i&quot; + this.id;</span>
+<span class="fc" id="L19">        this.place = place;</span>
+<span class="fc" id="L20">        this.transition = transition;</span>
+<span class="fc" id="L21">    }</span>
 
     /** Constructor to create a new input arc with specific attributes. */
 <span class="nc" id="L24">    public InputArc(PetriNet net, String id, Place place, Transition transition, String action) {</span>
@@ -31,7 +31,7 @@ public class InputArc extends Arc implements Inscription {
 
     /** Default method that is evaluated to check if the arc is enabled. */
     public boolean evaluate() {
-<span class="nc bnc" id="L34" title="All 2 branches missed.">        return getTokenSet().size() &gt; 0;</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">        return getTokenSet().size() &gt; 0;</span>
     }
 
     /** Default method that is executed when a transition fires. */
@@ -41,7 +41,7 @@ public class InputArc extends Arc implements Inscription {
 
     /** Returns the TokenSet of the place this arc is connected*/
     public TokenSet getTokenSet() {
-<span class="nc" id="L44">        return this.getPlace().getTokens();</span>
+<span class="fc" id="L44">        return this.getPlace().getTokens();</span>
     }
 
     /** Given a set of timed tokens it returns a token whose
@@ -70,8 +70,8 @@ public class InputArc extends Arc implements Inscription {
      * @param evaluateText the evaluateText to set
      */
     public void setEvaluateText(String evaluateText) {
-<span class="nc" id="L73">        this.evaluateText = evaluateText;</span>
-<span class="nc" id="L74">    }</span>
+<span class="fc" id="L73">        this.evaluateText = evaluateText;</span>
+<span class="fc" id="L74">    }</span>
 
     /**
      * @return the executeText

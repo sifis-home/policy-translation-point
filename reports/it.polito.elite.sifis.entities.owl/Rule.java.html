@@ -36,37 +36,37 @@ import java.util.List;
 	
 	@Override
 	public int hashCode() {
-<span class="nc" id="L39">		final int prime = 31;</span>
-<span class="nc" id="L40">		int result = 1;</span>
-<span class="nc bnc" id="L41" title="All 2 branches missed.">		result = prime * result + ((action == null) ? 0 : action.hashCode());</span>
-<span class="nc bnc" id="L42" title="All 2 branches missed.">		result = prime * result + ((dbId == null) ? 0 : dbId.hashCode());</span>
-<span class="nc bnc" id="L43" title="All 2 branches missed.">		result = prime * result + ((effect == null) ? 0 : effect.hashCode());</span>
-<span class="nc bnc" id="L44" title="All 2 branches missed.">		result = prime * result + ((parents == null) ? 0 : parents.hashCode());</span>
-<span class="nc bnc" id="L45" title="All 2 branches missed.">		result = prime * result + ((subject == null) ? 0 : subject.hashCode());</span>
-<span class="nc bnc" id="L46" title="All 2 branches missed.">		result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());</span>
-<span class="nc bnc" id="L47" title="All 2 branches missed.">		result = prime * result + ((trigger == null) ? 0 : trigger.hashCode());</span>
-<span class="nc bnc" id="L48" title="All 2 branches missed.">		result = prime * result + ((type == null) ? 0 : type.hashCode());</span>
-<span class="nc" id="L49">		return result;</span>
+<span class="fc" id="L39">		final int prime = 31;</span>
+<span class="fc" id="L40">		int result = 1;</span>
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">		result = prime * result + ((action == null) ? 0 : action.hashCode());</span>
+<span class="pc bpc" id="L42" title="1 of 2 branches missed.">		result = prime * result + ((dbId == null) ? 0 : dbId.hashCode());</span>
+<span class="pc bpc" id="L43" title="1 of 2 branches missed.">		result = prime * result + ((effect == null) ? 0 : effect.hashCode());</span>
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">		result = prime * result + ((parents == null) ? 0 : parents.hashCode());</span>
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">		result = prime * result + ((subject == null) ? 0 : subject.hashCode());</span>
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">		result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());</span>
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">		result = prime * result + ((trigger == null) ? 0 : trigger.hashCode());</span>
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">		result = prime * result + ((type == null) ? 0 : type.hashCode());</span>
+<span class="fc" id="L49">		return result;</span>
 	}
 	@Override
 	public boolean equals(Object obj) {
-<span class="nc bnc" id="L53" title="All 2 branches missed.">		if (this == obj)</span>
-<span class="nc" id="L54">			return true;</span>
-<span class="nc bnc" id="L55" title="All 2 branches missed.">		if (obj == null)</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">		if (this == obj)</span>
+<span class="fc" id="L54">			return true;</span>
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">		if (obj == null)</span>
 <span class="nc" id="L56">			return false;</span>
-<span class="nc bnc" id="L57" title="All 2 branches missed.">		if (getClass() != obj.getClass())</span>
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">		if (getClass() != obj.getClass())</span>
 <span class="nc" id="L58">			return false;</span>
-<span class="nc" id="L59">		Rule other = (Rule) obj;</span>
-<span class="nc bnc" id="L60" title="All 2 branches missed.">		if (action == null) {</span>
+<span class="fc" id="L59">		Rule other = (Rule) obj;</span>
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">		if (action == null) {</span>
 <span class="nc bnc" id="L61" title="All 2 branches missed.">			if (other.action != null)</span>
 <span class="nc" id="L62">				return false;</span>
-<span class="nc bnc" id="L63" title="All 2 branches missed.">		} else if (!action.equals(other.action))</span>
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">		} else if (!action.equals(other.action))</span>
 <span class="nc" id="L64">			return false;</span>
-<span class="nc bnc" id="L65" title="All 2 branches missed.">		if (dbId == null) {</span>
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">		if (dbId == null) {</span>
 <span class="nc bnc" id="L66" title="All 2 branches missed.">			if (other.dbId != null)</span>
 <span class="nc" id="L67">				return false;</span>
-<span class="nc bnc" id="L68" title="All 2 branches missed.">		} else if (!dbId.equals(other.dbId))</span>
-<span class="nc" id="L69">			return false;</span>
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">		} else if (!dbId.equals(other.dbId))</span>
+<span class="fc" id="L69">			return false;</span>
 <span class="nc bnc" id="L70" title="All 2 branches missed.">		if (effect == null) {</span>
 <span class="nc bnc" id="L71" title="All 2 branches missed.">			if (other.effect != null)</span>
 <span class="nc" id="L72">				return false;</span>

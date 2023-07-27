@@ -16,13 +16,13 @@ import it.polito.elite.sifis.entities.owl.Rule;
 
 public class Simulation extends Thread {
 
-<span class="nc" id="L19">    protected boolean step = false;</span>
-<span class="nc" id="L20">    protected boolean paused = false;</span>
-<span class="nc" id="L21">    protected boolean stop = false;</span>
+<span class="fc" id="L19">    protected boolean step = false;</span>
+<span class="fc" id="L20">    protected boolean paused = false;</span>
+<span class="fc" id="L21">    protected boolean stop = false;</span>
     /** Time delay between a transition is fired */
-<span class="nc" id="L23">    public static int DELAY = 0;</span>
+<span class="fc" id="L23">    public static int DELAY = 0;</span>
     /** Default time delay between each transition firing process */
-<span class="nc" id="L25">    public static int COMPONENTDELAY = 100;</span>
+<span class="fc" id="L25">    public static int COMPONENTDELAY = 100;</span>
     
     /** Petri Net pointer **/
     private PetriNet net;
@@ -31,50 +31,50 @@ public class Simulation extends Thread {
     private List&lt;Rule&gt; simulatedRules;
     
     /** Initializes Simulation. */
-<span class="nc" id="L34">    public Simulation(PetriNet net, boolean step) {</span>
-<span class="nc" id="L35">    	this.net = net;</span>
-<span class="nc" id="L36">        this.step = step;</span>
-<span class="nc" id="L37">        this.simualtedActions = new LinkedList&lt;Action&gt;();</span>
-<span class="nc" id="L38">        this.simulatedRules = new LinkedList&lt;Rule&gt;();</span>
-<span class="nc" id="L39">    }</span>
+<span class="fc" id="L34">    public Simulation(PetriNet net, boolean step) {</span>
+<span class="fc" id="L35">    	this.net = net;</span>
+<span class="fc" id="L36">        this.step = step;</span>
+<span class="fc" id="L37">        this.simualtedActions = new LinkedList&lt;Action&gt;();</span>
+<span class="fc" id="L38">        this.simulatedRules = new LinkedList&lt;Rule&gt;();</span>
+<span class="fc" id="L39">    }</span>
 
     @Override
     public void run() {
-<span class="nc bnc" id="L43" title="All 4 branches missed.">        while (!isFinished() &amp;&amp; !stop) {</span>
-<span class="nc" id="L44">            fireTransition();</span>
+<span class="pc bpc" id="L43" title="1 of 4 branches missed.">        while (!isFinished() &amp;&amp; !stop) {</span>
+<span class="fc" id="L44">            fireTransition();</span>
         }
-<span class="nc bnc" id="L46" title="All 2 branches missed.">        if (stop) {</span>
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">        if (stop) {</span>
 <span class="nc" id="L47">            System.out.println(&quot;Stopped.\n&quot;);</span>
         } else {
-<span class="nc" id="L49">        	 System.out.println(&quot;Deadlock.\n&quot;);</span>
+<span class="fc" id="L49">        	 System.out.println(&quot;Deadlock.\n&quot;);</span>
         }      
-<span class="nc" id="L51">    }</span>
+<span class="fc" id="L51">    }</span>
 
     /** Checks whether the Simulation has ended */
     public boolean isFinished() {
-<span class="nc" id="L55">        return this.net.isDead();</span>
+<span class="fc" id="L55">        return this.net.isDead();</span>
     }
 
     /** Fires a single transition of the enabled transition list */
     protected void fireTransition() {
     	
-<span class="nc" id="L61">    	enabledRuleTransitionList();</span>
-<span class="nc bnc" id="L62" title="All 2 branches missed.">    	while(!this.enabledRuleTransitionList().isEmpty()){</span>
+<span class="fc" id="L61">    	enabledRuleTransitionList();</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">    	while(!this.enabledRuleTransitionList().isEmpty()){</span>
     		Transition t;
-<span class="nc" id="L64">        	t = getRandomRuleTransition();</span>
-<span class="nc" id="L65">        	Rule rule = ((RuleTransition)t).fireAndGetRule(0);</span>
-<span class="nc" id="L66">        	this.simualtedActions.add(rule.getAction());</span>
-<span class="nc" id="L67">        	this.simulatedRules.add(rule);</span>
-<span class="nc" id="L68">    	}</span>
+<span class="fc" id="L64">        	t = getRandomRuleTransition();</span>
+<span class="fc" id="L65">        	Rule rule = ((RuleTransition)t).fireAndGetRule(0);</span>
+<span class="fc" id="L66">        	this.simualtedActions.add(rule.getAction());</span>
+<span class="fc" id="L67">        	this.simulatedRules.add(rule);</span>
+<span class="fc" id="L68">    	}</span>
     	
-<span class="nc" id="L70">    	enabledTransitionList();</span>
-<span class="nc bnc" id="L71" title="All 2 branches missed.">        if (!this.enabledTransitionList().isEmpty()) {</span>
+<span class="fc" id="L70">    	enabledTransitionList();</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        if (!this.enabledTransitionList().isEmpty()) {</span>
         	Transition t;	
-<span class="nc" id="L73">        	t = getRandomTransition();</span>
-<span class="nc" id="L74">        	t.fire(0);</span>
+<span class="fc" id="L73">        	t = getRandomTransition();</span>
+<span class="fc" id="L74">        	t.fire(0);</span>
         }
         
-<span class="nc" id="L77">        pauseResumeSimulation();</span>
+<span class="fc" id="L77">        pauseResumeSimulation();</span>
         /*enabledTransitionList();
         if (!this.enabledTransitionList().isEmpty()) {
         	Transition t;
@@ -93,10 +93,10 @@ public class Simulation extends Thread {
         }*/
     	
     	
-<span class="nc" id="L96">    }</span>
+<span class="fc" id="L96">    }</span>
 
     public synchronized void pauseResumeSimulation() {
-<span class="nc bnc" id="L99" title="All 4 branches missed.">        if (step &amp;&amp; !stop) {</span>
+<span class="pc bpc" id="L99" title="3 of 4 branches missed.">        if (step &amp;&amp; !stop) {</span>
 <span class="nc" id="L100">            paused = true;</span>
             try {
 <span class="nc" id="L102">                synchronized (this) {</span>
@@ -107,52 +107,52 @@ public class Simulation extends Thread {
 <span class="nc" id="L107">            }</span>
         } else {
             try {
-<span class="nc" id="L110">                Thread.sleep(DELAY);</span>
+<span class="fc" id="L110">                Thread.sleep(DELAY);</span>
 <span class="nc" id="L111">            } catch (InterruptedException l) {</span>
-<span class="nc" id="L112">            }</span>
+<span class="fc" id="L112">            }</span>
         }
-<span class="nc" id="L114">    }</span>
+<span class="fc" id="L114">    }</span>
     
     /** Returns a random transition from the enabled rule transition list */
     public RuleTransition getRandomRuleTransition() {
-<span class="nc" id="L118">    	ArrayList&lt;RuleTransition&gt; enabledTransitions = this.enabledRuleTransitionList();</span>
-<span class="nc" id="L119">        Random generator = new Random();</span>
-<span class="nc" id="L120">        int rand = generator.nextInt(enabledTransitions.size());</span>
-<span class="nc" id="L121">        return enabledTransitions.get(rand);</span>
+<span class="fc" id="L118">    	ArrayList&lt;RuleTransition&gt; enabledTransitions = this.enabledRuleTransitionList();</span>
+<span class="fc" id="L119">        Random generator = new Random();</span>
+<span class="fc" id="L120">        int rand = generator.nextInt(enabledTransitions.size());</span>
+<span class="fc" id="L121">        return enabledTransitions.get(rand);</span>
     }
 
     /** Returns a random transition from the enabled transition list */
     public Transition getRandomTransition() {
-<span class="nc" id="L126">        ArrayList&lt;Transition&gt; enabledTransitions = this.enabledTransitionList();</span>
-<span class="nc" id="L127">        Random generator = new Random();</span>
-<span class="nc" id="L128">        int rand = generator.nextInt(enabledTransitions.size());</span>
-<span class="nc" id="L129">        return (Transition) enabledTransitions.get(rand);</span>
+<span class="fc" id="L126">        ArrayList&lt;Transition&gt; enabledTransitions = this.enabledTransitionList();</span>
+<span class="fc" id="L127">        Random generator = new Random();</span>
+<span class="fc" id="L128">        int rand = generator.nextInt(enabledTransitions.size());</span>
+<span class="fc" id="L129">        return (Transition) enabledTransitions.get(rand);</span>
     }
 
     /** Returns a list of enabled transitions */
     public ArrayList&lt;Transition&gt; enabledTransitionList() {
-<span class="nc" id="L134">        Iterator&lt;Transition&gt; it = this.net.getTransitions().iterator();</span>
-<span class="nc" id="L135">        ArrayList&lt;Transition&gt; enabledTransitions = new ArrayList&lt;Transition&gt;();</span>
-<span class="nc bnc" id="L136" title="All 2 branches missed.">        while (it.hasNext()) {</span>
-<span class="nc" id="L137">            Transition transition = (Transition) it.next();</span>
-<span class="nc bnc" id="L138" title="All 2 branches missed.">            if (transition.enabled(0)) {</span>
-<span class="nc" id="L139">                enabledTransitions.add(transition);</span>
+<span class="fc" id="L134">        Iterator&lt;Transition&gt; it = this.net.getTransitions().iterator();</span>
+<span class="fc" id="L135">        ArrayList&lt;Transition&gt; enabledTransitions = new ArrayList&lt;Transition&gt;();</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">        while (it.hasNext()) {</span>
+<span class="fc" id="L137">            Transition transition = (Transition) it.next();</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">            if (transition.enabled(0)) {</span>
+<span class="fc" id="L139">                enabledTransitions.add(transition);</span>
             }
-<span class="nc" id="L141">        }</span>
-<span class="nc" id="L142">        return enabledTransitions;</span>
+<span class="fc" id="L141">        }</span>
+<span class="fc" id="L142">        return enabledTransitions;</span>
     }
     
     /** Returns a list of enabled rule transitions */
     public ArrayList&lt;RuleTransition&gt; enabledRuleTransitionList() {
-<span class="nc" id="L147">        Iterator&lt;Transition&gt; it = this.net.getTransitions().iterator();</span>
-<span class="nc" id="L148">        ArrayList&lt;RuleTransition&gt; enabledTransitions = new ArrayList&lt;RuleTransition&gt;();</span>
-<span class="nc bnc" id="L149" title="All 2 branches missed.">        while (it.hasNext()) {</span>
-<span class="nc" id="L150">            Transition transition = (Transition) it.next();</span>
-<span class="nc bnc" id="L151" title="All 4 branches missed.">            if (transition.enabled(0) &amp;&amp; transition instanceof RuleTransition) {</span>
-<span class="nc" id="L152">                enabledTransitions.add((RuleTransition)transition);</span>
+<span class="fc" id="L147">        Iterator&lt;Transition&gt; it = this.net.getTransitions().iterator();</span>
+<span class="fc" id="L148">        ArrayList&lt;RuleTransition&gt; enabledTransitions = new ArrayList&lt;RuleTransition&gt;();</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">        while (it.hasNext()) {</span>
+<span class="fc" id="L150">            Transition transition = (Transition) it.next();</span>
+<span class="fc bfc" id="L151" title="All 4 branches covered.">            if (transition.enabled(0) &amp;&amp; transition instanceof RuleTransition) {</span>
+<span class="fc" id="L152">                enabledTransitions.add((RuleTransition)transition);</span>
             }
-<span class="nc" id="L154">        }</span>
-<span class="nc" id="L155">        return enabledTransitions;</span>
+<span class="fc" id="L154">        }</span>
+<span class="fc" id="L155">        return enabledTransitions;</span>
     }
 
     /**
@@ -194,20 +194,20 @@ public class Simulation extends Thread {
      * @param stop the stop to set
      */
     public void setStop(boolean stop) {
-<span class="nc bnc" id="L197" title="All 2 branches missed.">        if (this.paused) {</span>
+<span class="pc bpc" id="L197" title="1 of 2 branches missed.">        if (this.paused) {</span>
 <span class="nc" id="L198">            synchronized (this) {</span>
 <span class="nc" id="L199">                this.notify();</span>
 <span class="nc" id="L200">            }</span>
         }
-<span class="nc" id="L202">        this.stop = stop;</span>
-<span class="nc" id="L203">    }</span>
+<span class="fc" id="L202">        this.stop = stop;</span>
+<span class="fc" id="L203">    }</span>
 
 	public List&lt;Action&gt; getSimualtedActions() {
 <span class="nc" id="L206">		return simualtedActions;</span>
 	}
 
 	public List&lt;Rule&gt; getSimulatedRules() {
-<span class="nc" id="L210">		return simulatedRules;</span>
+<span class="fc" id="L210">		return simulatedRules;</span>
 	}
 
 	public void setSimulatedRules(List&lt;Rule&gt; simulatedRules) {

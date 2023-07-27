@@ -7,9 +7,9 @@ import it.polito.elite.sifis.entities.owl.Trigger;
 
 
 public class CopyTransition extends Transition {
-<span class="nc" id="L10">	public enum Type {</span>
-<span class="nc" id="L11">	    TRIGGER,</span>
-<span class="nc" id="L12">	    ACTION,</span>
+<span class="fc" id="L10">	public enum Type {</span>
+<span class="fc" id="L11">	    TRIGGER,</span>
+<span class="fc" id="L12">	    ACTION,</span>
 	}
 	
 	/** Global clock when the transition fires.*/
@@ -22,10 +22,10 @@ public class CopyTransition extends Transition {
     private Type type;
     
 	public CopyTransition(PetriNet net, Trigger trigger) {
-<span class="nc" id="L25">		super(net);</span>
-<span class="nc" id="L26">		this.setTrigger(trigger);</span>
-<span class="nc" id="L27">		this.type = Type.TRIGGER;</span>
-<span class="nc" id="L28">	}</span>
+<span class="fc" id="L25">		super(net);</span>
+<span class="fc" id="L26">		this.setTrigger(trigger);</span>
+<span class="fc" id="L27">		this.type = Type.TRIGGER;</span>
+<span class="fc" id="L28">	}</span>
 	 
 	public CopyTransition(PetriNet net, String id, Trigger trigger) {
 <span class="nc" id="L31">	    super(net, id);</span>
@@ -61,44 +61,44 @@ public class CopyTransition extends Transition {
 	@Override
     public void fire(long globalClock) {
 		//remove tokens from the input places and replicate them on all the output places
-<span class="nc" id="L64">		this.globalClock = globalClock;</span>
+<span class="fc" id="L64">		this.globalClock = globalClock;</span>
 
 		//remove all tokens from places
-<span class="nc" id="L67">        Iterator&lt;InputArc&gt; itIN = this.getNet().getInputArcs().iterator();</span>
-<span class="nc bnc" id="L68" title="All 2 branches missed.">        while (itIN.hasNext()) {</span>
-<span class="nc" id="L69">            InputArc arc = (InputArc) itIN.next();</span>
-<span class="nc bnc" id="L70" title="All 2 branches missed.">            if (arc.getTransition().getId().equals(getId())) {</span>
-<span class="nc bnc" id="L71" title="All 2 branches missed.">            	if(this.type.equals(Type.TRIGGER))</span>
-<span class="nc" id="L72">            		arc.getPlace().removeTokens(new TokenSet(this.trigger));</span>
+<span class="fc" id="L67">        Iterator&lt;InputArc&gt; itIN = this.getNet().getInputArcs().iterator();</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        while (itIN.hasNext()) {</span>
+<span class="fc" id="L69">            InputArc arc = (InputArc) itIN.next();</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">            if (arc.getTransition().getId().equals(getId())) {</span>
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">            	if(this.type.equals(Type.TRIGGER))</span>
+<span class="fc" id="L72">            		arc.getPlace().removeTokens(new TokenSet(this.trigger));</span>
 <span class="nc bnc" id="L73" title="All 2 branches missed.">            	else if(this.type.equals(Type.ACTION))</span>
 <span class="nc" id="L74">            		arc.getPlace().removeTokens(new TokenSet(this.action));</span>
-<span class="nc" id="L75">                System.out.println(&quot;Removed token from &quot; + arc.getPlace().getLabel());</span>
+<span class="fc" id="L75">                System.out.println(&quot;Removed token from &quot; + arc.getPlace().getLabel());</span>
             }
-<span class="nc" id="L77">        }</span>
+<span class="fc" id="L77">        }</span>
         
-<span class="nc bnc" id="L79" title="All 2 branches missed.">        if (!this.getLabel().equals(this.getId())) {</span>
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">        if (!this.getLabel().equals(this.getId())) {</span>
 <span class="nc" id="L80">        	System.out.println(this.getLabel() + &quot; (&quot; + this.getId() + &quot;) fired!\n&quot;);</span>
         } else {
-<span class="nc" id="L82">        	System.out.println(this.getId() + &quot; fired.\n&quot;);</span>
+<span class="fc" id="L82">        	System.out.println(this.getId() + &quot; fired.\n&quot;);</span>
         }
         
         //replicate the tokens in all the output places
-<span class="nc" id="L86">        Iterator&lt;OutputArc&gt; itOUT = this.getNet().getOutputArcs().iterator();</span>
-<span class="nc bnc" id="L87" title="All 2 branches missed.">        while (itOUT.hasNext()) {</span>
-<span class="nc" id="L88">            OutputArc arc = (OutputArc) itOUT.next();</span>
-<span class="nc bnc" id="L89" title="All 2 branches missed.">            if (arc.getTransition().getId().equals(getId())) {</span>
-<span class="nc" id="L90">            	TokenSet tokenSet =  null;</span>
-<span class="nc bnc" id="L91" title="All 2 branches missed.">            	if(this.type.equals(Type.TRIGGER))</span>
-<span class="nc" id="L92">            		 tokenSet = new TokenSet(this.trigger);</span>
+<span class="fc" id="L86">        Iterator&lt;OutputArc&gt; itOUT = this.getNet().getOutputArcs().iterator();</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">        while (itOUT.hasNext()) {</span>
+<span class="fc" id="L88">            OutputArc arc = (OutputArc) itOUT.next();</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">            if (arc.getTransition().getId().equals(getId())) {</span>
+<span class="fc" id="L90">            	TokenSet tokenSet =  null;</span>
+<span class="pc bpc" id="L91" title="1 of 2 branches missed.">            	if(this.type.equals(Type.TRIGGER))</span>
+<span class="fc" id="L92">            		 tokenSet = new TokenSet(this.trigger);</span>
 <span class="nc bnc" id="L93" title="All 2 branches missed.">            	else if(this.type.equals(Type.ACTION))</span>
 <span class="nc" id="L94">            		tokenSet = new TokenSet(this.action);</span>
-<span class="nc" id="L95">                tokenSet.incrementTime(globalClock);// set time of all new tokens of the tokenSet</span>
-<span class="nc" id="L96">                arc.getPlace().addToken(tokenSet);</span>
-<span class="nc" id="L97">                System.out.println(&quot;Copied token in &quot; + arc.getPlace().getLabel());</span>
+<span class="fc" id="L95">                tokenSet.incrementTime(globalClock);// set time of all new tokens of the tokenSet</span>
+<span class="fc" id="L96">                arc.getPlace().addToken(tokenSet);</span>
+<span class="fc" id="L97">                System.out.println(&quot;Copied token in &quot; + arc.getPlace().getLabel());</span>
             }
-<span class="nc" id="L99">        }</span>
-<span class="nc" id="L100">        System.out.println(&quot;----------------------------\n&quot;);</span>
-<span class="nc" id="L101">	}</span>
+<span class="fc" id="L99">        }</span>
+<span class="fc" id="L100">        System.out.println(&quot;----------------------------\n&quot;);</span>
+<span class="fc" id="L101">	}</span>
 	
 	@Override
 	public long getGlobalClock() {
@@ -110,8 +110,8 @@ public class CopyTransition extends Transition {
 	}
 
 	public void setTrigger(Trigger trigger) {
-<span class="nc" id="L113">		this.trigger = trigger;</span>
-<span class="nc" id="L114">	}</span>
+<span class="fc" id="L113">		this.trigger = trigger;</span>
+<span class="fc" id="L114">	}</span>
 
 	public Action getAction() {
 <span class="nc" id="L117">		return action;</span>

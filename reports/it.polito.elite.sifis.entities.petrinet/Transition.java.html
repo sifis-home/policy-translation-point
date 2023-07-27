@@ -4,17 +4,17 @@ import java.util.Iterator;
 
 public class Transition extends NetObject implements Inscription {
 
-<span class="nc" id="L7">    private String guardText = &quot;return true;&quot;;</span>
+<span class="pc" id="L7">    private String guardText = &quot;return true;&quot;;</span>
     /** Global clock when the transition fires.*/
     private long globalClock;
     
     /** Petri Net pointer **/
     private PetriNet net;
 
-<span class="nc" id="L14">    public Transition(PetriNet net) {</span>
-<span class="nc" id="L15">    	this.net = net;</span>
-<span class="nc" id="L16">        this.id = &quot;t&quot; + this.id;</span>
-<span class="nc" id="L17">    }</span>
+<span class="fc" id="L14">    public Transition(PetriNet net) {</span>
+<span class="fc" id="L15">    	this.net = net;</span>
+<span class="fc" id="L16">        this.id = &quot;t&quot; + this.id;</span>
+<span class="fc" id="L17">    }</span>
 
 <span class="nc" id="L19">    public Transition(PetriNet net, String id) {</span>
 <span class="nc" id="L20">    	this.net = net;</span>
@@ -64,24 +64,24 @@ public class Transition extends NetObject implements Inscription {
 
     public boolean enabled(long time) {
         // transition guard evaluation
-<span class="nc" id="L67">        boolean enabled = evaluate();</span>
+<span class="fc" id="L67">        boolean enabled = evaluate();</span>
 
         // input arc guards
-<span class="nc bnc" id="L70" title="All 4 branches missed.">        if (enabled &amp;&amp; !this.net.getInputArcs().isEmpty()) {</span>
-<span class="nc" id="L71">            Iterator&lt;InputArc&gt; it = this.net.getInputArcs().iterator();</span>
-<span class="nc bnc" id="L72" title="All 4 branches missed.">            while (enabled &amp;&amp; it.hasNext()) {</span>
-<span class="nc" id="L73">                InputArc arc = (InputArc) it.next();</span>
-<span class="nc bnc" id="L74" title="All 2 branches missed.">                if (arc.getTransition().getId().equals(getId())) {</span>
-<span class="nc" id="L75">                    TokenSet tokensList = arc.getPlace().getTokens();</span>
-<span class="nc" id="L76">                    enabled = tokensList.containsTime(time);</span>
+<span class="pc bpc" id="L70" title="2 of 4 branches missed.">        if (enabled &amp;&amp; !this.net.getInputArcs().isEmpty()) {</span>
+<span class="fc" id="L71">            Iterator&lt;InputArc&gt; it = this.net.getInputArcs().iterator();</span>
+<span class="fc bfc" id="L72" title="All 4 branches covered.">            while (enabled &amp;&amp; it.hasNext()) {</span>
+<span class="fc" id="L73">                InputArc arc = (InputArc) it.next();</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">                if (arc.getTransition().getId().equals(getId())) {</span>
+<span class="fc" id="L75">                    TokenSet tokensList = arc.getPlace().getTokens();</span>
+<span class="fc" id="L76">                    enabled = tokensList.containsTime(time);</span>
                     // check arc's evaluation expression
-<span class="nc" id="L78">                    enabled = enabled &amp; arc.evaluate();</span>
+<span class="fc" id="L78">                    enabled = enabled &amp; arc.evaluate();</span>
                 }
-<span class="nc" id="L80">            }</span>
+<span class="fc" id="L80">            }</span>
         }
 
         // check output arc place capacity restriction
-<span class="nc bnc" id="L84" title="All 4 branches missed.">        if (enabled &amp;&amp; this.net.getOutputArcs().isEmpty()) {</span>
+<span class="pc bpc" id="L84" title="1 of 4 branches missed.">        if (enabled &amp;&amp; this.net.getOutputArcs().isEmpty()) {</span>
 <span class="nc" id="L85">            Iterator&lt;OutputArc&gt; it = this.net.getOutputArcs().iterator();</span>
 <span class="nc bnc" id="L86" title="All 4 branches missed.">            while (enabled &amp;&amp; it.hasNext()) {</span>
 <span class="nc" id="L87">                OutputArc arc = (OutputArc) it.next();</span>
@@ -95,11 +95,11 @@ public class Transition extends NetObject implements Inscription {
 <span class="nc" id="L95">            }</span>
         }
 
-<span class="nc" id="L98">        return enabled;</span>
+<span class="fc" id="L98">        return enabled;</span>
     }
 
     public boolean evaluate() {
-<span class="nc" id="L102">        return true;</span>
+<span class="fc" id="L102">        return true;</span>
     }
 
     public TokenSet execute() {
@@ -132,7 +132,7 @@ public class Transition extends NetObject implements Inscription {
     }
 
 	public PetriNet getNet() {
-<span class="nc" id="L135">		return net;</span>
+<span class="fc" id="L135">		return net;</span>
 	}
 
 	public void setNet(PetriNet net) {

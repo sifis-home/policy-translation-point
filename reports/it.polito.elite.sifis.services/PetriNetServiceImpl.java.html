@@ -49,13 +49,13 @@ public class PetriNetServiceImpl implements PetriNetService{
 	public PetriNet getNet(String username, List&lt;Rule&gt; rules, boolean refresh) throws OWLOntologyCreationException, InterruptedException{
 		ExtendedPetriNet petriNet; 
 		//force refresh
-<span class="nc bnc" id="L52" title="All 2 branches missed.">		if(refresh)</span>
-<span class="nc" id="L53">			petriNet = (ExtendedPetriNet) buildNet(username, rules);</span>
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">		if(refresh)</span>
+<span class="fc" id="L53">			petriNet = (ExtendedPetriNet) buildNet(username, rules);</span>
 		
-<span class="nc" id="L55">		petriNet = (ExtendedPetriNet) nets.get(username);</span>
-<span class="nc bnc" id="L56" title="All 2 branches missed.">		if(petriNet == null)</span>
+<span class="fc" id="L55">		petriNet = (ExtendedPetriNet) nets.get(username);</span>
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">		if(petriNet == null)</span>
 <span class="nc" id="L57">			petriNet = (ExtendedPetriNet) buildNet(username, rules);</span>
-<span class="nc" id="L58">		return petriNet;</span>
+<span class="fc" id="L58">		return petriNet;</span>
 
 	}
 	
@@ -101,33 +101,33 @@ public class PetriNetServiceImpl implements PetriNetService{
 
 	private PetriNet buildNet(String username, List&lt;Rule&gt; rules) throws OWLOntologyCreationException, InterruptedException {
 		
-<span class="nc" id="L104">		ExtendedPetriNet petriNet = new ExtendedPetriNet();	</span>
-<span class="nc" id="L105">		petriNet.setLabel(username);</span>
+<span class="fc" id="L104">		ExtendedPetriNet petriNet = new ExtendedPetriNet();	</span>
+<span class="fc" id="L105">		petriNet.setLabel(username);</span>
 		
 
 		//Loading unique places
-<span class="nc bnc" id="L109" title="All 2 branches missed.">		for(Rule rule :  rules){</span>
-<span class="nc" id="L110">			TriggerPlace tp = new TriggerPlace(petriNet,rule.getTrigger());</span>
-<span class="nc" id="L111">			tp.setLabel(rule.getTrigger().toString());</span>
-<span class="nc" id="L112">			petriNet.addTriggerPlace(tp);</span>
-<span class="nc" id="L113">			petriNet.addPlace(tp);</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">		for(Rule rule :  rules){</span>
+<span class="fc" id="L110">			TriggerPlace tp = new TriggerPlace(petriNet,rule.getTrigger());</span>
+<span class="fc" id="L111">			tp.setLabel(rule.getTrigger().toString());</span>
+<span class="fc" id="L112">			petriNet.addTriggerPlace(tp);</span>
+<span class="fc" id="L113">			petriNet.addPlace(tp);</span>
 			
-<span class="nc" id="L115">			ActionPlace ap = new ActionPlace(petriNet,rule.getAction());</span>
-<span class="nc" id="L116">			ap.setLabel(rule.getAction().toString());</span>
-<span class="nc" id="L117">			petriNet.addActionPlace(ap);</span>
-<span class="nc" id="L118">			petriNet.addPlace(ap);</span>
-<span class="nc" id="L119">		}		</span>
+<span class="fc" id="L115">			ActionPlace ap = new ActionPlace(petriNet,rule.getAction());</span>
+<span class="fc" id="L116">			ap.setLabel(rule.getAction().toString());</span>
+<span class="fc" id="L117">			petriNet.addActionPlace(ap);</span>
+<span class="fc" id="L118">			petriNet.addPlace(ap);</span>
+<span class="fc" id="L119">		}		</span>
 		
 		//adding unique places in the graph
-<span class="nc bnc" id="L122" title="All 2 branches missed.">		for(TriggerPlace tp: petriNet.getTriggerPlaces().values())</span>
-<span class="nc" id="L123">			petriNet.addGraphVertex(tp);</span>
-<span class="nc bnc" id="L124" title="All 2 branches missed.">		for(ActionPlace ap: petriNet.getActionPlaces().values())</span>
-<span class="nc" id="L125">			petriNet.addGraphVertex(ap);</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">		for(TriggerPlace tp: petriNet.getTriggerPlaces().values())</span>
+<span class="fc" id="L123">			petriNet.addGraphVertex(tp);</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">		for(ActionPlace ap: petriNet.getActionPlaces().values())</span>
+<span class="fc" id="L125">			petriNet.addGraphVertex(ap);</span>
 		
 		//Search for trigger copies
-<span class="nc bnc" id="L128" title="All 2 branches missed.">		for(TriggerPlace triggerPlace : petriNet.getTriggerPlaces().values()){</span>
-<span class="nc" id="L129">			List&lt;Rule&gt; rulesByTrigger = getByTrigger(rules, triggerPlace.getTrigger());</span>
-<span class="nc bnc" id="L130" title="All 2 branches missed.">			if(rulesByTrigger.size() == 1){</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">		for(TriggerPlace triggerPlace : petriNet.getTriggerPlaces().values()){</span>
+<span class="fc" id="L129">			List&lt;Rule&gt; rulesByTrigger = getByTrigger(rules, triggerPlace.getTrigger());</span>
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">			if(rulesByTrigger.size() == 1){</span>
 				//attach the action place directly with the unique trigger place
 <span class="nc" id="L132">				Rule rule = rulesByTrigger.iterator().next();</span>
 <span class="nc" id="L133">				ActionPlace actionPlace = petriNet.getActionPlace(rule.getAction());</span>
@@ -142,50 +142,50 @@ public class PetriNetServiceImpl implements PetriNetService{
 		      
 <span class="nc" id="L143">		        petriNet.addGraphEdge(triggerPlace, actionPlace);</span>
 <span class="nc" id="L144">			}</span>
-<span class="nc bnc" id="L145" title="All 2 branches missed.">			else if(rulesByTrigger.size() &gt; 1){</span>
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">			else if(rulesByTrigger.size() &gt; 1){</span>
 				//create the copy transition
-<span class="nc" id="L147">				CopyTransition copyTransition = new CopyTransition(petriNet, triggerPlace.getTrigger());</span>
-<span class="nc" id="L148">				petriNet.addTransition(copyTransition);</span>
-<span class="nc" id="L149">				InputArc copyArc1 = new InputArc(petriNet, triggerPlace, copyTransition);</span>
-<span class="nc" id="L150">				copyArc1.setEvaluateText(&quot;Token &gt; 0&quot;);</span>
-<span class="nc" id="L151">		        petriNet.addInputArc(copyArc1);</span>
+<span class="fc" id="L147">				CopyTransition copyTransition = new CopyTransition(petriNet, triggerPlace.getTrigger());</span>
+<span class="fc" id="L148">				petriNet.addTransition(copyTransition);</span>
+<span class="fc" id="L149">				InputArc copyArc1 = new InputArc(petriNet, triggerPlace, copyTransition);</span>
+<span class="fc" id="L150">				copyArc1.setEvaluateText(&quot;Token &gt; 0&quot;);</span>
+<span class="fc" id="L151">		        petriNet.addInputArc(copyArc1);</span>
 				//create copied places
-<span class="nc bnc" id="L153" title="All 2 branches missed.">				for(Rule rule : rulesByTrigger){</span>
-<span class="nc" id="L154">					Place copyPlace = new Place(petriNet);</span>
-<span class="nc" id="L155">					copyPlace.setLabel(&quot;copy_of_&quot; + rule.getTrigger().toString());</span>
-<span class="nc" id="L156">					petriNet.addPlace(copyPlace);</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">				for(Rule rule : rulesByTrigger){</span>
+<span class="fc" id="L154">					Place copyPlace = new Place(petriNet);</span>
+<span class="fc" id="L155">					copyPlace.setLabel(&quot;copy_of_&quot; + rule.getTrigger().toString());</span>
+<span class="fc" id="L156">					petriNet.addPlace(copyPlace);</span>
 					//attach the copied place to the original one
-<span class="nc" id="L158">			        OutputArc copyArc2 = new OutputArc(petriNet, copyPlace, copyTransition);</span>
-<span class="nc" id="L159">			        copyArc2.setExecuteText(&quot;Copy the token&quot;);</span>
-<span class="nc" id="L160">			        petriNet.addOutputArc(copyArc2);</span>
+<span class="fc" id="L158">			        OutputArc copyArc2 = new OutputArc(petriNet, copyPlace, copyTransition);</span>
+<span class="fc" id="L159">			        copyArc2.setExecuteText(&quot;Copy the token&quot;);</span>
+<span class="fc" id="L160">			        petriNet.addOutputArc(copyArc2);</span>
 			        //attach the copied place to the relative action
-<span class="nc" id="L162">					ActionPlace actionPlace = petriNet.getActionPlace(rule.getAction());</span>
-<span class="nc" id="L163">					RuleTransition ruleTransition = new RuleTransition(petriNet,rule);</span>
+<span class="fc" id="L162">					ActionPlace actionPlace = petriNet.getActionPlace(rule.getAction());</span>
+<span class="fc" id="L163">					RuleTransition ruleTransition = new RuleTransition(petriNet,rule);</span>
 					//ruleTransition.setAction(rule.getAction());
-<span class="nc" id="L165">					petriNet.addTransition(ruleTransition);</span>
-<span class="nc" id="L166">					InputArc ruleArc1 = new InputArc(petriNet, copyPlace, ruleTransition);</span>
-<span class="nc" id="L167">					ruleArc1.setEvaluateText(&quot;Token &gt; 0&quot;);</span>
-<span class="nc" id="L168">			        petriNet.addInputArc(ruleArc1);</span>
-<span class="nc" id="L169">			        OutputArc ruleArc2 = new OutputArc(petriNet, actionPlace, ruleTransition);</span>
-<span class="nc" id="L170">			        ruleArc2.setExecuteText(&quot;new &quot; + rule.getAction().toString());</span>
-<span class="nc" id="L171">			        petriNet.addOutputArc(ruleArc2);</span>
+<span class="fc" id="L165">					petriNet.addTransition(ruleTransition);</span>
+<span class="fc" id="L166">					InputArc ruleArc1 = new InputArc(petriNet, copyPlace, ruleTransition);</span>
+<span class="fc" id="L167">					ruleArc1.setEvaluateText(&quot;Token &gt; 0&quot;);</span>
+<span class="fc" id="L168">			        petriNet.addInputArc(ruleArc1);</span>
+<span class="fc" id="L169">			        OutputArc ruleArc2 = new OutputArc(petriNet, actionPlace, ruleTransition);</span>
+<span class="fc" id="L170">			        ruleArc2.setExecuteText(&quot;new &quot; + rule.getAction().toString());</span>
+<span class="fc" id="L171">			        petriNet.addOutputArc(ruleArc2);</span>
 			        
-<span class="nc" id="L173">			        petriNet.addGraphEdge(triggerPlace,actionPlace);</span>
+<span class="fc" id="L173">			        petriNet.addGraphEdge(triggerPlace,actionPlace);</span>
 			        
 			        
-<span class="nc" id="L176">				}</span>
+<span class="fc" id="L176">				}</span>
 			}
-<span class="nc" id="L178">		}</span>
+<span class="fc" id="L178">		}</span>
 		
 		//Adding triggers transitions
-<span class="nc bnc" id="L181" title="All 2 branches missed.">		for(ActionPlace actionPlace : petriNet.getActionPlaces().values()){</span>
-<span class="nc" id="L182">			List&lt;Rule&gt; triggeredRules = getTriggeredRules(rules, actionPlace.getAction());</span>
-<span class="nc" id="L183">			Set&lt;Trigger&gt; triggeredTriggers = new HashSet&lt;Trigger&gt;();</span>
-<span class="nc bnc" id="L184" title="All 2 branches missed.">			for(Rule rule :  triggeredRules)</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">		for(ActionPlace actionPlace : petriNet.getActionPlaces().values()){</span>
+<span class="fc" id="L182">			List&lt;Rule&gt; triggeredRules = getTriggeredRules(rules, actionPlace.getAction());</span>
+<span class="fc" id="L183">			Set&lt;Trigger&gt; triggeredTriggers = new HashSet&lt;Trigger&gt;();</span>
+<span class="pc bpc" id="L184" title="1 of 2 branches missed.">			for(Rule rule :  triggeredRules)</span>
 <span class="nc" id="L185">				triggeredTriggers.add(rule.getTrigger());</span>
 			
 			
-<span class="nc bnc" id="L188" title="All 2 branches missed.">			if(triggeredTriggers.size() == 1){</span>
+<span class="pc bpc" id="L188" title="1 of 2 branches missed.">			if(triggeredTriggers.size() == 1){</span>
 				//attach the action place directly with the triggered place
 				//Rule rule = triggeredRules.iterator().next();
 <span class="nc" id="L191">				Trigger trigger = triggeredTriggers.iterator().next();</span>
@@ -201,7 +201,7 @@ public class PetriNetServiceImpl implements PetriNetService{
 		        
 <span class="nc" id="L202">		        petriNet.addGraphEdge(actionPlace, triggerPlace);</span>
 <span class="nc" id="L203">			}</span>
-<span class="nc bnc" id="L204" title="All 2 branches missed.">			else if(triggeredTriggers.size() &gt; 1){</span>
+<span class="pc bpc" id="L204" title="1 of 2 branches missed.">			else if(triggeredTriggers.size() &gt; 1){</span>
 				//duplicate the action place and attach each copy to the relative triggered place
 				//create the copy transition
 <span class="nc" id="L207">				CopyTransition copyTransition = new CopyTransition(petriNet, actionPlace.getAction());</span>
@@ -233,23 +233,23 @@ public class PetriNetServiceImpl implements PetriNetService{
 
 <span class="nc" id="L234">				}</span>
 			}
-<span class="nc" id="L236">		}</span>
-<span class="nc" id="L237">		nets.put(username, petriNet);</span>
-<span class="nc" id="L238">		return petriNet;</span>
+<span class="fc" id="L236">		}</span>
+<span class="fc" id="L237">		nets.put(username, petriNet);</span>
+<span class="fc" id="L238">		return petriNet;</span>
 	}
 	private List&lt;Rule&gt; getByTrigger(List&lt;Rule&gt; ruleset, Trigger trigger){
-<span class="nc" id="L241">		List&lt;Rule&gt; rules = new LinkedList&lt;Rule&gt;();</span>
-<span class="nc bnc" id="L242" title="All 2 branches missed.">		for(Rule r : ruleset){</span>
-<span class="nc bnc" id="L243" title="All 2 branches missed.">			if(r.getTrigger().equals(trigger))</span>
-<span class="nc" id="L244">				rules.add(r);</span>
-<span class="nc" id="L245">		}</span>
-<span class="nc" id="L246">		return rules;</span>
+<span class="fc" id="L241">		List&lt;Rule&gt; rules = new LinkedList&lt;Rule&gt;();</span>
+<span class="fc bfc" id="L242" title="All 2 branches covered.">		for(Rule r : ruleset){</span>
+<span class="pc bpc" id="L243" title="1 of 2 branches missed.">			if(r.getTrigger().equals(trigger))</span>
+<span class="fc" id="L244">				rules.add(r);</span>
+<span class="fc" id="L245">		}</span>
+<span class="fc" id="L246">		return rules;</span>
 	}
 	
 	private List&lt;Rule&gt; getTriggeredRules(List&lt;Rule&gt; ruleset, Action action) throws InterruptedException{
-<span class="nc" id="L250">		List&lt;Rule&gt; rules = new LinkedList&lt;Rule&gt;();</span>
-<span class="nc bnc" id="L251" title="All 2 branches missed.">		for(Rule r : ruleset){</span>
-<span class="nc bnc" id="L252" title="All 2 branches missed.">			if(action.getService().equals(r.getTrigger().getService())){</span>
+<span class="fc" id="L250">		List&lt;Rule&gt; rules = new LinkedList&lt;Rule&gt;();</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">		for(Rule r : ruleset){</span>
+<span class="pc bpc" id="L252" title="1 of 2 branches missed.">			if(action.getService().equals(r.getTrigger().getService())){</span>
 				//trigger and action act on the same service: possible implication
 				
 				//check entity
@@ -281,8 +281,8 @@ public class PetriNetServiceImpl implements PetriNetService{
 					}
 				}
 			}
-<span class="nc" id="L284">		}</span>
-<span class="nc" id="L285">		return rules;</span>
+<span class="fc" id="L284">		}</span>
+<span class="fc" id="L285">		return rules;</span>
 	}
 
 	@Override

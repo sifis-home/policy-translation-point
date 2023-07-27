@@ -7,7 +7,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-<span class="nc" id="L10">public class RuleProblems {</span>
+<span class="fc" id="L10">public class RuleProblems {</span>
 	private Rule rule;
 	private Set&lt;List&lt;Rule&gt;&gt; loops;
 	private Set&lt;List&lt;Rule&gt;&gt; redundantRules;
@@ -22,9 +22,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 <span class="nc" id="L22">	}</span>
 	@JsonIgnore
 	public void addRedundantRules(List&lt;Rule&gt; rules){
-<span class="nc bnc" id="L25" title="All 2 branches missed.">		if(redundantRules == null) redundantRules = new HashSet&lt;List&lt;Rule&gt;&gt;();</span>
-<span class="nc" id="L26">		redundantRules.add(rules);</span>
-<span class="nc" id="L27">	}</span>
+<span class="pc bpc" id="L25" title="1 of 2 branches missed.">		if(redundantRules == null) redundantRules = new HashSet&lt;List&lt;Rule&gt;&gt;();</span>
+<span class="fc" id="L26">		redundantRules.add(rules);</span>
+<span class="fc" id="L27">	}</span>
 
 	@JsonIgnore
 	public void addInconsistentRules(List&lt;Rule&gt; rules){
@@ -33,7 +33,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 <span class="nc" id="L33">	}</span>
 	
 	public Set&lt;List&lt;Rule&gt;&gt; getLoops() {
-<span class="nc" id="L36">		return loops;</span>
+<span class="fc" id="L36">		return loops;</span>
 	}
 	
 	public void setLoops(Set&lt;List&lt;Rule&gt;&gt; loops) {
@@ -41,7 +41,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 <span class="nc" id="L41">	}</span>
 	
 	public Set&lt;List&lt;Rule&gt;&gt; getRedundantRules() {
-<span class="nc" id="L44">		return redundantRules;</span>
+<span class="fc" id="L44">		return redundantRules;</span>
 	}
 	
 	public void setRedundantRules(Set&lt;List&lt;Rule&gt;&gt; redundantRules) {
@@ -49,7 +49,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 <span class="nc" id="L49">	}</span>
 	
 	public Set&lt;List&lt;Rule&gt;&gt; getInconsistentRules() {
-<span class="nc" id="L52">		return inconsistentRules;</span>
+<span class="fc" id="L52">		return inconsistentRules;</span>
 	}
 	
 	public void setInconsistentRules(Set&lt;List&lt;Rule&gt;&gt; inconsistentRules) {
@@ -57,7 +57,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 <span class="nc" id="L57">	}</span>
 	
 	public Rule getRule() {
-<span class="nc" id="L60">		return rule;</span>
+<span class="fc" id="L60">		return rule;</span>
 	}
 	
 	public void setRule(Rule rule) {
@@ -76,22 +76,22 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 	}
 	@JsonIgnore
 	public boolean containsRedundancy(List&lt;Rule&gt; redundant) {
-<span class="nc bnc" id="L79" title="All 4 branches missed.">		if(this.redundantRules == null || this.redundantRules.size() == 0)</span>
-<span class="nc" id="L80">			return false;</span>
+<span class="pc bpc" id="L79" title="1 of 4 branches missed.">		if(this.redundantRules == null || this.redundantRules.size() == 0)</span>
+<span class="fc" id="L80">			return false;</span>
 
-<span class="nc bnc" id="L82" title="All 2 branches missed.">		for(List&lt;Rule&gt; redundancy : this.redundantRules){</span>
-<span class="nc bnc" id="L83" title="All 2 branches missed.">			if(redundancy.containsAll(redundant))</span>
-<span class="nc" id="L84">				return true;</span>
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">		for(List&lt;Rule&gt; redundancy : this.redundantRules){</span>
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">			if(redundancy.containsAll(redundant))</span>
+<span class="fc" id="L84">				return true;</span>
 <span class="nc" id="L85">		}</span>
 
 <span class="nc" id="L87">		return false;</span>
 	}
 	public List&lt;Rule&gt; getExecutedRules() {
-<span class="nc" id="L90">		return executedRules;</span>
+<span class="fc" id="L90">		return executedRules;</span>
 	}
 	public void setExecutedRules(List&lt;Rule&gt; executedRules) {
-<span class="nc" id="L93">		this.executedRules = executedRules;</span>
-<span class="nc" id="L94">	}</span>
+<span class="fc" id="L93">		this.executedRules = executedRules;</span>
+<span class="fc" id="L94">	}</span>
 	
 	@JsonIgnore
 	public void addExecutedRule(Rule rule){
@@ -100,10 +100,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 <span class="nc" id="L100">	}</span>
 	
 	public Trigger getStartTrigger() {
-<span class="nc" id="L103">		return startTrigger;</span>
+<span class="fc" id="L103">		return startTrigger;</span>
 	}
 	public void setStartTrigger(Trigger startTrigger) {
-<span class="nc" id="L106">		this.startTrigger = startTrigger;</span>
-<span class="nc" id="L107">	}</span>
+<span class="fc" id="L106">		this.startTrigger = startTrigger;</span>
+<span class="fc" id="L107">	}</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -13,9 +13,9 @@ public class RuleTransition extends Transition {
     private Rule rule;
     
 	public RuleTransition(PetriNet net, Rule rule) {
-<span class="nc" id="L16">		super(net);</span>
-<span class="nc" id="L17">		this.setRule(rule);</span>
-<span class="nc" id="L18">	}</span>
+<span class="fc" id="L16">		super(net);</span>
+<span class="fc" id="L17">		this.setRule(rule);</span>
+<span class="fc" id="L18">	}</span>
 	
 	public RuleTransition(PetriNet net, String id, Rule rule) {
 <span class="nc" id="L21">	    super(net, id);</span>
@@ -30,44 +30,44 @@ public class RuleTransition extends Transition {
 	@Override
     public void fire(long globalClock) {
 		//remove tokens from the input places and generates a token in the output place corresponding to the rule action
-<span class="nc" id="L33">		this.globalClock = globalClock;</span>
+<span class="fc" id="L33">		this.globalClock = globalClock;</span>
 				
 		//remove all tokens from places
-<span class="nc" id="L36">        Iterator&lt;InputArc&gt; itIN = this.getNet().getInputArcs().iterator();</span>
-<span class="nc bnc" id="L37" title="All 2 branches missed.">        while (itIN.hasNext()) {</span>
-<span class="nc" id="L38">            InputArc arc = (InputArc) itIN.next();</span>
-<span class="nc bnc" id="L39" title="All 2 branches missed.">            if (arc.getTransition().getId().equals(getId())) {</span>
-<span class="nc" id="L40">                arc.getPlace().removeTokens(new TokenSet(this.rule.getTrigger()));</span>
-<span class="nc" id="L41">                System.out.println(&quot;Removed token from &quot; + arc.getPlace().getLabel());</span>
+<span class="fc" id="L36">        Iterator&lt;InputArc&gt; itIN = this.getNet().getInputArcs().iterator();</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        while (itIN.hasNext()) {</span>
+<span class="fc" id="L38">            InputArc arc = (InputArc) itIN.next();</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">            if (arc.getTransition().getId().equals(getId())) {</span>
+<span class="fc" id="L40">                arc.getPlace().removeTokens(new TokenSet(this.rule.getTrigger()));</span>
+<span class="fc" id="L41">                System.out.println(&quot;Removed token from &quot; + arc.getPlace().getLabel());</span>
             }
-<span class="nc" id="L43">        }</span>
+<span class="fc" id="L43">        }</span>
         
-<span class="nc bnc" id="L45" title="All 2 branches missed.">        if (!this.getLabel().equals(this.getId())) {</span>
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">        if (!this.getLabel().equals(this.getId())) {</span>
 <span class="nc" id="L46">        	System.out.println(this.getLabel() + &quot; (&quot; + this.getId() + &quot;) fired!\n&quot;);</span>
         } else {
-<span class="nc" id="L48">        	System.out.println(this.getId() + &quot; fired.\n&quot;);</span>
+<span class="fc" id="L48">        	System.out.println(this.getId() + &quot; fired.\n&quot;);</span>
         }
         
         //generate the corresponding Action token in the output places
-<span class="nc" id="L52">        Iterator&lt;OutputArc&gt; itOUT = this.getNet().getOutputArcs().iterator();</span>
-<span class="nc bnc" id="L53" title="All 2 branches missed.">        while (itOUT.hasNext()) {</span>
-<span class="nc" id="L54">            OutputArc arc = (OutputArc) itOUT.next();</span>
-<span class="nc bnc" id="L55" title="All 2 branches missed.">            if (arc.getTransition().getId().equals(getId())) {</span>
+<span class="fc" id="L52">        Iterator&lt;OutputArc&gt; itOUT = this.getNet().getOutputArcs().iterator();</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">        while (itOUT.hasNext()) {</span>
+<span class="fc" id="L54">            OutputArc arc = (OutputArc) itOUT.next();</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">            if (arc.getTransition().getId().equals(getId())) {</span>
             	Token token;
-<span class="nc" id="L57">        		token = new Token(this.rule.getAction());</span>
-<span class="nc" id="L58">                TokenSet tokenSet = new TokenSet(token);</span>
-<span class="nc" id="L59">                tokenSet.incrementTime(globalClock);// set time of all new tokens of the tokenSet</span>
-<span class="nc" id="L60">                arc.getPlace().addToken(tokenSet);</span>
-<span class="nc" id="L61">                System.out.println(&quot;+ &quot; + arc.getExecuteText() + &quot;\n&quot;);</span>
+<span class="fc" id="L57">        		token = new Token(this.rule.getAction());</span>
+<span class="fc" id="L58">                TokenSet tokenSet = new TokenSet(token);</span>
+<span class="fc" id="L59">                tokenSet.incrementTime(globalClock);// set time of all new tokens of the tokenSet</span>
+<span class="fc" id="L60">                arc.getPlace().addToken(tokenSet);</span>
+<span class="fc" id="L61">                System.out.println(&quot;+ &quot; + arc.getExecuteText() + &quot;\n&quot;);</span>
             }
-<span class="nc" id="L63">        }</span>
-<span class="nc" id="L64">        System.out.println(&quot;----------------------------\n&quot;);</span>
-<span class="nc" id="L65">	}</span>
+<span class="fc" id="L63">        }</span>
+<span class="fc" id="L64">        System.out.println(&quot;----------------------------\n&quot;);</span>
+<span class="fc" id="L65">	}</span>
 	
 	public Rule fireAndGetRule(long globalClock){
-<span class="nc" id="L68">		this.fire(globalClock);</span>
+<span class="fc" id="L68">		this.fire(globalClock);</span>
 		
-<span class="nc" id="L70">		return this.rule;</span>
+<span class="fc" id="L70">		return this.rule;</span>
 	}
 	
 	@Override
@@ -80,8 +80,8 @@ public class RuleTransition extends Transition {
 	}
 
 	public void setRule(Rule rule) {
-<span class="nc" id="L83">		this.rule = rule;</span>
-<span class="nc" id="L84">	}</span>
+<span class="fc" id="L83">		this.rule = rule;</span>
+<span class="fc" id="L84">	}</span>
 
 	
 	

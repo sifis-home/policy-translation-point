@@ -210,75 +210,75 @@ import it.polito.elite.sifis.utils.PropertyFileReader;
 	
 	@GetMapping(value = &quot;/sifis/download&quot;, produces=&quot;application/zip&quot;)
 	public ResponseEntity&lt;StreamingResponseBody&gt; download(HttpServletResponse response, Principal user) throws IOException {
-<span class="nc" id="L213">		ClassLoader classloader = Thread.currentThread().getContextClassLoader();</span>
-<span class="nc" id="L214">		File policyDir = new File(classloader.getResource(prop.getProperty(&quot;policiesDir&quot;)).getFile());</span>
+<span class="fc" id="L213">		ClassLoader classloader = Thread.currentThread().getContextClassLoader();</span>
+<span class="fc" id="L214">		File policyDir = new File(classloader.getResource(prop.getProperty(&quot;policiesDir&quot;)).getFile());</span>
 	    
-<span class="nc" id="L216">		int BUFFER_SIZE = 1024;</span>
+<span class="fc" id="L216">		int BUFFER_SIZE = 1024;</span>
 
-<span class="nc" id="L218">		StreamingResponseBody streamResponseBody = out -&gt; {</span>
+<span class="fc" id="L218">		StreamingResponseBody streamResponseBody = out -&gt; {</span>
 
-<span class="nc" id="L220">			final ZipOutputStream zipOutputStream = new ZipOutputStream(response.getOutputStream());</span>
-<span class="nc" id="L221">			ZipEntry zipEntry = null;</span>
-<span class="nc" id="L222">			InputStream inputStream = null;</span>
+<span class="fc" id="L220">			final ZipOutputStream zipOutputStream = new ZipOutputStream(response.getOutputStream());</span>
+<span class="fc" id="L221">			ZipEntry zipEntry = null;</span>
+<span class="fc" id="L222">			InputStream inputStream = null;</span>
 
 			try {
-<span class="nc bnc" id="L225" title="All 2 branches missed.">				for (File file : policyDir.listFiles()) {</span>
-<span class="nc" id="L226">					zipEntry = new ZipEntry(file.getName());</span>
+<span class="fc bfc" id="L225" title="All 2 branches covered.">				for (File file : policyDir.listFiles()) {</span>
+<span class="fc" id="L226">					zipEntry = new ZipEntry(file.getName());</span>
 
-<span class="nc" id="L228">					inputStream = new FileInputStream(file);</span>
+<span class="fc" id="L228">					inputStream = new FileInputStream(file);</span>
 
-<span class="nc" id="L230">					zipOutputStream.putNextEntry(zipEntry);</span>
-<span class="nc" id="L231">					byte[] bytes = new byte[BUFFER_SIZE];</span>
+<span class="fc" id="L230">					zipOutputStream.putNextEntry(zipEntry);</span>
+<span class="fc" id="L231">					byte[] bytes = new byte[BUFFER_SIZE];</span>
 					int length;
-<span class="nc bnc" id="L233" title="All 2 branches missed.">					while ((length = inputStream.read(bytes)) &gt;= 0) {</span>
-<span class="nc" id="L234">						zipOutputStream.write(bytes, 0, length);</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">					while ((length = inputStream.read(bytes)) &gt;= 0) {</span>
+<span class="fc" id="L234">						zipOutputStream.write(bytes, 0, length);</span>
 					}
 
 				}
 				// set zip size in response
-<span class="nc bnc" id="L239" title="All 2 branches missed.">				response.setContentLength((int) (zipEntry != null ? zipEntry.getSize() : 0));</span>
+<span class="pc bpc" id="L239" title="1 of 2 branches missed.">				response.setContentLength((int) (zipEntry != null ? zipEntry.getSize() : 0));</span>
 <span class="nc" id="L240">			} catch (IOException e) {</span>
 			} finally {
-<span class="nc bnc" id="L242" title="All 2 branches missed.">				if (inputStream != null) {</span>
-<span class="nc" id="L243">					inputStream.close();</span>
+<span class="pc bpc" id="L242" title="1 of 2 branches missed.">				if (inputStream != null) {</span>
+<span class="fc" id="L243">					inputStream.close();</span>
 				}
-<span class="nc bnc" id="L245" title="All 2 branches missed.">				if (zipOutputStream != null) {</span>
-<span class="nc" id="L246">					zipOutputStream.close();</span>
+<span class="pc bpc" id="L245" title="1 of 2 branches missed.">				if (zipOutputStream != null) {</span>
+<span class="fc" id="L246">					zipOutputStream.close();</span>
 				}
 			}
 
-<span class="nc" id="L250">		};</span>
+<span class="fc" id="L250">		};</span>
 		
 
-<span class="nc" id="L253">		response.setContentType(&quot;application/zip&quot;);</span>
-<span class="nc" id="L254">		response.setHeader(&quot;Content-Disposition&quot;, &quot;attachment; filename=policy.zip&quot;);</span>
-<span class="nc" id="L255">		response.addHeader(&quot;Pragma&quot;, &quot;no-cache&quot;);</span>
-<span class="nc" id="L256">		response.addHeader(&quot;Expires&quot;, &quot;0&quot;);</span>
-<span class="nc" id="L257">		return ResponseEntity.ok(streamResponseBody);</span>
+<span class="fc" id="L253">		response.setContentType(&quot;application/zip&quot;);</span>
+<span class="fc" id="L254">		response.setHeader(&quot;Content-Disposition&quot;, &quot;attachment; filename=policy.zip&quot;);</span>
+<span class="fc" id="L255">		response.addHeader(&quot;Pragma&quot;, &quot;no-cache&quot;);</span>
+<span class="fc" id="L256">		response.addHeader(&quot;Expires&quot;, &quot;0&quot;);</span>
+<span class="fc" id="L257">		return ResponseEntity.ok(streamResponseBody);</span>
 	}
 		
 	
 	@PostMapping(value = &quot;/sifis/check&quot;)
 	@ResponseStatus(value = HttpStatus.OK)
 	public RuleProblems checkRule(@RequestBody Rule rule, Principal user) throws OWLOntologyCreationException, InterruptedException{
-<span class="nc" id="L264">		RuleProblems ruleProblems = new RuleProblems();</span>
+<span class="fc" id="L264">		RuleProblems ruleProblems = new RuleProblems();</span>
 		
-<span class="nc" id="L266">		List&lt;Rule&gt; rulesBefore = new ArrayList&lt;Rule&gt;();</span>
-<span class="nc" id="L267">		List&lt;Rule&gt; rulesAfter = dbService.getRulesByType(&quot;sifis&quot;, user.getName());</span>
-<span class="nc bnc" id="L268" title="All 2 branches missed.">		for (Rule r : rulesAfter) {</span>
-<span class="nc bnc" id="L269" title="All 2 branches missed.">			if(r.getDbId() != rule.getDbId()) {</span>
-<span class="nc" id="L270">				rulesBefore.add(r);</span>
+<span class="fc" id="L266">		List&lt;Rule&gt; rulesBefore = new ArrayList&lt;Rule&gt;();</span>
+<span class="fc" id="L267">		List&lt;Rule&gt; rulesAfter = dbService.getRulesByType(&quot;sifis&quot;, user.getName());</span>
+<span class="fc bfc" id="L268" title="All 2 branches covered.">		for (Rule r : rulesAfter) {</span>
+<span class="pc bpc" id="L269" title="1 of 2 branches missed.">			if(r.getDbId() != rule.getDbId()) {</span>
+<span class="fc" id="L270">				rulesBefore.add(r);</span>
 			} else {
 <span class="nc" id="L272">				ruleProblems.setRule(r);</span>
 			}
-<span class="nc" id="L274">		}</span>
+<span class="fc" id="L274">		}</span>
 
-<span class="nc" id="L276">		ExtendedPetriNet net = (ExtendedPetriNet) petriNetService.getNet(user.getName(),rulesAfter,true);</span>
+<span class="fc" id="L276">		ExtendedPetriNet net = (ExtendedPetriNet) petriNetService.getNet(user.getName(),rulesAfter,true);</span>
 		
 		//search for loops
-<span class="nc" id="L279">		List&lt;List&lt;Place&gt;&gt; cycles = net.getCycle(rule, rulesAfter);</span>
+<span class="fc" id="L279">		List&lt;List&lt;Place&gt;&gt; cycles = net.getCycle(rule, rulesAfter);</span>
 		
-<span class="nc bnc" id="L281" title="All 4 branches missed.">		if(cycles != null &amp;&amp; cycles.size() &gt; 0){</span>
+<span class="pc bpc" id="L281" title="2 of 4 branches missed.">		if(cycles != null &amp;&amp; cycles.size() &gt; 0){</span>
 			//there are cycles!
 			
 <span class="nc bnc" id="L284" title="All 2 branches missed.">			for(List&lt;Place&gt; cycle : cycles){</span>
@@ -307,19 +307,19 @@ import it.polito.elite.sifis.utils.PropertyFileReader;
 <span class="nc" id="L307">					ruleProblems.addLoop(loop);</span>
 <span class="nc" id="L308">			}</span>
 		}
-<span class="nc bnc" id="L310" title="All 2 branches missed.">		if(ruleProblems.getLoops() == null){</span>
+<span class="pc bpc" id="L310" title="1 of 2 branches missed.">		if(ruleProblems.getLoops() == null){</span>
 			//search for inconsistencies and redundancies
 		
 			Trigger startTrigger;
-<span class="nc bnc" id="L314" title="All 2 branches missed.">			if(ruleProblems.getLoops() == null)</span>
-<span class="nc" id="L315">				startTrigger = net.getRoot(rule);</span>
+<span class="pc bpc" id="L314" title="1 of 2 branches missed.">			if(ruleProblems.getLoops() == null)</span>
+<span class="fc" id="L315">				startTrigger = net.getRoot(rule);</span>
 			else
 <span class="nc" id="L317">				startTrigger = rule.getTrigger();</span>
 			
-<span class="nc" id="L319">			ruleProblems.setStartTrigger(startTrigger);</span>
-<span class="nc" id="L320">			Rule[] simulatedRules = net.getSimualtedRules(startTrigger);</span>
-<span class="nc" id="L321">			List&lt;Rule&gt; simulatedRulesList = Arrays.asList(simulatedRules);</span>
-<span class="nc bnc" id="L322" title="All 2 branches missed.">			if(simulatedRulesList.size() &gt; 40){</span>
+<span class="fc" id="L319">			ruleProblems.setStartTrigger(startTrigger);</span>
+<span class="fc" id="L320">			Rule[] simulatedRules = net.getSimualtedRules(startTrigger);</span>
+<span class="fc" id="L321">			List&lt;Rule&gt; simulatedRulesList = Arrays.asList(simulatedRules);</span>
+<span class="pc bpc" id="L322" title="1 of 2 branches missed.">			if(simulatedRulesList.size() &gt; 40){</span>
 <span class="nc" id="L323">				simulatedRulesList = simulatedRulesList.subList(0, 40);</span>
 <span class="nc" id="L324">				simulatedRules = new Rule[40];</span>
 <span class="nc" id="L325">				int i = 0;</span>
@@ -329,21 +329,21 @@ import it.polito.elite.sifis.utils.PropertyFileReader;
 			
 			//Action ruleAction = rule.getAction();
 			
-<span class="nc bnc" id="L332" title="All 2 branches missed.">			for(int i = 0; i &lt; simulatedRules.length; i++) {</span>
-<span class="nc" id="L333">				Rule r1 = simulatedRules[i];</span>
-<span class="nc" id="L334">				Action a1 = simulatedRules[i].getAction();</span>
-<span class="nc" id="L335">				List&lt;Rule&gt; redundant = new LinkedList&lt;Rule&gt;();</span>
-<span class="nc" id="L336">				List&lt;Rule&gt; inconsistent = new LinkedList&lt;Rule&gt;();</span>
-<span class="nc" id="L337">				inconsistent.add(r1);</span>
-<span class="nc" id="L338">				redundant.add(r1);</span>
+<span class="fc bfc" id="L332" title="All 2 branches covered.">			for(int i = 0; i &lt; simulatedRules.length; i++) {</span>
+<span class="fc" id="L333">				Rule r1 = simulatedRules[i];</span>
+<span class="fc" id="L334">				Action a1 = simulatedRules[i].getAction();</span>
+<span class="fc" id="L335">				List&lt;Rule&gt; redundant = new LinkedList&lt;Rule&gt;();</span>
+<span class="fc" id="L336">				List&lt;Rule&gt; inconsistent = new LinkedList&lt;Rule&gt;();</span>
+<span class="fc" id="L337">				inconsistent.add(r1);</span>
+<span class="fc" id="L338">				redundant.add(r1);</span>
 				
-<span class="nc bnc" id="L340" title="All 4 branches missed.">				for(int j = 0; j &lt; simulatedRules.length &amp;&amp; j&lt;100; j++){</span>
-<span class="nc bnc" id="L341" title="All 2 branches missed.">					if(j!=i){</span>
-<span class="nc" id="L342">						Rule r2 = simulatedRules[j];</span>
-<span class="nc" id="L343">						Action a2 = simulatedRules[j].getAction();</span>
+<span class="pc bpc" id="L340" title="1 of 4 branches missed.">				for(int j = 0; j &lt; simulatedRules.length &amp;&amp; j&lt;100; j++){</span>
+<span class="fc bfc" id="L341" title="All 2 branches covered.">					if(j!=i){</span>
+<span class="fc" id="L342">						Rule r2 = simulatedRules[j];</span>
+<span class="fc" id="L343">						Action a2 = simulatedRules[j].getAction();</span>
 						
-<span class="nc bnc" id="L345" title="All 2 branches missed.">						if(owlService.equalsML(a1,a2)){</span>
-<span class="nc" id="L346">							redundant.add(r2);</span>
+<span class="pc bpc" id="L345" title="1 of 2 branches missed.">						if(owlService.equalsML(a1,a2)){</span>
+<span class="fc" id="L346">							redundant.add(r2);</span>
 						}
 						else{
 <span class="nc" id="L349">							inconsistent.add(r2);</span>
@@ -352,16 +352,16 @@ import it.polito.elite.sifis.utils.PropertyFileReader;
 					}
 				}
 				
-<span class="nc bnc" id="L355" title="All 6 branches missed.">				if(inconsistent != null &amp;&amp; inconsistent.size() &gt; 1 &amp;&amp; !ruleProblems.containsInconsistency(inconsistent)) ruleProblems.addInconsistentRules(inconsistent);</span>
-<span class="nc bnc" id="L356" title="All 6 branches missed.">				if(redundant != null &amp;&amp; redundant.size() &gt; 1 &amp;&amp; !ruleProblems.containsRedundancy(redundant)) ruleProblems.addRedundantRules(redundant);</span>
-<span class="nc" id="L357">				Trigger lastTrigger = simulatedRules[0].getTrigger();</span>
-<span class="nc" id="L358">				List&lt;Rule&gt; temp = new LinkedList&lt;Rule&gt;();</span>
+<span class="pc bpc" id="L355" title="4 of 6 branches missed.">				if(inconsistent != null &amp;&amp; inconsistent.size() &gt; 1 &amp;&amp; !ruleProblems.containsInconsistency(inconsistent)) ruleProblems.addInconsistentRules(inconsistent);</span>
+<span class="pc bpc" id="L356" title="2 of 6 branches missed.">				if(redundant != null &amp;&amp; redundant.size() &gt; 1 &amp;&amp; !ruleProblems.containsRedundancy(redundant)) ruleProblems.addRedundantRules(redundant);</span>
+<span class="fc" id="L357">				Trigger lastTrigger = simulatedRules[0].getTrigger();</span>
+<span class="fc" id="L358">				List&lt;Rule&gt; temp = new LinkedList&lt;Rule&gt;();</span>
 
-<span class="nc bnc" id="L360" title="All 2 branches missed.">				for(Rule simulatedRule : simulatedRulesList){</span>
+<span class="fc bfc" id="L360" title="All 2 branches covered.">				for(Rule simulatedRule : simulatedRulesList){</span>
 					
-<span class="nc bnc" id="L362" title="All 2 branches missed.">					if(simulatedRule.getTrigger().equals(lastTrigger)){</span>
-<span class="nc" id="L363">						temp.add(simulatedRule);</span>
-<span class="nc" id="L364">						continue;</span>
+<span class="pc bpc" id="L362" title="1 of 2 branches missed.">					if(simulatedRule.getTrigger().equals(lastTrigger)){</span>
+<span class="fc" id="L363">						temp.add(simulatedRule);</span>
+<span class="fc" id="L364">						continue;</span>
 					}
 <span class="nc" id="L366">					simulatedRule.setParents(petriNetService.getParents(simulatedRule, temp));</span>
 <span class="nc" id="L367">					temp.add(simulatedRule);</span>
@@ -369,13 +369,13 @@ import it.polito.elite.sifis.utils.PropertyFileReader;
 <span class="nc" id="L369">				}</span>
 				
 			
-<span class="nc" id="L372">				ruleProblems.setExecutedRules(simulatedRulesList);		</span>
+<span class="fc" id="L372">				ruleProblems.setExecutedRules(simulatedRulesList);		</span>
 			}
 		}
 			
 		
 
-<span class="nc" id="L378">		return ruleProblems;</span>
+<span class="fc" id="L378">		return ruleProblems;</span>
 	}
 	
 

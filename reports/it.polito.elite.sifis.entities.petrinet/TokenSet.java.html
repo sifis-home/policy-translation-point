@@ -7,20 +7,20 @@ import java.util.Iterator;
 
 public class TokenSet extends AbstractCollection&lt;Object&gt; {
 
-<span class="nc" id="L10">    private ArrayList&lt;Object&gt; tokenList = new ArrayList&lt;Object&gt;();</span>
+<span class="pc" id="L10">    private ArrayList&lt;Object&gt; tokenList = new ArrayList&lt;Object&gt;();</span>
 
-<span class="nc" id="L12">    public TokenSet() {</span>
-<span class="nc" id="L13">    }</span>
+<span class="fc" id="L12">    public TokenSet() {</span>
+<span class="fc" id="L13">    }</span>
 
-<span class="nc" id="L15">    public TokenSet(Object object) {</span>
-<span class="nc bnc" id="L16" title="All 2 branches missed.">        if (object instanceof Token) {</span>
-<span class="nc" id="L17">            tokenList.add(object);</span>
-<span class="nc bnc" id="L18" title="All 2 branches missed.">        } else if (object instanceof TokenSet) {</span>
-<span class="nc" id="L19">            tokenList.addAll((TokenSet) object);</span>
+<span class="fc" id="L15">    public TokenSet(Object object) {</span>
+<span class="fc bfc" id="L16" title="All 2 branches covered.">        if (object instanceof Token) {</span>
+<span class="fc" id="L17">            tokenList.add(object);</span>
+<span class="fc bfc" id="L18" title="All 2 branches covered.">        } else if (object instanceof TokenSet) {</span>
+<span class="fc" id="L19">            tokenList.addAll((TokenSet) object);</span>
         } else {
-<span class="nc" id="L21">            tokenList.add(new Token(object));</span>
+<span class="fc" id="L21">            tokenList.add(new Token(object));</span>
         }
-<span class="nc" id="L23">    }</span>
+<span class="fc" id="L23">    }</span>
 
 <span class="nc" id="L25">    public TokenSet(Object object, long time) {</span>
 <span class="nc bnc" id="L26" title="All 2 branches missed.">        if (object instanceof TokenSet) {</span>
@@ -40,12 +40,12 @@ public class TokenSet extends AbstractCollection&lt;Object&gt; {
 
     @Override
     public Iterator&lt;Object&gt; iterator() {
-<span class="nc" id="L43">        return tokenList.iterator();</span>
+<span class="fc" id="L43">        return tokenList.iterator();</span>
     }
 
     @Override
     public int size() {
-<span class="nc" id="L48">        return tokenList.size();</span>
+<span class="fc" id="L48">        return tokenList.size();</span>
     }
 
     @Override
@@ -56,12 +56,12 @@ public class TokenSet extends AbstractCollection&lt;Object&gt; {
 
     @Override
     public boolean addAll(Collection tokenSet) {
-<span class="nc" id="L59">        boolean b = tokenList.addAll(((TokenSet) tokenSet).getTokenList());</span>
-<span class="nc" id="L60">        return b;</span>
+<span class="fc" id="L59">        boolean b = tokenList.addAll(((TokenSet) tokenSet).getTokenList());</span>
+<span class="fc" id="L60">        return b;</span>
     }
 
     public ArrayList getTokenList() {
-<span class="nc" id="L64">        return this.tokenList;</span>
+<span class="fc" id="L64">        return this.tokenList;</span>
     }
 
     public Token get(int id) {
@@ -77,21 +77,21 @@ public class TokenSet extends AbstractCollection&lt;Object&gt; {
      * if(exists at least one timed token and his time &lt;= GLOBALTIME) true
      */
     public boolean containsTime(long timestamp) {
-<span class="nc" id="L80">        boolean found = false;</span>
-<span class="nc" id="L81">        boolean allzero = true;</span>
-<span class="nc" id="L82">        Iterator it = tokenList.iterator();</span>
-<span class="nc bnc" id="L83" title="All 2 branches missed.">        while (it.hasNext()) {</span>
-<span class="nc" id="L84">            Token token = (Token) it.next();</span>
-<span class="nc bnc" id="L85" title="All 2 branches missed.">            if (token.getTimestamp() &lt;= timestamp) {</span>
-<span class="nc" id="L86">                found = true;</span>
+<span class="fc" id="L80">        boolean found = false;</span>
+<span class="fc" id="L81">        boolean allzero = true;</span>
+<span class="fc" id="L82">        Iterator it = tokenList.iterator();</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">        while (it.hasNext()) {</span>
+<span class="fc" id="L84">            Token token = (Token) it.next();</span>
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">            if (token.getTimestamp() &lt;= timestamp) {</span>
+<span class="fc" id="L86">                found = true;</span>
             }
-<span class="nc bnc" id="L88" title="All 2 branches missed.">            if (token.getTimestamp() != 0) {</span>
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">            if (token.getTimestamp() != 0) {</span>
 <span class="nc" id="L89">                allzero = false;</span>
             }
-<span class="nc" id="L91">        }</span>
+<span class="fc" id="L91">        }</span>
 
-<span class="nc bnc" id="L93" title="All 4 branches missed.">        if (allzero || found) {</span>
-<span class="nc" id="L94">            return true;</span>
+<span class="pc bpc" id="L93" title="3 of 4 branches missed.">        if (allzero || found) {</span>
+<span class="fc" id="L94">            return true;</span>
         } else {
 <span class="nc" id="L96">            return false;</span>
         }
@@ -99,30 +99,30 @@ public class TokenSet extends AbstractCollection&lt;Object&gt; {
 
     /** Increments timed tokens by a fixed amount */
     public void incrementTime(long timestamp) {
-<span class="nc" id="L102">        Iterator it = tokenList.iterator();</span>
-<span class="nc bnc" id="L103" title="All 2 branches missed.">        while (it.hasNext()) {</span>
-<span class="nc" id="L104">            Token token = (Token) it.next();</span>
-<span class="nc bnc" id="L105" title="All 2 branches missed.">            if (token.getTimestamp() != 0) {</span>
+<span class="fc" id="L102">        Iterator it = tokenList.iterator();</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">        while (it.hasNext()) {</span>
+<span class="fc" id="L104">            Token token = (Token) it.next();</span>
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">            if (token.getTimestamp() != 0) {</span>
 <span class="nc" id="L106">                token.setTimestamp(token.getTimestamp() + timestamp);</span>
             }
-<span class="nc" id="L108">        }</span>
-<span class="nc" id="L109">    }</span>
+<span class="fc" id="L108">        }</span>
+<span class="fc" id="L109">    }</span>
 
     @Override
     public boolean removeAll(Collection c) {
-<span class="nc" id="L113">        Iterator it = tokenList.iterator();</span>
-<span class="nc bnc" id="L114" title="All 2 branches missed.">        while (it.hasNext()) {</span>
-<span class="nc" id="L115">            Token i = (Token) it.next();</span>
-<span class="nc" id="L116">            Iterator it2 = c.iterator();</span>
-<span class="nc bnc" id="L117" title="All 2 branches missed.">            while (it2.hasNext()) {</span>
-<span class="nc" id="L118">                Token j = (Token) it2.next();</span>
-<span class="nc bnc" id="L119" title="All 2 branches missed.">                if (j.equals(i)) {</span>
-<span class="nc" id="L120">                    it.remove();</span>
-<span class="nc" id="L121">                    it2.remove();</span>
+<span class="fc" id="L113">        Iterator it = tokenList.iterator();</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">        while (it.hasNext()) {</span>
+<span class="fc" id="L115">            Token i = (Token) it.next();</span>
+<span class="fc" id="L116">            Iterator it2 = c.iterator();</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">            while (it2.hasNext()) {</span>
+<span class="fc" id="L118">                Token j = (Token) it2.next();</span>
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">                if (j.equals(i)) {</span>
+<span class="fc" id="L120">                    it.remove();</span>
+<span class="fc" id="L121">                    it2.remove();</span>
                 }
-<span class="nc" id="L123">            }</span>
-<span class="nc" id="L124">        }</span>
-<span class="nc" id="L125">        return true;</span>
+<span class="fc" id="L123">            }</span>
+<span class="fc" id="L124">        }</span>
+<span class="fc" id="L125">        return true;</span>
     }
 
     @Override

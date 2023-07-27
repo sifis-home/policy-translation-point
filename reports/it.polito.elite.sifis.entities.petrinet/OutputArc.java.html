@@ -4,18 +4,18 @@
 public class OutputArc extends Arc implements Inscription {
 
     /** Text string that represents the expression this arc will execute by default */
-<span class="nc" id="L7">    private String executeText = &quot;1&quot;;</span>
+<span class="pc" id="L7">    private String executeText = &quot;1&quot;;</span>
 
     /** Petri Net pointer **/
     private PetriNet net;
     
     /** Constructor to create an output arc. */
-<span class="nc" id="L13">    public OutputArc(PetriNet net, Place place, Transition transition) {</span>
-<span class="nc" id="L14">        this.net = net;</span>
-<span class="nc" id="L15">    	this.id = &quot;o&quot; + this.id;</span>
-<span class="nc" id="L16">        this.place = place;</span>
-<span class="nc" id="L17">        this.transition = transition;</span>
-<span class="nc" id="L18">    }</span>
+<span class="fc" id="L13">    public OutputArc(PetriNet net, Place place, Transition transition) {</span>
+<span class="fc" id="L14">        this.net = net;</span>
+<span class="fc" id="L15">    	this.id = &quot;o&quot; + this.id;</span>
+<span class="fc" id="L16">        this.place = place;</span>
+<span class="fc" id="L17">        this.transition = transition;</span>
+<span class="fc" id="L18">    }</span>
 
     /** Constructor to create a new output arc with specific attributes. */
 <span class="nc" id="L21">    public OutputArc(PetriNet net, String id, Place place, Transition transition, String action) {</span>
@@ -44,14 +44,14 @@ public class OutputArc extends Arc implements Inscription {
      * @return the executeText
      */
     public String getExecuteText() {
-<span class="nc" id="L47">        return executeText;</span>
+<span class="fc" id="L47">        return executeText;</span>
     }
 
     /**
      * @param executeText the executeText to set
      */
     public void setExecuteText(String executeText) {
-<span class="nc" id="L54">        this.executeText = executeText;</span>
-<span class="nc" id="L55">    }</span>
+<span class="fc" id="L54">        this.executeText = executeText;</span>
+<span class="fc" id="L55">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
