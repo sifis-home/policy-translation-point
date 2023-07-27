@@ -18,6 +18,11 @@ jobs:
           '11.0.x',
         ]
 
+    env:
+      DB_DATABASE: sifis-ptp
+      DB_USER: root
+      DB_PASSWORD: rootroot
+
     steps:
       - uses: actions/checkout@v3
 
@@ -28,9 +33,15 @@ jobs:
           distribution: 'zulu'
           cache: 'maven'
 
+      - name: Set up MySQL
+        run: |
+          sudo /etc/init.d/mysql start
+          mysql -e 'CREATE DATABASE ${{ env.DB_DATABASE }};' -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD}} 
+          mysql -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD}}  -e schema.sql
+
       - name: Package ACE entities
         run: |
-          ./scripts/build-ptp.sh --with-mysql
+          ./scripts/build-ptp.sh
 
       - name: Generate Jacoco Badge
         if: ${{ matrix.java-version == '11.0.x' }}
