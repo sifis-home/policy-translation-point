@@ -20,9 +20,9 @@ $ docker network create --driver=bridge ptp-network
 ```
 Then, you can create the `ptp-db` container;
 ```
-$ docker run --name ptp-db -v ptp-db:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=rootroot -e MYSQL_DATABASE=sifis-ptp --network ptp-network -d mysql:5.7
+$ docker run --name ptp-db -v ptp-db:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=sifis_ptp --network ptp-network -d mysql:5.7
 ```
-Here, `rootroot` is the password of the MySql root account, while `sifis-ptp`is the name of the database that will be exploited by the web application.
+Here, `root` is the password of the MySql root account, while `sifis_ptp`is the name of the database that will be exploited by the web application.
 
 After creating the the container for the MySql server, you will have to create the `ptp-inspector`container:
 ```
