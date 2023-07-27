@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RestSimulator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sifis</a> &gt; <a href="index.source.html" class="el_package">it.polito.elite.sifis.entities.petrinet</a> &gt; <span class="el_source">RestSimulator.java</span></div><h1>RestSimulator.java</h1><pre class="source lang-java linenums">package it.polito.elite.sifis.entities.petrinet;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+
+import it.polito.elite.sifis.entities.owl.Rule;
+
+
+public class RestSimulator {
+	
+<span class="nc" id="L13">	protected boolean paused = false;</span>
+<span class="nc" id="L14">	protected boolean stop = false;</span>
+    
+	/** Petri Net pointer **/
+    private PetriNet net;
+    
+<span class="nc" id="L19">    public RestSimulator(PetriNet net){</span>
+<span class="nc" id="L20">    	this.net = net;</span>
+<span class="nc" id="L21">    }</span>
+    
+    public Rule step(){
+<span class="nc bnc" id="L24" title="All 2 branches missed.">    	if(!isFinished()){</span>
+<span class="nc" id="L25">    		return fireTransition();</span>
+    	}
+<span class="nc" id="L27">    	return null;</span>
+    }
+    
+    private Rule fireTransition() {
+<span class="nc" id="L31">    	enabledTransitionList();</span>
+        
+<span class="nc bnc" id="L33" title="All 2 branches missed.">    	if (!this.enabledTransitionList().isEmpty()) {</span>
+        	Transition t;
+<span class="nc" id="L35">        	t = getRandomTransition();</span>
+        	//if the transition is a Copy or Triggers transition -&gt; fire anyway
+<span class="nc bnc" id="L37" title="All 2 branches missed.">        	while(!(t instanceof RuleTransition)){</span>
+<span class="nc" id="L38">        		t.fire(0);</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">        		if(this.enabledTransitionList().isEmpty())</span>
+<span class="nc" id="L40">        			return null;</span>
+<span class="nc" id="L41">        		t = getRandomTransition();</span>
+        	}
+            
+        	//There is a Rule transition -&gt; fire the transition and return the activated rule
+<span class="nc" id="L45">        	return ((RuleTransition)t).fireAndGetRule(0);            </span>
+        }
+        
+<span class="nc" id="L48">		return null;</span>
+	}
+
+	/** Checks whether the Simulation has ended */
+    private boolean isFinished() {
+<span class="nc" id="L53">        return this.net.isDead();</span>
+    }
+
+    /** Returns a random transition from the enabled transition list */
+    public Transition getRandomTransition() {
+<span class="nc" id="L58">        ArrayList&lt;Transition&gt; enabledTransitions = this.enabledTransitionList();</span>
+<span class="nc" id="L59">        Random generator = new Random();</span>
+<span class="nc" id="L60">        int rand = generator.nextInt(enabledTransitions.size());</span>
+<span class="nc" id="L61">        return (Transition) enabledTransitions.get(rand);</span>
+    }
+
+    /** Returns a list of enabled transitions */
+    public ArrayList&lt;Transition&gt; enabledTransitionList() {
+<span class="nc" id="L66">        Iterator&lt;Transition&gt; it = this.net.getTransitions().iterator();</span>
+<span class="nc" id="L67">        ArrayList&lt;Transition&gt; enabledTransitions = new ArrayList&lt;Transition&gt;();</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">        while (it.hasNext()) {</span>
+<span class="nc" id="L69">            Transition transition = (Transition) it.next();</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">            if (transition.enabled(0)) {</span>
+<span class="nc" id="L71">                enabledTransitions.add(transition);</span>
+            }
+<span class="nc" id="L73">        }</span>
+<span class="nc" id="L74">        return enabledTransitions;</span>
+    }
+
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

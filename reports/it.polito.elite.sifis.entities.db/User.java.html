@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>User.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sifis</a> &gt; <a href="index.source.html" class="el_package">it.polito.elite.sifis.entities.db</a> &gt; <span class="el_source">User.java</span></div><h1>User.java</h1><pre class="source lang-java linenums">package it.polito.elite.sifis.entities.db;
+
+import java.io.Serializable;
+import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
+import org.springframework.data.annotation.Transient;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import it.polito.elite.sifis.entities.owl.Role;
+
+@Entity
+@Table(name = &quot;user&quot;)
+<span class="fc" id="L24">public class User implements Serializable{</span>
+
+	private static final long serialVersionUID = 1L;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = &quot;user_id&quot;)
+	private Long id;
+	@Column(name = &quot;username&quot;)
+	@NotEmpty(message = &quot;*Please provide a username&quot;)
+	private String username;
+	@Column(name = &quot;password&quot;, unique = true)
+	@NotEmpty(message = &quot;*Please provide your password&quot;)
+	@Transient
+	private String password;
+	@Column(name = &quot;name&quot;)
+	@NotEmpty(message = &quot;*Please provide your name&quot;)
+	private String name;
+	@Column(name = &quot;last_name&quot;)
+	@NotEmpty(message = &quot;*Please provide your last name&quot;)
+	private String lastName;
+	@Column(name = &quot;ontology_iri&quot;)
+	private String ontologyIRI;
+	@Column(name = &quot;active&quot;)
+	private int active;
+	@JsonIgnore
+	@ManyToMany(cascade = CascadeType.MERGE)
+	@JoinTable(name = &quot;user_role&quot;, joinColumns = @JoinColumn(name = &quot;user_id&quot;), inverseJoinColumns = @JoinColumn(name = &quot;role_id&quot;))
+	private Set&lt;Role&gt; roles;
+	
+
+
+	public Long getId() {
+<span class="nc" id="L56">		return id;</span>
+	}
+
+	public void setId(Long id) {
+<span class="nc" id="L60">		this.id = id;</span>
+<span class="nc" id="L61">	}</span>
+
+	public String getPassword() {
+<span class="fc" id="L64">		return password;</span>
+	}
+
+	public void setPassword(String password) {
+<span class="nc" id="L68">		this.password = password;</span>
+<span class="nc" id="L69">	}</span>
+
+	public String getName() {
+<span class="nc" id="L72">		return name;</span>
+	}
+
+	public void setName(String name) {
+<span class="nc" id="L76">		this.name = name;</span>
+<span class="nc" id="L77">	}</span>
+
+	public String getLastName() {
+<span class="nc" id="L80">		return lastName;</span>
+	}
+
+	public void setLastName(String lastName) {
+<span class="nc" id="L84">		this.lastName = lastName;</span>
+<span class="nc" id="L85">	}</span>
+
+	public String getUsername() {
+<span class="fc" id="L88">		return username;</span>
+	}
+
+	public void setUsername(String username) {
+<span class="nc" id="L92">		this.username = username;</span>
+<span class="nc" id="L93">	}</span>
+
+	public int getActive() {
+<span class="nc" id="L96">		return active;</span>
+	}
+
+	public void setActive(int active) {
+<span class="nc" id="L100">		this.active = active;</span>
+<span class="nc" id="L101">	}</span>
+	@JsonIgnore
+	public Set&lt;Role&gt; getRoles() {
+<span class="nc" id="L104">		return roles;</span>
+	}
+	@JsonIgnore
+	public void setRoles(Set&lt;Role&gt; roles) {
+<span class="nc" id="L108">		this.roles = roles;</span>
+<span class="nc" id="L109">	}</span>
+
+	public String getOntologyIRI() {
+<span class="nc" id="L112">		return ontologyIRI;</span>
+	}
+
+	public void setOntologyIRI(String ontologyIRI) {
+<span class="nc" id="L116">		this.ontologyIRI = ontologyIRI;</span>
+<span class="nc" id="L117">	}</span>
+
+	
+	
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

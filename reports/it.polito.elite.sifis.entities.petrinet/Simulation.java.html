@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Simulation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sifis</a> &gt; <a href="index.source.html" class="el_package">it.polito.elite.sifis.entities.petrinet</a> &gt; <span class="el_source">Simulation.java</span></div><h1>Simulation.java</h1><pre class="source lang-java linenums">package it.polito.elite.sifis.entities.petrinet;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import it.polito.elite.sifis.entities.owl.Action;
+import it.polito.elite.sifis.entities.owl.Rule;
+
+
+public class Simulation extends Thread {
+
+<span class="nc" id="L19">    protected boolean step = false;</span>
+<span class="nc" id="L20">    protected boolean paused = false;</span>
+<span class="nc" id="L21">    protected boolean stop = false;</span>
+    /** Time delay between a transition is fired */
+<span class="nc" id="L23">    public static int DELAY = 0;</span>
+    /** Default time delay between each transition firing process */
+<span class="nc" id="L25">    public static int COMPONENTDELAY = 100;</span>
+    
+    /** Petri Net pointer **/
+    private PetriNet net;
+    
+    private List&lt;Action&gt; simualtedActions;
+    private List&lt;Rule&gt; simulatedRules;
+    
+    /** Initializes Simulation. */
+<span class="nc" id="L34">    public Simulation(PetriNet net, boolean step) {</span>
+<span class="nc" id="L35">    	this.net = net;</span>
+<span class="nc" id="L36">        this.step = step;</span>
+<span class="nc" id="L37">        this.simualtedActions = new LinkedList&lt;Action&gt;();</span>
+<span class="nc" id="L38">        this.simulatedRules = new LinkedList&lt;Rule&gt;();</span>
+<span class="nc" id="L39">    }</span>
+
+    @Override
+    public void run() {
+<span class="nc bnc" id="L43" title="All 4 branches missed.">        while (!isFinished() &amp;&amp; !stop) {</span>
+<span class="nc" id="L44">            fireTransition();</span>
+        }
+<span class="nc bnc" id="L46" title="All 2 branches missed.">        if (stop) {</span>
+<span class="nc" id="L47">            System.out.println(&quot;Stopped.\n&quot;);</span>
+        } else {
+<span class="nc" id="L49">        	 System.out.println(&quot;Deadlock.\n&quot;);</span>
+        }      
+<span class="nc" id="L51">    }</span>
+
+    /** Checks whether the Simulation has ended */
+    public boolean isFinished() {
+<span class="nc" id="L55">        return this.net.isDead();</span>
+    }
+
+    /** Fires a single transition of the enabled transition list */
+    protected void fireTransition() {
+    	
+<span class="nc" id="L61">    	enabledRuleTransitionList();</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">    	while(!this.enabledRuleTransitionList().isEmpty()){</span>
+    		Transition t;
+<span class="nc" id="L64">        	t = getRandomRuleTransition();</span>
+<span class="nc" id="L65">        	Rule rule = ((RuleTransition)t).fireAndGetRule(0);</span>
+<span class="nc" id="L66">        	this.simualtedActions.add(rule.getAction());</span>
+<span class="nc" id="L67">        	this.simulatedRules.add(rule);</span>
+<span class="nc" id="L68">    	}</span>
+    	
+<span class="nc" id="L70">    	enabledTransitionList();</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">        if (!this.enabledTransitionList().isEmpty()) {</span>
+        	Transition t;	
+<span class="nc" id="L73">        	t = getRandomTransition();</span>
+<span class="nc" id="L74">        	t.fire(0);</span>
+        }
+        
+<span class="nc" id="L77">        pauseResumeSimulation();</span>
+        /*enabledTransitionList();
+        if (!this.enabledTransitionList().isEmpty()) {
+        	Transition t;
+        	
+        	t = getRandomTransition();
+        	if(t instanceof RuleTransition){
+        		Rule rule = ((RuleTransition)t).fireAndGetRule(0);   
+        		this.simualtedActions.add(rule.getAction());
+        		this.simulatedRules.add(rule);
+        		
+        	}
+        	else
+        		t.fire(0);
+        	pauseResumeSimulation();
+                
+        }*/
+    	
+    	
+<span class="nc" id="L96">    }</span>
+
+    public synchronized void pauseResumeSimulation() {
+<span class="nc bnc" id="L99" title="All 4 branches missed.">        if (step &amp;&amp; !stop) {</span>
+<span class="nc" id="L100">            paused = true;</span>
+            try {
+<span class="nc" id="L102">                synchronized (this) {</span>
+<span class="nc" id="L103">                    this.wait();</span>
+<span class="nc" id="L104">                }</span>
+<span class="nc" id="L105">            } catch (InterruptedException ex) {</span>
+<span class="nc" id="L106">                Logger.getLogger(Simulation.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L107">            }</span>
+        } else {
+            try {
+<span class="nc" id="L110">                Thread.sleep(DELAY);</span>
+<span class="nc" id="L111">            } catch (InterruptedException l) {</span>
+<span class="nc" id="L112">            }</span>
+        }
+<span class="nc" id="L114">    }</span>
+    
+    /** Returns a random transition from the enabled rule transition list */
+    public RuleTransition getRandomRuleTransition() {
+<span class="nc" id="L118">    	ArrayList&lt;RuleTransition&gt; enabledTransitions = this.enabledRuleTransitionList();</span>
+<span class="nc" id="L119">        Random generator = new Random();</span>
+<span class="nc" id="L120">        int rand = generator.nextInt(enabledTransitions.size());</span>
+<span class="nc" id="L121">        return enabledTransitions.get(rand);</span>
+    }
+
+    /** Returns a random transition from the enabled transition list */
+    public Transition getRandomTransition() {
+<span class="nc" id="L126">        ArrayList&lt;Transition&gt; enabledTransitions = this.enabledTransitionList();</span>
+<span class="nc" id="L127">        Random generator = new Random();</span>
+<span class="nc" id="L128">        int rand = generator.nextInt(enabledTransitions.size());</span>
+<span class="nc" id="L129">        return (Transition) enabledTransitions.get(rand);</span>
+    }
+
+    /** Returns a list of enabled transitions */
+    public ArrayList&lt;Transition&gt; enabledTransitionList() {
+<span class="nc" id="L134">        Iterator&lt;Transition&gt; it = this.net.getTransitions().iterator();</span>
+<span class="nc" id="L135">        ArrayList&lt;Transition&gt; enabledTransitions = new ArrayList&lt;Transition&gt;();</span>
+<span class="nc bnc" id="L136" title="All 2 branches missed.">        while (it.hasNext()) {</span>
+<span class="nc" id="L137">            Transition transition = (Transition) it.next();</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">            if (transition.enabled(0)) {</span>
+<span class="nc" id="L139">                enabledTransitions.add(transition);</span>
+            }
+<span class="nc" id="L141">        }</span>
+<span class="nc" id="L142">        return enabledTransitions;</span>
+    }
+    
+    /** Returns a list of enabled rule transitions */
+    public ArrayList&lt;RuleTransition&gt; enabledRuleTransitionList() {
+<span class="nc" id="L147">        Iterator&lt;Transition&gt; it = this.net.getTransitions().iterator();</span>
+<span class="nc" id="L148">        ArrayList&lt;RuleTransition&gt; enabledTransitions = new ArrayList&lt;RuleTransition&gt;();</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">        while (it.hasNext()) {</span>
+<span class="nc" id="L150">            Transition transition = (Transition) it.next();</span>
+<span class="nc bnc" id="L151" title="All 4 branches missed.">            if (transition.enabled(0) &amp;&amp; transition instanceof RuleTransition) {</span>
+<span class="nc" id="L152">                enabledTransitions.add((RuleTransition)transition);</span>
+            }
+<span class="nc" id="L154">        }</span>
+<span class="nc" id="L155">        return enabledTransitions;</span>
+    }
+
+    /**
+     * @return the step
+     */
+    public boolean isStep() {
+<span class="nc" id="L162">        return step;</span>
+    }
+
+    /**
+     * @param step the step to set
+     */
+    public void setStep(boolean step) {
+<span class="nc" id="L169">        this.step = step;</span>
+<span class="nc" id="L170">    }</span>
+
+    /**
+     * @return the paused
+     */
+    public boolean isPaused() {
+<span class="nc" id="L176">        return paused;</span>
+    }
+
+    /**
+     * @param paused the paused to set
+     */
+    public void setPaused(boolean paused) {
+<span class="nc" id="L183">        this.paused = paused;</span>
+<span class="nc" id="L184">    }</span>
+
+    /**
+     * @return the stop
+     */
+    public boolean isStop() {
+<span class="nc" id="L190">        return stop;</span>
+    }
+
+    /**
+     * @param stop the stop to set
+     */
+    public void setStop(boolean stop) {
+<span class="nc bnc" id="L197" title="All 2 branches missed.">        if (this.paused) {</span>
+<span class="nc" id="L198">            synchronized (this) {</span>
+<span class="nc" id="L199">                this.notify();</span>
+<span class="nc" id="L200">            }</span>
+        }
+<span class="nc" id="L202">        this.stop = stop;</span>
+<span class="nc" id="L203">    }</span>
+
+	public List&lt;Action&gt; getSimualtedActions() {
+<span class="nc" id="L206">		return simualtedActions;</span>
+	}
+
+	public List&lt;Rule&gt; getSimulatedRules() {
+<span class="nc" id="L210">		return simulatedRules;</span>
+	}
+
+	public void setSimulatedRules(List&lt;Rule&gt; simulatedRules) {
+<span class="nc" id="L214">		this.simulatedRules = simulatedRules;</span>
+<span class="nc" id="L215">	}</span>
+
+
+    
+    
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NetObject.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sifis</a> &gt; <a href="index.source.html" class="el_package">it.polito.elite.sifis.entities.petrinet</a> &gt; <span class="el_source">NetObject.java</span></div><h1>NetObject.java</h1><pre class="source lang-java linenums">package it.polito.elite.sifis.entities.petrinet;
+
+
+public abstract class NetObject {
+
+    /** Latest id assigned to a net object*/
+<span class="nc" id="L7">    public static long LATEST_ID = 0;</span>
+    /** Id of this net object*/
+    protected String id;
+    /** Label of this net object*/
+<span class="nc" id="L11">    protected String label = &quot;&quot;;</span>
+
+    /** Constructor that assigns the LATEST_ID to this object and increments it by 1*/
+<span class="nc" id="L14">    public NetObject() {</span>
+<span class="nc" id="L15">        this.id = &quot;&quot; + LATEST_ID;</span>
+<span class="nc" id="L16">        LATEST_ID++;</span>
+<span class="nc" id="L17">    }</span>
+
+    /**
+     * @return the id
+     */
+    public String getId() {
+<span class="nc" id="L23">        return id;</span>
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(String id) {
+<span class="nc" id="L30">        this.id = id;</span>
+<span class="nc" id="L31">    }</span>
+
+    /**
+     * @return the label
+     */
+    public String getLabel() {
+<span class="nc bnc" id="L37" title="All 2 branches missed.">        if (label.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L38">            label = id;</span>
+        }
+<span class="nc" id="L40">        return label;</span>
+    }
+
+    /**
+     * @param label the label to set
+     */
+    public void setLabel(String label) {
+<span class="nc" id="L47">        this.label = label;</span>
+<span class="nc" id="L48">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

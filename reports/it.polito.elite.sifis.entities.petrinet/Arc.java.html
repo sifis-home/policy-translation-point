@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Arc.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sifis</a> &gt; <a href="index.source.html" class="el_package">it.polito.elite.sifis.entities.petrinet</a> &gt; <span class="el_source">Arc.java</span></div><h1>Arc.java</h1><pre class="source lang-java linenums">/* Copyright Guillem Catala. www.guillemcatala.com/petrinetsim. Licensed http://creativecommons.org/licenses/by-nc-sa/3.0/ */
+package it.polito.elite.sifis.entities.petrinet;
+
+/**
+ *
+ * @author Guillem
+ */
+<span class="nc" id="L8">public abstract class Arc extends NetObject {</span>
+
+    /** The place where this arc is connected*/
+    protected Place place;
+    /** The transition where this arc is connected*/
+    protected Transition transition;
+
+    /**
+     * @return the place
+     */
+    public Place getPlace() {
+<span class="nc" id="L19">        return place;</span>
+    }
+
+    /**
+     * @param place the place to set
+     */
+    public void setPlace(Place place) {
+<span class="nc" id="L26">        this.place = place;</span>
+<span class="nc" id="L27">    }</span>
+
+    /**
+     * @return the transition
+     */
+    public Transition getTransition() {
+<span class="nc" id="L33">        return transition;</span>
+    }
+
+    /**
+     * @param transition the transition to set
+     */
+    public void setTransition(Transition transition) {
+<span class="nc" id="L40">        this.transition = transition;</span>
+<span class="nc" id="L41">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

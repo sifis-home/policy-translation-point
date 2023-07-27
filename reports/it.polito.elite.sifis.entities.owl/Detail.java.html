@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Detail.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sifis</a> &gt; <a href="index.source.html" class="el_package">it.polito.elite.sifis.entities.owl</a> &gt; <span class="el_source">Detail.java</span></div><h1>Detail.java</h1><pre class="source lang-java linenums">package it.polito.elite.sifis.entities.owl;
+
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import it.polito.elite.sifis.entities.db.Dbaction;
+import it.polito.elite.sifis.entities.db.Dbtrigger;
+
+<span class="nc" id="L15">public class Detail {</span>
+	
+	private String URL;
+	private String id;
+	private String name;
+	private String type;
+	private Object value;
+	@JoinColumn(name = &quot;triggerId&quot;)
+	@ManyToOne(cascade = CascadeType.ALL)
+	private Dbtrigger trigger;
+	@JoinColumn(name = &quot;actionId&quot;)
+	@ManyToOne(cascade = CascadeType.ALL)
+	private Dbaction action;
+	private Set&lt;Object&gt; alternatives;
+	
+	
+	public String getURL() {
+<span class="nc" id="L32">		return URL;</span>
+	}
+	public void setURL(String uRL) {
+<span class="nc" id="L35">		URL = uRL;</span>
+<span class="nc" id="L36">	}</span>
+	public String getName() {
+<span class="nc" id="L38">		return name;</span>
+	}
+	public void setName(String name) {
+<span class="nc" id="L41">		this.name = name;</span>
+<span class="nc" id="L42">	}</span>
+	
+	public String getId() {
+<span class="nc" id="L45">		return id;</span>
+	}
+	public void setId(String id) {
+<span class="nc" id="L48">		this.id = id;</span>
+<span class="nc" id="L49">	}</span>
+	public String getType() {
+<span class="nc" id="L51">		return type;</span>
+	}
+	public void setType(String type) {
+<span class="nc" id="L54">		this.type = type;</span>
+<span class="nc" id="L55">	}</span>
+	public Object getValue() {
+<span class="nc" id="L57">		return value;</span>
+	}
+	public void setValue(Object value) {
+<span class="nc" id="L60">		this.value = value;</span>
+<span class="nc" id="L61">	}</span>
+	public Set&lt;Object&gt; getAlternatives() {
+<span class="nc" id="L63">		return alternatives;</span>
+	}
+	public void setAlternatives(Set&lt;Object&gt; alternatives) {
+<span class="nc" id="L66">		this.alternatives = alternatives;</span>
+<span class="nc" id="L67">	}</span>
+	public Dbaction getAction() {
+<span class="nc" id="L69">		return action;</span>
+	}
+	public void setAction(Dbaction action) {
+<span class="nc" id="L72">		this.action = action;</span>
+<span class="nc" id="L73">	}</span>
+	public Dbtrigger getTrigger() {
+<span class="nc" id="L75">		return trigger;</span>
+	}
+	public void setTrigger(Dbtrigger trigger) {
+<span class="nc" id="L78">		this.trigger = trigger;</span>
+<span class="nc" id="L79">	}</span>
+	@JsonIgnore
+	@Override
+	public int hashCode() {
+<span class="nc" id="L83">		final int prime = 31;</span>
+<span class="nc" id="L84">		int result = 1;</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">		result = prime * result + ((URL == null) ? 0 : URL.hashCode());</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">		result = prime * result + ((value == null) ? 0 : value.hashCode());</span>
+<span class="nc" id="L87">		return result;</span>
+	}
+	@JsonIgnore
+	@Override
+	public boolean equals(Object obj) {
+<span class="nc bnc" id="L92" title="All 2 branches missed.">		if (this == obj)</span>
+<span class="nc" id="L93">			return true;</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">		if (obj == null)</span>
+<span class="nc" id="L95">			return false;</span>
+<span class="nc bnc" id="L96" title="All 2 branches missed.">		if (getClass() != obj.getClass())</span>
+<span class="nc" id="L97">			return false;</span>
+<span class="nc" id="L98">		Detail other = (Detail) obj;</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">		if (URL == null) {</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">			if (other.URL != null)</span>
+<span class="nc" id="L101">				return false;</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">		} else if (!URL.equals(other.URL))</span>
+<span class="nc" id="L103">			return false;</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">		if (value == null) {</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">			if (other.value != null)</span>
+<span class="nc" id="L106">				return false;</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">		} else if (!value.equals(other.value))</span>
+<span class="nc" id="L108">			return false;</span>
+<span class="nc" id="L109">		return true;</span>
+	}
+	@JsonIgnore
+	@Override
+	public String toString() {
+<span class="nc" id="L114">		return &quot;Detail [name=&quot; + name + &quot;, value=&quot; + value + &quot;]&quot;;</span>
+	}
+		
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

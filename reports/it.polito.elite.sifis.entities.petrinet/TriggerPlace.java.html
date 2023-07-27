@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TriggerPlace.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sifis</a> &gt; <a href="index.source.html" class="el_package">it.polito.elite.sifis.entities.petrinet</a> &gt; <span class="el_source">TriggerPlace.java</span></div><h1>TriggerPlace.java</h1><pre class="source lang-java linenums">package it.polito.elite.sifis.entities.petrinet;
+
+import it.polito.elite.sifis.entities.owl.Trigger;
+
+public class TriggerPlace extends Place{
+
+	private Trigger trigger;
+	
+	public TriggerPlace(PetriNet net, Trigger trigger) {
+<span class="nc" id="L10">		super(net);</span>
+<span class="nc" id="L11">		this.setTrigger(trigger);</span>
+<span class="nc" id="L12">	}</span>
+
+	public TriggerPlace(PetriNet net, String id, Trigger trigger) {
+<span class="nc" id="L15">    	super(net, id);</span>
+<span class="nc" id="L16">    	this.setTrigger(trigger);</span>
+<span class="nc" id="L17">    }</span>
+
+	public Trigger getTrigger() {
+<span class="nc" id="L20">		return trigger;</span>
+	}
+
+	public void setTrigger(Trigger trigger) {
+<span class="nc" id="L24">		this.trigger = trigger;</span>
+<span class="nc" id="L25">	}</span>
+	
+	
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

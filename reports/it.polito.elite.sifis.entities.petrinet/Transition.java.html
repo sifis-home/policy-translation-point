@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Transition.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sifis</a> &gt; <a href="index.source.html" class="el_package">it.polito.elite.sifis.entities.petrinet</a> &gt; <span class="el_source">Transition.java</span></div><h1>Transition.java</h1><pre class="source lang-java linenums">package it.polito.elite.sifis.entities.petrinet;
+
+import java.util.Iterator;
+
+public class Transition extends NetObject implements Inscription {
+
+<span class="nc" id="L7">    private String guardText = &quot;return true;&quot;;</span>
+    /** Global clock when the transition fires.*/
+    private long globalClock;
+    
+    /** Petri Net pointer **/
+    private PetriNet net;
+
+<span class="nc" id="L14">    public Transition(PetriNet net) {</span>
+<span class="nc" id="L15">    	this.net = net;</span>
+<span class="nc" id="L16">        this.id = &quot;t&quot; + this.id;</span>
+<span class="nc" id="L17">    }</span>
+
+<span class="nc" id="L19">    public Transition(PetriNet net, String id) {</span>
+<span class="nc" id="L20">    	this.net = net;</span>
+<span class="nc" id="L21">    	this.id = id;</span>
+<span class="nc" id="L22">    }</span>
+
+<span class="nc" id="L24">    public Transition(PetriNet net, String id, String guardText) {</span>
+<span class="nc" id="L25">    	this.net = net;</span>
+<span class="nc" id="L26">        this.id = id;</span>
+<span class="nc" id="L27">        this.guardText = guardText;</span>
+<span class="nc" id="L28">    }</span>
+
+    /** Fires a transition. */
+    public void fire(long globalClock) {
+<span class="nc" id="L32">        this.globalClock = globalClock;</span>
+
+        //remove all tokens from places
+<span class="nc" id="L35">        Iterator&lt;InputArc&gt; itIN = this.net.getInputArcs().iterator();</span>
+<span class="nc bnc" id="L36" title="All 2 branches missed.">        while (itIN.hasNext()) {</span>
+<span class="nc" id="L37">            InputArc arc = (InputArc) itIN.next();</span>
+<span class="nc bnc" id="L38" title="All 2 branches missed.">            if (arc.getTransition().getId().equals(getId())) {</span>
+<span class="nc" id="L39">                arc.getPlace().removeTokens(arc.execute());</span>
+<span class="nc" id="L40">                System.out.println(&quot;- &quot; + arc.getExecuteText());</span>
+            }
+<span class="nc" id="L42">        }</span>
+
+<span class="nc bnc" id="L44" title="All 2 branches missed.">        if (!this.getLabel().equals(this.getId())) {</span>
+<span class="nc" id="L45">        	System.out.println(this.getLabel() + &quot; (&quot; + this.getId() + &quot;) fired!\n&quot;);</span>
+        } else {
+<span class="nc" id="L47">        	System.out.println(this.getId() + &quot; fired.\n&quot;);</span>
+        }
+        
+        //create all tokens to output places
+<span class="nc" id="L51">        Iterator&lt;OutputArc&gt; itOUT = this.net.getOutputArcs().iterator();</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">        while (itOUT.hasNext()) {</span>
+<span class="nc" id="L53">            OutputArc arc = (OutputArc) itOUT.next();</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">            if (arc.getTransition().getId().equals(getId())) {</span>
+<span class="nc" id="L55">                TokenSet tokenSet = arc.execute();</span>
+<span class="nc" id="L56">                tokenSet.incrementTime(globalClock);// set time of all new tokens of the tokenSet</span>
+<span class="nc" id="L57">                arc.getPlace().addToken(tokenSet);</span>
+<span class="nc" id="L58">                System.out.println(&quot;+ &quot; + arc.getExecuteText() + &quot;\n&quot;);</span>
+            }
+<span class="nc" id="L60">        }</span>
+<span class="nc" id="L61">        System.out.println(&quot;----------------------------\n&quot;);</span>
+
+<span class="nc" id="L63">    }</span>
+
+    public boolean enabled(long time) {
+        // transition guard evaluation
+<span class="nc" id="L67">        boolean enabled = evaluate();</span>
+
+        // input arc guards
+<span class="nc bnc" id="L70" title="All 4 branches missed.">        if (enabled &amp;&amp; !this.net.getInputArcs().isEmpty()) {</span>
+<span class="nc" id="L71">            Iterator&lt;InputArc&gt; it = this.net.getInputArcs().iterator();</span>
+<span class="nc bnc" id="L72" title="All 4 branches missed.">            while (enabled &amp;&amp; it.hasNext()) {</span>
+<span class="nc" id="L73">                InputArc arc = (InputArc) it.next();</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">                if (arc.getTransition().getId().equals(getId())) {</span>
+<span class="nc" id="L75">                    TokenSet tokensList = arc.getPlace().getTokens();</span>
+<span class="nc" id="L76">                    enabled = tokensList.containsTime(time);</span>
+                    // check arc's evaluation expression
+<span class="nc" id="L78">                    enabled = enabled &amp; arc.evaluate();</span>
+                }
+<span class="nc" id="L80">            }</span>
+        }
+
+        // check output arc place capacity restriction
+<span class="nc bnc" id="L84" title="All 4 branches missed.">        if (enabled &amp;&amp; this.net.getOutputArcs().isEmpty()) {</span>
+<span class="nc" id="L85">            Iterator&lt;OutputArc&gt; it = this.net.getOutputArcs().iterator();</span>
+<span class="nc bnc" id="L86" title="All 4 branches missed.">            while (enabled &amp;&amp; it.hasNext()) {</span>
+<span class="nc" id="L87">                OutputArc arc = (OutputArc) it.next();</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">                if (arc.getTransition().getId().equals(getId())) {</span>
+<span class="nc" id="L89">                    TokenSet tokensList = arc.getPlace().getTokens();</span>
+                    // check if places have capacity limit
+<span class="nc bnc" id="L91" title="All 2 branches missed.">                    if (arc.getPlace().getCapacity() != 0) {</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">                        enabled = enabled &amp; arc.getPlace().getCapacity() &gt; tokensList.size();</span>
+                    }
+                }
+<span class="nc" id="L95">            }</span>
+        }
+
+<span class="nc" id="L98">        return enabled;</span>
+    }
+
+    public boolean evaluate() {
+<span class="nc" id="L102">        return true;</span>
+    }
+
+    public TokenSet execute() {
+<span class="nc" id="L106">        throw new UnsupportedOperationException(&quot;Not supported yet.&quot;);</span>
+    }
+
+    public TokenSet getTokenSet() {
+<span class="nc" id="L110">        throw new UnsupportedOperationException(&quot;Not supported yet.&quot;);</span>
+    }
+
+    /**
+     * @return the inscriptionText
+     */
+    public String getGuardText() {
+<span class="nc" id="L117">        return guardText;</span>
+    }
+
+    /**
+     * @param inscriptionText the inscriptionText to set
+     */
+    public void setGuardText(String guardText) {
+<span class="nc" id="L124">        this.guardText = guardText;</span>
+<span class="nc" id="L125">    }</span>
+
+    /**
+     * @return the globalClock
+     */
+    public long getGlobalClock() {
+<span class="nc" id="L131">        return globalClock;</span>
+    }
+
+	public PetriNet getNet() {
+<span class="nc" id="L135">		return net;</span>
+	}
+
+	public void setNet(PetriNet net) {
+<span class="nc" id="L139">		this.net = net;</span>
+<span class="nc" id="L140">	}</span>
+    
+    
+}
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

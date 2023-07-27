@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InputArc.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sifis</a> &gt; <a href="index.source.html" class="el_package">it.polito.elite.sifis.entities.petrinet</a> &gt; <span class="el_source">InputArc.java</span></div><h1>InputArc.java</h1><pre class="source lang-java linenums">package it.polito.elite.sifis.entities.petrinet;
+
+import java.util.Iterator;
+
+public class InputArc extends Arc implements Inscription {
+
+    /** Text string that represents the expression this arc will evaluate by default. */
+<span class="nc" id="L8">    private String evaluateText = &quot;getTokenSet().size()&gt;0&quot;;</span>
+    /** Text string that represents the expression this arc will execute by default. */
+<span class="nc" id="L10">    private String executeText = &quot;1&quot;;</span>
+
+    /** Petri Net pointer **/
+    private PetriNet net;
+    
+    /** Constructor to create an input arc. */
+<span class="nc" id="L16">    public InputArc(PetriNet net, Place place, Transition transition) {</span>
+<span class="nc" id="L17">    	this.net = net;</span>
+<span class="nc" id="L18">        this.id = &quot;i&quot; + this.id;</span>
+<span class="nc" id="L19">        this.place = place;</span>
+<span class="nc" id="L20">        this.transition = transition;</span>
+<span class="nc" id="L21">    }</span>
+
+    /** Constructor to create a new input arc with specific attributes. */
+<span class="nc" id="L24">    public InputArc(PetriNet net, String id, Place place, Transition transition, String action) {</span>
+<span class="nc" id="L25">    	this.net = net;</span>
+<span class="nc" id="L26">    	this.id = id;</span>
+<span class="nc" id="L27">        this.place = place;</span>
+<span class="nc" id="L28">        this.transition = transition;</span>
+<span class="nc" id="L29">        this.executeText = action;</span>
+<span class="nc" id="L30">    }</span>
+
+    /** Default method that is evaluated to check if the arc is enabled. */
+    public boolean evaluate() {
+<span class="nc bnc" id="L34" title="All 2 branches missed.">        return getTokenSet().size() &gt; 0;</span>
+    }
+
+    /** Default method that is executed when a transition fires. */
+    public TokenSet execute() {
+<span class="nc" id="L39">        return new TokenSet(executeText);</span>
+    }
+
+    /** Returns the TokenSet of the place this arc is connected*/
+    public TokenSet getTokenSet() {
+<span class="nc" id="L44">        return this.getPlace().getTokens();</span>
+    }
+
+    /** Given a set of timed tokens it returns a token whose
+     * timestamp value is less or equal than the current simulation
+     * global clock */
+    public Token removeTimedToken(TokenSet tokenSet) {
+<span class="nc" id="L51">        Iterator it = tokenSet.iterator();</span>
+<span class="nc" id="L52">        Token token = null;</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">        while (it.hasNext()) {</span>
+<span class="nc" id="L54">            Token i = (Token) it.next();</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">            if (i.getTimestamp() &lt;= transition.getGlobalClock()) {</span>
+<span class="nc" id="L56">                token = i;</span>
+            }
+<span class="nc" id="L58">        }</span>
+<span class="nc" id="L59">        return token;</span>
+    }
+
+    /**
+     * @return the evaluateText
+     */
+    public String getEvaluateText() {
+<span class="nc" id="L66">        return evaluateText;</span>
+    }
+
+    /**
+     * @param evaluateText the evaluateText to set
+     */
+    public void setEvaluateText(String evaluateText) {
+<span class="nc" id="L73">        this.evaluateText = evaluateText;</span>
+<span class="nc" id="L74">    }</span>
+
+    /**
+     * @return the executeText
+     */
+    public String getExecuteText() {
+<span class="nc" id="L80">        return executeText;</span>
+    }
+
+    /**
+     * @param executeText the executeText to set
+     */
+    public void setExecuteText(String executeText) {
+<span class="nc" id="L87">        this.executeText = executeText;</span>
+<span class="nc" id="L88">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SecurityConfig.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sifis</a> &gt; <a href="index.source.html" class="el_package">it.polito.elite.sifis</a> &gt; <span class="el_source">SecurityConfig.java</span></div><h1>SecurityConfig.java</h1><pre class="source lang-java linenums">package it.polito.elite.sifis;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+@EnableWebSecurity
+@Configuration
+<span class="fc" id="L22">public class SecurityConfig extends WebSecurityConfigurerAdapter{</span>
+	
+	//Autowired
+	//private BCryptPasswordEncoder bCryptPasswordEncoder;
+	
+	@Autowired
+	private UserDetailsService customUserDetailsService;
+	
+	@Override
+	protected void configure(AuthenticationManagerBuilder auth)
+			throws Exception {
+<span class="fc" id="L33">		auth.authenticationProvider(authenticationProvider());</span>
+<span class="fc" id="L34">	}</span>
+	
+	@Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+<span class="fc" id="L38">        final DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();</span>
+<span class="fc" id="L39">        authProvider.setUserDetailsService(customUserDetailsService);</span>
+<span class="fc" id="L40">        authProvider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());</span>
+        //authProvider.setPasswordEncoder(bCryptPasswordEncoder);
+<span class="fc" id="L42">        return authProvider;</span>
+    }
+	
+	@Override
+	public void configure(WebSecurity web) throws Exception {
+<span class="fc" id="L47">	    web</span>
+<span class="fc" id="L48">	       .ignoring()</span>
+<span class="fc" id="L49">	       .antMatchers(&quot;/assets/js/**&quot;, &quot;/assets/css/**&quot;, &quot;/assets/images/**&quot;);</span>
+<span class="fc" id="L50">	}</span>
+	
+	
+	
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+<span class="fc" id="L56">		http</span>
+<span class="fc" id="L57">			.httpBasic().and()</span>
+<span class="fc" id="L58">			.authorizeRequests()</span>
+<span class="fc" id="L59">				.antMatchers(&quot;/registration&quot;, &quot;/login&quot;,&quot;/test&quot;).permitAll()</span>
+<span class="fc" id="L60">				.antMatchers(HttpMethod.GET, &quot;/index.html&quot;, &quot;/home.html&quot;, &quot;/login.html&quot;, &quot;/&quot;, &quot;/home&quot;).permitAll()</span>
+<span class="fc" id="L61">			.and()</span>
+<span class="fc" id="L62">				.logout().logoutRequestMatcher(new AntPathRequestMatcher(&quot;/logout&quot;)).deleteCookies(&quot;JSESSIONID&quot;).invalidateHttpSession(false) </span>
+<span class="fc" id="L63">				.logoutSuccessHandler(new MyLogoutSuccessHandler())</span>
+<span class="fc" id="L64">                .addLogoutHandler(new MyLogoutHandler())</span>
+<span class="fc" id="L65">                .logoutSuccessUrl(&quot;/login&quot;)</span>
+<span class="fc" id="L66">			.and().csrf().disable();</span>
+			
+<span class="fc" id="L68">		http.cors();</span>
+<span class="fc" id="L69">	}</span>
+	
+	
+	
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

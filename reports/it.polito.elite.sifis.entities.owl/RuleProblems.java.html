@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RuleProblems.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sifis</a> &gt; <a href="index.source.html" class="el_package">it.polito.elite.sifis.entities.owl</a> &gt; <span class="el_source">RuleProblems.java</span></div><h1>RuleProblems.java</h1><pre class="source lang-java linenums">package it.polito.elite.sifis.entities.owl;
+
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+<span class="nc" id="L10">public class RuleProblems {</span>
+	private Rule rule;
+	private Set&lt;List&lt;Rule&gt;&gt; loops;
+	private Set&lt;List&lt;Rule&gt;&gt; redundantRules;
+	private Set&lt;List&lt;Rule&gt;&gt; inconsistentRules;
+	private List&lt;Rule&gt; executedRules;
+	private Trigger startTrigger;
+	
+	@JsonIgnore
+	public void addLoop(List&lt;Rule&gt; rules){
+<span class="nc bnc" id="L20" title="All 2 branches missed.">		if(loops == null) loops = new HashSet&lt;List&lt;Rule&gt;&gt;();</span>
+<span class="nc" id="L21">		loops.add(rules);</span>
+<span class="nc" id="L22">	}</span>
+	@JsonIgnore
+	public void addRedundantRules(List&lt;Rule&gt; rules){
+<span class="nc bnc" id="L25" title="All 2 branches missed.">		if(redundantRules == null) redundantRules = new HashSet&lt;List&lt;Rule&gt;&gt;();</span>
+<span class="nc" id="L26">		redundantRules.add(rules);</span>
+<span class="nc" id="L27">	}</span>
+
+	@JsonIgnore
+	public void addInconsistentRules(List&lt;Rule&gt; rules){
+<span class="nc bnc" id="L31" title="All 2 branches missed.">		if(inconsistentRules == null) inconsistentRules =  new HashSet&lt;List&lt;Rule&gt;&gt;();</span>
+<span class="nc" id="L32">		inconsistentRules.add(rules);</span>
+<span class="nc" id="L33">	}</span>
+	
+	public Set&lt;List&lt;Rule&gt;&gt; getLoops() {
+<span class="nc" id="L36">		return loops;</span>
+	}
+	
+	public void setLoops(Set&lt;List&lt;Rule&gt;&gt; loops) {
+<span class="nc" id="L40">		this.loops = loops;</span>
+<span class="nc" id="L41">	}</span>
+	
+	public Set&lt;List&lt;Rule&gt;&gt; getRedundantRules() {
+<span class="nc" id="L44">		return redundantRules;</span>
+	}
+	
+	public void setRedundantRules(Set&lt;List&lt;Rule&gt;&gt; redundantRules) {
+<span class="nc" id="L48">		this.redundantRules = redundantRules;</span>
+<span class="nc" id="L49">	}</span>
+	
+	public Set&lt;List&lt;Rule&gt;&gt; getInconsistentRules() {
+<span class="nc" id="L52">		return inconsistentRules;</span>
+	}
+	
+	public void setInconsistentRules(Set&lt;List&lt;Rule&gt;&gt; inconsistentRules) {
+<span class="nc" id="L56">		this.inconsistentRules = inconsistentRules;</span>
+<span class="nc" id="L57">	}</span>
+	
+	public Rule getRule() {
+<span class="nc" id="L60">		return rule;</span>
+	}
+	
+	public void setRule(Rule rule) {
+<span class="nc" id="L64">		this.rule = rule;</span>
+<span class="nc" id="L65">	}</span>
+	@JsonIgnore
+	public boolean containsInconsistency(List&lt;Rule&gt; inconsistent) {
+<span class="nc bnc" id="L68" title="All 4 branches missed.">		if(this.inconsistentRules == null || this.inconsistentRules.size() == 0)</span>
+<span class="nc" id="L69">			return false;</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">		for(List&lt;Rule&gt; inconsistency : this.inconsistentRules){</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">			if(inconsistency.containsAll(inconsistent))</span>
+<span class="nc" id="L72">				return true;</span>
+<span class="nc" id="L73">		}</span>
+
+<span class="nc" id="L75">		return false;</span>
+	}
+	@JsonIgnore
+	public boolean containsRedundancy(List&lt;Rule&gt; redundant) {
+<span class="nc bnc" id="L79" title="All 4 branches missed.">		if(this.redundantRules == null || this.redundantRules.size() == 0)</span>
+<span class="nc" id="L80">			return false;</span>
+
+<span class="nc bnc" id="L82" title="All 2 branches missed.">		for(List&lt;Rule&gt; redundancy : this.redundantRules){</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">			if(redundancy.containsAll(redundant))</span>
+<span class="nc" id="L84">				return true;</span>
+<span class="nc" id="L85">		}</span>
+
+<span class="nc" id="L87">		return false;</span>
+	}
+	public List&lt;Rule&gt; getExecutedRules() {
+<span class="nc" id="L90">		return executedRules;</span>
+	}
+	public void setExecutedRules(List&lt;Rule&gt; executedRules) {
+<span class="nc" id="L93">		this.executedRules = executedRules;</span>
+<span class="nc" id="L94">	}</span>
+	
+	@JsonIgnore
+	public void addExecutedRule(Rule rule){
+<span class="nc bnc" id="L98" title="All 2 branches missed.">		if(this.executedRules == null) this.executedRules = new LinkedList&lt;Rule&gt;();</span>
+<span class="nc" id="L99">		this.executedRules.add(rule);</span>
+<span class="nc" id="L100">	}</span>
+	
+	public Trigger getStartTrigger() {
+<span class="nc" id="L103">		return startTrigger;</span>
+	}
+	public void setStartTrigger(Trigger startTrigger) {
+<span class="nc" id="L106">		this.startTrigger = startTrigger;</span>
+<span class="nc" id="L107">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

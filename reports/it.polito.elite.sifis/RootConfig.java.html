@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RootConfig.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sifis</a> &gt; <a href="index.source.html" class="el_package">it.polito.elite.sifis</a> &gt; <span class="el_source">RootConfig.java</span></div><h1>RootConfig.java</h1><pre class="source lang-java linenums">package it.polito.elite.sifis;
+
+import java.io.IOException;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import it.polito.elite.sifis.services.CustomUserDetailsService;
+import it.polito.elite.sifis.services.DBService;
+import it.polito.elite.sifis.services.DBServiceImpl;
+import it.polito.elite.sifis.services.DHTService;
+import it.polito.elite.sifis.services.DHTServiceImpl;
+import it.polito.elite.sifis.services.OWLService;
+import it.polito.elite.sifis.services.OWLServiceImpl;
+import it.polito.elite.sifis.services.PetriNetService;
+import it.polito.elite.sifis.services.PetriNetServiceImpl;
+import it.polito.elite.sifis.services.UserService;
+import it.polito.elite.sifis.services.UserServiceImpl;
+import it.polito.elite.sifis.services.XACMLService;
+import it.polito.elite.sifis.services.XACMLServiceImpl;
+
+
+@Configuration
+<span class="fc" id="L26">public class RootConfig {</span>
+	
+
+	@Bean
+	public OWLService MyOWLService() throws OWLOntologyCreationException, IOException{
+<span class="fc" id="L31">		return new OWLServiceImpl();</span>
+	}
+	
+	@Bean
+	public UserService MyUserService() {
+<span class="fc" id="L36">		return new UserServiceImpl();</span>
+	}
+	
+	@Bean
+	public DBService MyDBService() {
+<span class="fc" id="L41">		return new DBServiceImpl();</span>
+	}
+	
+	@Bean
+	public XACMLService MyXACMLService() {
+<span class="fc" id="L46">		return new XACMLServiceImpl();</span>
+	}
+	
+	@Bean
+	public DHTService MyDHTService() {
+<span class="fc" id="L51">		return new DHTServiceImpl();</span>
+	}
+	
+	@Bean
+	public BCryptPasswordEncoder passwordEncoder() {
+<span class="fc" id="L56">		BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(12);</span>
+<span class="fc" id="L57">		return bCryptPasswordEncoder;</span>
+	}
+	
+	@Bean
+	public UserDetailsService userDetailService() {
+<span class="fc" id="L62">		return new CustomUserDetailsService();</span>
+	}
+	
+	@Bean
+	public PetriNetService petriNetService() {
+<span class="fc" id="L67">		return new PetriNetServiceImpl();</span>
+	}
+	
+	
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

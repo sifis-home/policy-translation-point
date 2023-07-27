@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Dbentity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sifis</a> &gt; <a href="index.source.html" class="el_package">it.polito.elite.sifis.entities.db</a> &gt; <span class="el_source">Dbentity.java</span></div><h1>Dbentity.java</h1><pre class="source lang-java linenums">package it.polito.elite.sifis.entities.db;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = &quot;dbentity&quot;)
+<span class="fc" id="L14">public class Dbentity {</span>
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	Long id;
+	String url;
+	
+	@JoinColumn(name = &quot;user_id&quot;)
+	@ManyToOne(cascade = CascadeType.MERGE)
+	User user;
+	
+	public User getUser() {
+<span class="nc" id="L25">		return user;</span>
+	}
+	public void setUser(User user) {
+<span class="nc" id="L28">		this.user = user;</span>
+<span class="nc" id="L29">	}</span>
+	public Long getId() {
+<span class="nc" id="L31">		return id;</span>
+	}
+	public void setId(Long id) {
+<span class="nc" id="L34">		this.id = id;</span>
+<span class="nc" id="L35">	}</span>
+	public String getUrl() {
+<span class="nc" id="L37">		return url;</span>
+	}
+	public void setUrl(String url) {
+<span class="nc" id="L40">		this.url = url;</span>
+<span class="nc" id="L41">	}</span>
+	
+	
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

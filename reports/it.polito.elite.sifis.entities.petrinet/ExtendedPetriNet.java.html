@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExtendedPetriNet.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sifis</a> &gt; <a href="index.source.html" class="el_package">it.polito.elite.sifis.entities.petrinet</a> &gt; <span class="el_source">ExtendedPetriNet.java</span></div><h1>ExtendedPetriNet.java</h1><pre class="source lang-java linenums">package it.polito.elite.sifis.entities.petrinet;
+
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+import org.jgrapht.DirectedGraph;
+import org.jgrapht.alg.ConnectivityInspector;
+import org.jgrapht.alg.CycleDetector;
+import org.jgrapht.alg.cycle.DirectedSimpleCycles;
+import org.jgrapht.alg.cycle.HawickJamesSimpleCycles;
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+
+import it.polito.elite.sifis.entities.owl.Action;
+import it.polito.elite.sifis.entities.owl.Rule;
+import it.polito.elite.sifis.entities.owl.Trigger;
+
+
+public class ExtendedPetriNet extends PetriNet{
+	
+	private HashMap&lt;Trigger,TriggerPlace&gt; triggerPlaces;
+	private HashMap&lt;Action,ActionPlace&gt; actionPlaces;
+	private DirectedGraph&lt;Place,DefaultEdge&gt; graph;
+	
+	public ExtendedPetriNet(){
+<span class="nc" id="L30">		super();</span>
+<span class="nc" id="L31">		triggerPlaces = new HashMap&lt;Trigger,TriggerPlace&gt;();</span>
+<span class="nc" id="L32">		actionPlaces = new HashMap&lt;Action,ActionPlace&gt;();</span>
+<span class="nc" id="L33">		graph = new DefaultDirectedGraph&lt;&gt;(DefaultEdge.class);</span>
+<span class="nc" id="L34">	}</span>
+	
+	public HashMap&lt;Trigger,TriggerPlace&gt; getTriggerPlaces() {
+<span class="nc" id="L37">		return triggerPlaces;</span>
+	}
+	public void setTriggerPlaces(HashMap&lt;Trigger,TriggerPlace&gt; triggerPlaces) {
+<span class="nc" id="L40">		this.triggerPlaces = triggerPlaces;</span>
+<span class="nc" id="L41">	}</span>
+	public HashMap&lt;Action,ActionPlace&gt; getActionPlaces() {
+<span class="nc" id="L43">		return actionPlaces;</span>
+	}
+	public void setActionPlaces(HashMap&lt;Action,ActionPlace&gt; actionPlaces) {
+<span class="nc" id="L46">		this.actionPlaces = actionPlaces;</span>
+<span class="nc" id="L47">	}</span>
+	
+	public void addTriggerPlace(TriggerPlace place){
+<span class="nc bnc" id="L50" title="All 2 branches missed.">		if(!this.triggerPlaces.containsKey(place.getTrigger())){</span>
+<span class="nc" id="L51">			this.triggerPlaces.put(place.getTrigger(), place);</span>
+		}
+<span class="nc" id="L53">	}</span>
+	
+	public void addActionPlace(ActionPlace place){
+<span class="nc bnc" id="L56" title="All 2 branches missed.">		if(!this.actionPlaces.containsKey(place.getAction())){</span>
+<span class="nc" id="L57">			this.actionPlaces.put(place.getAction(), place);</span>
+		}
+<span class="nc" id="L59">	}</span>
+	
+	public ActionPlace getActionPlace(Action action){
+<span class="nc" id="L62">		return this.actionPlaces.get(action);</span>
+	}
+	
+	public TriggerPlace getTriggerPlace(Trigger trigger){
+<span class="nc" id="L66">		return this.triggerPlaces.get(trigger);</span>
+	}
+	
+	public void addGraphVertex(Place p){
+<span class="nc" id="L70">		this.graph.addVertex(p);</span>
+<span class="nc" id="L71">	}</span>
+	
+	public void addGraphEdge(Place p1, Place p2){
+<span class="nc" id="L74">		this.graph.addEdge(p1, p2);</span>
+<span class="nc" id="L75">	}</span>
+	
+	public DirectedGraph&lt;Place,DefaultEdge&gt; getGraph(){
+<span class="nc" id="L78">		return this.graph;</span>
+	}
+	
+	public void removeAllTokens(){
+<span class="nc bnc" id="L82" title="All 2 branches missed.">		for(Place p : this.getPlaces()){</span>
+			try{
+<span class="nc" id="L84">				TokenSet toRemove = new TokenSet(p.getTokens());</span>
+<span class="nc" id="L85">				p.removeTokens(toRemove);</span>
+			}
+<span class="nc" id="L87">			catch(Throwable t){t.printStackTrace();}</span>
+<span class="nc" id="L88">		}</span>
+<span class="nc" id="L89">	}</span>
+	
+	
+	public void simulate() throws OWLOntologyCreationException {
+		
+<span class="nc" id="L94">		Simulation simulator = new Simulation(this, false);</span>
+<span class="nc" id="L95">		simulator.start();</span>
+		try {
+<span class="nc" id="L97">			Thread.sleep(1000);</span>
+<span class="nc" id="L98">			simulator.setStop(true);</span>
+<span class="nc" id="L99">		} catch (InterruptedException e) {</span>
+<span class="nc" id="L100">			e.printStackTrace();</span>
+<span class="nc" id="L101">		}</span>
+		
+<span class="nc bnc" id="L103" title="All 2 branches missed.">		if(!simulator.isFinished()){</span>
+<span class="nc" id="L104">			System.out.println(&quot;Possible Loops&quot;);</span>
+		}
+		
+<span class="nc" id="L107">	}</span>
+	
+	public Trigger getRoot(Rule rule){
+		//get the connected component in the graph that includes the rule
+<span class="nc" id="L111">		ConnectivityInspector&lt;Place, DefaultEdge&gt; inspector = new ConnectivityInspector&lt;&gt;(this.graph);</span>
+<span class="nc" id="L112">		TriggerPlace tp = this.triggerPlaces.get(rule.getTrigger());</span>
+<span class="nc" id="L113">		Set&lt;Place&gt; connectedComponent = inspector.connectedSetOf(tp);</span>
+		//get the root of the connected component
+<span class="nc" id="L115">		Place root = null;</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">		for(Place p : connectedComponent){</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">			if(this.graph.inDegreeOf(p) == 0){</span>
+<span class="nc" id="L118">				root = p;</span>
+<span class="nc" id="L119">				break;</span>
+			}
+<span class="nc" id="L121">		}</span>
+		//insert a token in the root and simulate the net
+<span class="nc bnc" id="L123" title="All 4 branches missed.">		if(root != null &amp;&amp; root instanceof TriggerPlace)</span>
+<span class="nc" id="L124">			return ((TriggerPlace)root).getTrigger();</span>
+		else
+<span class="nc" id="L126">			return null;</span>
+	}
+
+	public Rule[] getSimualtedRules(Trigger trigger) throws OWLOntologyCreationException {
+<span class="nc" id="L130">		List&lt;Rule&gt; rules = new LinkedList&lt;Rule&gt;();</span>
+<span class="nc" id="L131">		this.removeAllTokens();</span>
+<span class="nc" id="L132">		TriggerPlace tp = this.triggerPlaces.get(trigger);</span>
+		Token token;
+<span class="nc" id="L134">		token = new Token(trigger);</span>
+<span class="nc" id="L135">		token.setInitialMarkingtExpression(&quot;1&quot;);</span>
+<span class="nc" id="L136">		tp.addToken(new TokenSet(token));</span>
+		
+<span class="nc" id="L138">		Simulation simulator = new Simulation(this, false);</span>
+<span class="nc" id="L139">		simulator.start();</span>
+		try {
+<span class="nc" id="L141">			Thread.sleep(1000);</span>
+<span class="nc" id="L142">			simulator.setStop(true);</span>
+<span class="nc" id="L143">		} catch (InterruptedException e) {</span>
+<span class="nc" id="L144">			e.printStackTrace();</span>
+<span class="nc" id="L145">		}</span>
+			
+<span class="nc bnc" id="L147" title="All 2 branches missed.">		if(!simulator.isFinished()){</span>
+<span class="nc" id="L148">			System.out.println(&quot;Possible Loops&quot;);</span>
+		}
+<span class="nc" id="L150">		rules.addAll(simulator.getSimulatedRules());</span>
+		
+<span class="nc" id="L152">		Rule[] rulesArray = new Rule[rules.size()];</span>
+<span class="nc" id="L153">		rulesArray = rules.toArray(rulesArray);</span>
+<span class="nc" id="L154">		return rulesArray;</span>
+	}
+
+	
+	public List&lt;List&lt;Place&gt;&gt; getCycle(Rule rule, List&lt;Rule&gt; rules) {
+<span class="nc" id="L159">		DirectedSimpleCycles&lt;Place, DefaultEdge&gt; cycleDetector = new HawickJamesSimpleCycles&lt;Place, DefaultEdge&gt;(this.graph);</span>
+<span class="nc" id="L160">		List&lt;List&lt;Place&gt;&gt; cycles = cycleDetector.findSimpleCycles();</span>
+<span class="nc" id="L161">		return cycles;</span>
+	}
+
+	
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

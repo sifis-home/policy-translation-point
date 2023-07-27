@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SifisController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sifis</a> &gt; <a href="index.source.html" class="el_package">it.polito.elite.sifis.controllers</a> &gt; <span class="el_source">SifisController.java</span></div><h1>SifisController.java</h1><pre class="source lang-java linenums">package it.polito.elite.sifis.controllers;
+
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.Principal;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
+import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+
+import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.json.JSONObject;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StreamUtils;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import it.polito.elite.sifis.entities.db.Dbrule;
+import it.polito.elite.sifis.entities.owl.Action;
+import it.polito.elite.sifis.entities.owl.Detail;
+import it.polito.elite.sifis.entities.owl.IoTEntity;
+import it.polito.elite.sifis.entities.owl.Rule;
+import it.polito.elite.sifis.entities.owl.RuleProblems;
+import it.polito.elite.sifis.entities.owl.Service;
+import it.polito.elite.sifis.entities.owl.Trigger;
+import it.polito.elite.sifis.entities.petrinet.ActionPlace;
+import it.polito.elite.sifis.entities.petrinet.ExtendedPetriNet;
+import it.polito.elite.sifis.entities.petrinet.Place;
+import it.polito.elite.sifis.entities.petrinet.TriggerPlace;
+import it.polito.elite.sifis.entities.xacml.PolicyType;
+import it.polito.elite.sifis.services.DBService;
+import it.polito.elite.sifis.services.DHTService;
+import it.polito.elite.sifis.services.OWLService;
+import it.polito.elite.sifis.services.PetriNetService;
+import it.polito.elite.sifis.services.UserService;
+import it.polito.elite.sifis.services.XACMLService;
+import it.polito.elite.sifis.utils.PropertyFileReader;
+
+@RestController
+@CrossOrigin(&quot;*&quot;)
+<span class="fc" id="L84">public class SifisController {</span>
+	
+<span class="fc" id="L86">	private static String configFile = &quot;config.properties&quot;;</span>
+	Properties prop;
+
+	
+	@Autowired
+	OWLService owlService;
+	
+	@Autowired
+	XACMLService xacmlService;
+	
+	@Autowired
+	DBService dbService;
+	
+	@Autowired
+	UserService userService;
+	
+	@Autowired
+	PetriNetService petriNetService;
+	
+	@Autowired
+	DHTService dhtService;
+	
+	@GetMapping(value = &quot;/sifis/triggerservice&quot;)
+	public List&lt;Service&gt; getTriggerServices() throws InterruptedException{
+<span class="nc" id="L110">		Collection&lt;Service&gt; services = owlService.getTriggerServices();</span>
+<span class="nc" id="L111">		List&lt;Service&gt; serviceList = new LinkedList&lt;Service&gt;(services);</span>
+<span class="nc" id="L112">		Collections.sort(serviceList);</span>
+<span class="nc" id="L113">		return serviceList;</span>
+	}
+	
+	@GetMapping(value = &quot;/sifis/triggerservice/{service}/triggers&quot;)
+	public List&lt;Trigger&gt; getTriggers(@PathVariable String service, Principal user) throws InterruptedException, OWLOntologyCreationException{
+<span class="nc" id="L118">		return new LinkedList&lt;Trigger&gt;(owlService.getTriggers(service, user.getName()));</span>
+	}
+	
+	@GetMapping(value = &quot;/sifis/triggerservice/{service}/triggers/{trigger}/details&quot;)
+	public List&lt;Detail&gt; getTriggerDetails(@PathVariable String service, @PathVariable String trigger, Principal user) throws OWLOntologyCreationException, InterruptedException{
+<span class="nc" id="L123">		return new LinkedList&lt;Detail&gt;(owlService.getTriggerDetails(null, service, trigger, user.getName()));</span>
+	}
+	
+	@GetMapping(value = &quot;/sifis/actionservice&quot;)
+	public List&lt;Service&gt; getActionServices() throws InterruptedException{
+<span class="nc" id="L128">		Collection&lt;Service&gt; services = owlService.getActionServices();</span>
+<span class="nc" id="L129">		List&lt;Service&gt; serviceList = new LinkedList&lt;Service&gt;(services);</span>
+<span class="nc" id="L130">		Collections.sort(serviceList);</span>
+<span class="nc" id="L131">		return serviceList;</span>
+	}
+	
+	@GetMapping(value = &quot;/sifis/actionservice/{service}/actions&quot;)
+	public List&lt;Action&gt; getActions(@PathVariable String service, Principal user) throws InterruptedException, OWLOntologyCreationException{
+<span class="nc" id="L136">		return new LinkedList&lt;Action&gt;(owlService.getActions(service, user.getName()));</span>
+	}
+	
+	@GetMapping(value = &quot;/sifis/actionservice/{service}/actions/{action}/details&quot;)
+	public List&lt;Detail&gt; getActionDetails(@PathVariable String service, @PathVariable String action, Principal user) throws OWLOntologyCreationException, InterruptedException{
+<span class="nc" id="L141">		return new LinkedList&lt;Detail&gt;(owlService.getActionDetails(null, service, action, user.getName()));</span>
+	}
+	
+	@DeleteMapping(value = &quot;/sifis/rule/{ruleId}&quot;)
+	@ResponseStatus(value = HttpStatus.OK)
+	public Long deleteRule(@PathVariable Long ruleId, Principal user){
+<span class="nc" id="L147">		dbService.deleteRule(ruleId);</span>
+<span class="nc" id="L148">		return ruleId;</span>
+	}
+	
+	@GetMapping(value = &quot;/sifis/rule&quot;)
+	public List&lt;Rule&gt; getRules(Principal user) throws OWLOntologyCreationException, InterruptedException {
+<span class="nc" id="L153">		List&lt;Rule&gt; rules = dbService.getRulesByType(&quot;sifis&quot;,user.getName());</span>
+<span class="nc" id="L154">		return rules;</span>
+	}
+	
+	@GetMapping(value = &quot;/sifis/rule/trigger&quot;)
+	public Set&lt;Trigger&gt; getDefinedTriggers(Principal user) throws OWLOntologyCreationException, InterruptedException {
+<span class="nc" id="L159">		return dbService.getDefinedTriggersByType(&quot;sifis&quot;,user.getName());</span>
+	}
+	
+	@PostMapping(value = &quot;/sifis/rule&quot;)
+	@ResponseStatus(value = HttpStatus.OK)
+	public void saveRule(@RequestBody Rule rule, Principal user) throws OWLOntologyCreationException{
+<span class="nc bnc" id="L165" title="All 2 branches missed.">		for(Detail d : rule.getAction().getDetails()){</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">			if(d.getType().equals(&quot;entity&quot;)){</span>
+<span class="nc" id="L167">				ObjectMapper mapper = new ObjectMapper();</span>
+<span class="nc" id="L168">				IoTEntity entity = mapper.convertValue(d.getValue(), IoTEntity.class);</span>
+<span class="nc" id="L169">				d.setValue(entity);</span>
+			}
+<span class="nc" id="L171">		}</span>
+		
+<span class="nc bnc" id="L173" title="All 2 branches missed.">		if(rule.getTrigger() != null) {</span>
+<span class="nc bnc" id="L174" title="All 2 branches missed.">			for(Detail d : rule.getTrigger().getDetails()){</span>
+<span class="nc bnc" id="L175" title="All 2 branches missed.">				if(d.getType().equals(&quot;entity&quot;)){</span>
+<span class="nc" id="L176">					ObjectMapper mapper = new ObjectMapper();</span>
+<span class="nc" id="L177">					IoTEntity entity = mapper.convertValue(d.getValue(), IoTEntity.class);</span>
+<span class="nc" id="L178">					d.setValue(entity);</span>
+				}
+<span class="nc" id="L180">			}</span>
+		}
+<span class="nc" id="L182">		Dbrule dbrule = dbService.saveRule(rule, &quot;sifis&quot;, user.getName());</span>
+<span class="nc" id="L183">		rule.setDbId(dbrule.getId());</span>
+<span class="nc" id="L184">	}</span>
+	
+	@PostMapping(value = &quot;/sifis/translate&quot;)
+	@ResponseStatus(value = HttpStatus.OK)
+	public void translate(HttpServletResponse response, @RequestBody Rule rule, Principal user) throws OWLOntologyCreationException, InterruptedException, JAXBException, IOException {
+<span class="nc" id="L189">		prop = PropertyFileReader.loadProperties(configFile);</span>
+
+<span class="nc" id="L191">		ClassLoader classloader = Thread.currentThread().getContextClassLoader();</span>
+<span class="nc" id="L192">		File policyDir = new File(classloader.getResource(prop.getProperty(&quot;policiesDir&quot;)).getFile());</span>
+<span class="nc" id="L193">		FileUtils.cleanDirectory(policyDir); </span>
+		        
+
+<span class="nc" id="L196">		List&lt;PolicyType&gt; policies = xacmlService.translate(rule, user.getName());</span>
+		
+<span class="nc" id="L198">		JAXBContext jaxbContext = JAXBContext.newInstance(PolicyType.class);</span>
+<span class="nc" id="L199">		Marshaller jaxbMarshaller = jaxbContext.createMarshaller();</span>
+
+<span class="nc bnc" id="L201" title="All 2 branches missed.">		for(PolicyType policy : policies) {</span>
+<span class="nc" id="L202">			File policyFile = new File(policyDir.getAbsolutePath() + &quot;/&quot; + policy.getPolicyId()+ &quot;.xml&quot;);</span>
+<span class="nc" id="L203">		    jaxbMarshaller.marshal(policy, policyFile);</span>
+		    
+<span class="nc" id="L205">		    dhtService.publishPolicy(policyFile, policy);</span>
+
+<span class="nc" id="L207">		}</span>
+	        
+<span class="nc" id="L209">	}</span>
+	
+	@GetMapping(value = &quot;/sifis/download&quot;, produces=&quot;application/zip&quot;)
+	public ResponseEntity&lt;StreamingResponseBody&gt; download(HttpServletResponse response, Principal user) throws IOException {
+<span class="nc" id="L213">		ClassLoader classloader = Thread.currentThread().getContextClassLoader();</span>
+<span class="nc" id="L214">		File policyDir = new File(classloader.getResource(prop.getProperty(&quot;policiesDir&quot;)).getFile());</span>
+	    
+<span class="nc" id="L216">		int BUFFER_SIZE = 1024;</span>
+
+<span class="nc" id="L218">		StreamingResponseBody streamResponseBody = out -&gt; {</span>
+
+<span class="nc" id="L220">			final ZipOutputStream zipOutputStream = new ZipOutputStream(response.getOutputStream());</span>
+<span class="nc" id="L221">			ZipEntry zipEntry = null;</span>
+<span class="nc" id="L222">			InputStream inputStream = null;</span>
+
+			try {
+<span class="nc bnc" id="L225" title="All 2 branches missed.">				for (File file : policyDir.listFiles()) {</span>
+<span class="nc" id="L226">					zipEntry = new ZipEntry(file.getName());</span>
+
+<span class="nc" id="L228">					inputStream = new FileInputStream(file);</span>
+
+<span class="nc" id="L230">					zipOutputStream.putNextEntry(zipEntry);</span>
+<span class="nc" id="L231">					byte[] bytes = new byte[BUFFER_SIZE];</span>
+					int length;
+<span class="nc bnc" id="L233" title="All 2 branches missed.">					while ((length = inputStream.read(bytes)) &gt;= 0) {</span>
+<span class="nc" id="L234">						zipOutputStream.write(bytes, 0, length);</span>
+					}
+
+				}
+				// set zip size in response
+<span class="nc bnc" id="L239" title="All 2 branches missed.">				response.setContentLength((int) (zipEntry != null ? zipEntry.getSize() : 0));</span>
+<span class="nc" id="L240">			} catch (IOException e) {</span>
+			} finally {
+<span class="nc bnc" id="L242" title="All 2 branches missed.">				if (inputStream != null) {</span>
+<span class="nc" id="L243">					inputStream.close();</span>
+				}
+<span class="nc bnc" id="L245" title="All 2 branches missed.">				if (zipOutputStream != null) {</span>
+<span class="nc" id="L246">					zipOutputStream.close();</span>
+				}
+			}
+
+<span class="nc" id="L250">		};</span>
+		
+
+<span class="nc" id="L253">		response.setContentType(&quot;application/zip&quot;);</span>
+<span class="nc" id="L254">		response.setHeader(&quot;Content-Disposition&quot;, &quot;attachment; filename=policy.zip&quot;);</span>
+<span class="nc" id="L255">		response.addHeader(&quot;Pragma&quot;, &quot;no-cache&quot;);</span>
+<span class="nc" id="L256">		response.addHeader(&quot;Expires&quot;, &quot;0&quot;);</span>
+<span class="nc" id="L257">		return ResponseEntity.ok(streamResponseBody);</span>
+	}
+		
+	
+	@PostMapping(value = &quot;/sifis/check&quot;)
+	@ResponseStatus(value = HttpStatus.OK)
+	public RuleProblems checkRule(@RequestBody Rule rule, Principal user) throws OWLOntologyCreationException, InterruptedException{
+<span class="nc" id="L264">		RuleProblems ruleProblems = new RuleProblems();</span>
+		
+<span class="nc" id="L266">		List&lt;Rule&gt; rulesBefore = new ArrayList&lt;Rule&gt;();</span>
+<span class="nc" id="L267">		List&lt;Rule&gt; rulesAfter = dbService.getRulesByType(&quot;sifis&quot;, user.getName());</span>
+<span class="nc bnc" id="L268" title="All 2 branches missed.">		for (Rule r : rulesAfter) {</span>
+<span class="nc bnc" id="L269" title="All 2 branches missed.">			if(r.getDbId() != rule.getDbId()) {</span>
+<span class="nc" id="L270">				rulesBefore.add(r);</span>
+			} else {
+<span class="nc" id="L272">				ruleProblems.setRule(r);</span>
+			}
+<span class="nc" id="L274">		}</span>
+
+<span class="nc" id="L276">		ExtendedPetriNet net = (ExtendedPetriNet) petriNetService.getNet(user.getName(),rulesAfter,true);</span>
+		
+		//search for loops
+<span class="nc" id="L279">		List&lt;List&lt;Place&gt;&gt; cycles = net.getCycle(rule, rulesAfter);</span>
+		
+<span class="nc bnc" id="L281" title="All 4 branches missed.">		if(cycles != null &amp;&amp; cycles.size() &gt; 0){</span>
+			//there are cycles!
+			
+<span class="nc bnc" id="L284" title="All 2 branches missed.">			for(List&lt;Place&gt; cycle : cycles){</span>
+<span class="nc" id="L285">				List&lt;Rule&gt; loop = new LinkedList&lt;Rule&gt;();</span>
+				
+<span class="nc" id="L287">				Collections.reverse(cycle);</span>
+<span class="nc" id="L288">				Iterator&lt;Place&gt; it = cycle.iterator();</span>
+<span class="nc" id="L289">				boolean involved = false;</span>
+<span class="nc bnc" id="L290" title="All 2 branches missed.">				while(it.hasNext()){</span>
+<span class="nc" id="L291">					Rule r = new Rule();</span>
+<span class="nc" id="L292">					r.setTrigger(((TriggerPlace)it.next()).getTrigger());</span>
+<span class="nc" id="L293">					r.setAction(((ActionPlace)it.next()).getAction());</span>
+					
+<span class="nc bnc" id="L295" title="All 2 branches missed.">					for(Rule ra : rulesAfter){</span>
+<span class="nc bnc" id="L296" title="All 4 branches missed.">						if(r.getTrigger().equals(ra.getTrigger()) &amp;&amp; r.getAction().equals(ra.getAction())){</span>
+<span class="nc" id="L297">							loop.add(ra);</span>
+<span class="nc bnc" id="L298" title="All 4 branches missed.">							if(r.getTrigger().equals(rule.getTrigger()) &amp;&amp; r.getAction().equals(rule.getAction())){</span>
+<span class="nc" id="L299">								involved = true;</span>
+							}	
+						}
+<span class="nc" id="L302">					}</span>
+<span class="nc" id="L303">				}</span>
+				//Collections.reverse(loop);
+				//return the loop only if the saved rule is involved
+<span class="nc bnc" id="L306" title="All 2 branches missed.">				if(involved)</span>
+<span class="nc" id="L307">					ruleProblems.addLoop(loop);</span>
+<span class="nc" id="L308">			}</span>
+		}
+<span class="nc bnc" id="L310" title="All 2 branches missed.">		if(ruleProblems.getLoops() == null){</span>
+			//search for inconsistencies and redundancies
+		
+			Trigger startTrigger;
+<span class="nc bnc" id="L314" title="All 2 branches missed.">			if(ruleProblems.getLoops() == null)</span>
+<span class="nc" id="L315">				startTrigger = net.getRoot(rule);</span>
+			else
+<span class="nc" id="L317">				startTrigger = rule.getTrigger();</span>
+			
+<span class="nc" id="L319">			ruleProblems.setStartTrigger(startTrigger);</span>
+<span class="nc" id="L320">			Rule[] simulatedRules = net.getSimualtedRules(startTrigger);</span>
+<span class="nc" id="L321">			List&lt;Rule&gt; simulatedRulesList = Arrays.asList(simulatedRules);</span>
+<span class="nc bnc" id="L322" title="All 2 branches missed.">			if(simulatedRulesList.size() &gt; 40){</span>
+<span class="nc" id="L323">				simulatedRulesList = simulatedRulesList.subList(0, 40);</span>
+<span class="nc" id="L324">				simulatedRules = new Rule[40];</span>
+<span class="nc" id="L325">				int i = 0;</span>
+<span class="nc bnc" id="L326" title="All 2 branches missed.">				for(Rule r : simulatedRulesList)</span>
+<span class="nc" id="L327">					simulatedRules[i++] = r;</span>
+			}
+			
+			//Action ruleAction = rule.getAction();
+			
+<span class="nc bnc" id="L332" title="All 2 branches missed.">			for(int i = 0; i &lt; simulatedRules.length; i++) {</span>
+<span class="nc" id="L333">				Rule r1 = simulatedRules[i];</span>
+<span class="nc" id="L334">				Action a1 = simulatedRules[i].getAction();</span>
+<span class="nc" id="L335">				List&lt;Rule&gt; redundant = new LinkedList&lt;Rule&gt;();</span>
+<span class="nc" id="L336">				List&lt;Rule&gt; inconsistent = new LinkedList&lt;Rule&gt;();</span>
+<span class="nc" id="L337">				inconsistent.add(r1);</span>
+<span class="nc" id="L338">				redundant.add(r1);</span>
+				
+<span class="nc bnc" id="L340" title="All 4 branches missed.">				for(int j = 0; j &lt; simulatedRules.length &amp;&amp; j&lt;100; j++){</span>
+<span class="nc bnc" id="L341" title="All 2 branches missed.">					if(j!=i){</span>
+<span class="nc" id="L342">						Rule r2 = simulatedRules[j];</span>
+<span class="nc" id="L343">						Action a2 = simulatedRules[j].getAction();</span>
+						
+<span class="nc bnc" id="L345" title="All 2 branches missed.">						if(owlService.equalsML(a1,a2)){</span>
+<span class="nc" id="L346">							redundant.add(r2);</span>
+						}
+						else{
+<span class="nc" id="L349">							inconsistent.add(r2);</span>
+						}
+						
+					}
+				}
+				
+<span class="nc bnc" id="L355" title="All 6 branches missed.">				if(inconsistent != null &amp;&amp; inconsistent.size() &gt; 1 &amp;&amp; !ruleProblems.containsInconsistency(inconsistent)) ruleProblems.addInconsistentRules(inconsistent);</span>
+<span class="nc bnc" id="L356" title="All 6 branches missed.">				if(redundant != null &amp;&amp; redundant.size() &gt; 1 &amp;&amp; !ruleProblems.containsRedundancy(redundant)) ruleProblems.addRedundantRules(redundant);</span>
+<span class="nc" id="L357">				Trigger lastTrigger = simulatedRules[0].getTrigger();</span>
+<span class="nc" id="L358">				List&lt;Rule&gt; temp = new LinkedList&lt;Rule&gt;();</span>
+
+<span class="nc bnc" id="L360" title="All 2 branches missed.">				for(Rule simulatedRule : simulatedRulesList){</span>
+					
+<span class="nc bnc" id="L362" title="All 2 branches missed.">					if(simulatedRule.getTrigger().equals(lastTrigger)){</span>
+<span class="nc" id="L363">						temp.add(simulatedRule);</span>
+<span class="nc" id="L364">						continue;</span>
+					}
+<span class="nc" id="L366">					simulatedRule.setParents(petriNetService.getParents(simulatedRule, temp));</span>
+<span class="nc" id="L367">					temp.add(simulatedRule);</span>
+<span class="nc" id="L368">					lastTrigger = simulatedRule.getTrigger();</span>
+<span class="nc" id="L369">				}</span>
+				
+			
+<span class="nc" id="L372">				ruleProblems.setExecutedRules(simulatedRulesList);		</span>
+			}
+		}
+			
+		
+
+<span class="nc" id="L378">		return ruleProblems;</span>
+	}
+	
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

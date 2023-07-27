@@ -1,0 +1,1796 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OWLServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sifis</a> &gt; <a href="index.source.html" class="el_package">it.polito.elite.sifis.services</a> &gt; <span class="el_source">OWLServiceImpl.java</span></div><h1>OWLServiceImpl.java</h1><pre class="source lang-java linenums">package it.polito.elite.sifis.services;
+
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.semanticweb.HermiT.Reasoner;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.AddAxiom;
+import org.semanticweb.owlapi.model.AddImport;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLImportsDeclaration;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLOntologyStorageException;
+import org.semanticweb.owlapi.reasoner.InferenceType;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.search.EntitySearcher;
+import org.semanticweb.owlapi.util.AutoIRIMapper;
+import org.semanticweb.owlapi.util.DefaultPrefixManager;
+import org.semanticweb.owlapi.util.OWLEntityRemover;
+import org.springframework.beans.factory.annotation.Autowired;
+import it.polito.elite.sifis.entities.db.Dbentity;
+import it.polito.elite.sifis.entities.owl.Action;
+import it.polito.elite.sifis.entities.owl.Command;
+import it.polito.elite.sifis.entities.owl.Detail;
+import it.polito.elite.sifis.entities.owl.IoTEntity;
+import it.polito.elite.sifis.entities.owl.Location;
+import it.polito.elite.sifis.entities.owl.Notification;
+import it.polito.elite.sifis.entities.owl.Rule;
+import it.polito.elite.sifis.entities.owl.Service;
+import it.polito.elite.sifis.entities.owl.Technology;
+import it.polito.elite.sifis.entities.owl.Trigger;
+import it.polito.elite.sifis.utils.PropertyFileReader;
+
+
+public class OWLServiceImpl implements OWLService{
+	
+	@Autowired
+	UserService userService;
+	
+	@Autowired
+	DBService dbService;
+	
+	// default configuration file
+<span class="fc" id="L71">	private static String configFile = &quot;config.properties&quot;;</span>
+<span class="fc" id="L72">	private static Logger logger = LogManager</span>
+<span class="fc" id="L73">			.getLogger(OWLServiceImpl.class.getName());</span>
+	
+	
+	private OWLOntology baseOntology;
+<span class="fc" id="L77">	BlockingQueue&lt;OWLReasoner&gt; reasoners = new LinkedBlockingDeque&lt;&gt;();</span>
+
+	
+	private OWLOntologyManager manager;
+	private DefaultPrefixManager prefix;
+	private Map&lt;String, OWLReasoner&gt; userReasoners;
+	Properties prop;
+	
+<span class="fc" id="L85">	public OWLServiceImpl() throws IOException, OWLOntologyCreationException {</span>
+<span class="fc" id="L86">		prop = PropertyFileReader.loadProperties(configFile);</span>
+<span class="fc" id="L87">		manager = OWLManager.createOWLOntologyManager();</span>
+<span class="fc" id="L88">		this.userReasoners = new HashMap&lt;String,OWLReasoner&gt;();</span>
+<span class="pc bpc" id="L89" title="1 of 2 branches missed.">		if(this.baseOntology != null) </span>
+<span class="nc" id="L90">			manager.removeOntology(baseOntology);</span>
+		
+		//this.baseOntology = loadFromWeb(prop.getProperty(&quot;ontologyBaseEndPoint&quot;));
+<span class="fc" id="L93">		this.baseOntology = loadFromFile(prop.getProperty(&quot;ontologySifisEndPoint&quot;));</span>
+		
+<span class="fc" id="L95">		int n = Integer.valueOf(prop.getProperty(&quot;queueSize&quot;));</span>
+		
+<span class="fc bfc" id="L97" title="All 2 branches covered.">		for(int i = 0; i &lt; n; i++){</span>
+<span class="pc" id="L98">			try {reasoners.put(initHermiTReasoner(this.baseOntology));} catch (InterruptedException e) {e.printStackTrace();}</span>
+		}
+		
+		//this.reasoner = initHermiTReasoner(this.baseOntology);
+<span class="fc" id="L102">		this.prefix = new DefaultPrefixManager(null, null,baseOntology.getOntologyID().getOntologyIRI().get().toString() + &quot;#&quot;);</span>
+<span class="fc" id="L103">	    this.prefix.setPrefix(&quot;eupont:&quot;, &quot;http://elite.polito.it/ontologies/eupont.owl#&quot;);</span>
+	    //this.prefix.setPrefix(&quot;eupont-conversational&quot;, &quot;http://elite.polito.it/ontologies/eupont-conversational.owl&quot;);
+<span class="fc" id="L105">	    this.prefix.setPrefix(&quot;foaf:&quot;, &quot;http://xmlns.com/foaf/0.1/&quot;);</span>
+<span class="fc" id="L106">	    System.out.println(baseOntology.getOntologyID().getOntologyIRI().get());</span>
+<span class="fc" id="L107">	}</span>
+	
+	
+	/**
+	 * This method loads an ontology from the web
+	 * 
+	 * 
+	 * @param ontologyUrl URL of the base ontology
+	 * @return OWLOntology
+	 * @throws OWLOntologyCreationException
+	 */
+	public OWLOntology loadFromWeb(String ontologyUrl) throws OWLOntologyCreationException{
+<span class="nc" id="L119">		logger.info(&quot;Load ontology from the web at: &quot; + ontologyUrl);</span>
+<span class="nc" id="L120">		IRI ontologyIri = IRI.create(ontologyUrl);</span>
+<span class="nc" id="L121">		OWLOntology ontology =  manager.loadOntologyFromOntologyDocument(ontologyIri);</span>
+<span class="nc" id="L122">		logger.info(&quot;Ontology succesfully loaded&quot;);</span>
+<span class="nc" id="L123">		return ontology;</span>
+	}
+
+	/**
+	 * This method loads an ontology from a local file
+	 * 
+	 * @param ontologyUrl URL of the base ontology
+	 * @return OWLOntology
+	 * @throws OWLOntologyCreationException
+	 */
+	public OWLOntology loadFromFile(String ontologyUrl) throws OWLOntologyCreationException {
+<span class="fc" id="L134">		logger.info(&quot;Load ontology from file: &quot; + ontologyUrl);</span>
+
+<span class="fc" id="L136">		ClassLoader classloader = Thread.currentThread().getContextClassLoader();</span>
+<span class="fc" id="L137">		InputStream ontologyF = classloader.getResourceAsStream(prop.getProperty(&quot;ontologyDir&quot;) + ontologyUrl);		</span>
+
+<span class="fc" id="L139">		File ontologyDir = new File(classloader.getResource(prop.getProperty(&quot;ontologyDir&quot;)).getFile());</span>
+<span class="fc" id="L140">		manager.getIRIMappers().add(new AutoIRIMapper(ontologyDir, true));</span>
+		
+<span class="fc" id="L142">		OWLOntology ontology =  manager.loadOntologyFromOntologyDocument(ontologyF);</span>
+<span class="fc" id="L143">		return ontology;</span>
+	}
+	
+	/**
+	 * This method loads an ontology from a local file
+	 * 
+	 * @param ontologyUrl URL of the base ontology
+	 * @return OWLOntology
+	 * @throws OWLOntologyCreationException
+	 */
+	public OWLOntology loadFromFile(String ontologyUrl,String username) throws OWLOntologyCreationException {
+<span class="nc" id="L154">		logger.info(&quot;Load ontology from file: &quot; + ontologyUrl);</span>
+
+<span class="nc" id="L156">		ClassLoader classloader = Thread.currentThread().getContextClassLoader();</span>
+<span class="nc" id="L157">		InputStream ontologyF = classloader.getResourceAsStream(prop.getProperty(&quot;ontologyDir&quot;) + ontologyUrl);</span>
+
+<span class="nc" id="L159">		File ontologyDir = new File(classloader.getResource(prop.getProperty(&quot;ontologyDir&quot;)).getFile());</span>
+<span class="nc" id="L160">		manager.getIRIMappers().add(new AutoIRIMapper(ontologyDir, true));</span>
+
+	
+<span class="nc" id="L163">		OWLOntology ontology =  manager.loadOntologyFromOntologyDocument(ontologyF);</span>
+<span class="nc" id="L164">		logger.info(&quot;Ontology succesfully loaded&quot;);</span>
+<span class="nc" id="L165">		return ontology;</span>
+	}
+	
+	/**
+	 * This method returns an instance of the base ontology
+	 *  
+	 * @return OWLOntology
+	 */
+	public OWLOntology getBaseOntology(){
+<span class="nc" id="L174">		return this.baseOntology;</span>
+	}
+
+	/**
+	 * This methods creates a HermiT reasoner for a loaded ontology
+	 */
+	public OWLReasoner initHermiTReasoner(OWLOntology ontology) {
+<span class="fc" id="L181">		logger.info(&quot;Create reasoner&quot;);</span>
+<span class="fc" id="L182">		OWLReasoner reasoner = new Reasoner.ReasonerFactory().createNonBufferingReasoner(ontology);</span>
+<span class="fc" id="L183">		reasoner.precomputeInferences(InferenceType.values());</span>
+<span class="fc" id="L184">		logger.info(&quot;Reasoner succesfully created&quot;);</span>
+<span class="fc" id="L185">		return reasoner;</span>
+	}
+
+	/**
+	 * This method duplicate the base ontology for a new user
+	 * 
+	 * @param fileName the name for the new ontology
+	 * @throws OWLOntologyStorageException
+	 * @throws FileNotFoundException
+	 * @throws OWLOntologyCreationException 
+	 */
+	public void addOntology(String fileName, IRI iri) throws OWLOntologyStorageException, FileNotFoundException, OWLOntologyCreationException{
+		
+<span class="nc" id="L198">		logger.info(&quot;Add a new ontology with file name: &quot; + fileName);</span>
+		//Creation of the new ontology with a custom user-URI
+<span class="nc" id="L200">		OWLOntology newOntology = this.manager.createOntology(iri);</span>
+<span class="nc" id="L201">		this.prefix.setPrefix(fileName + &quot;:&quot;, iri + &quot;#&quot;);</span>
+		//Add the import of the base ontology (i.e., EUPont-composition)
+<span class="nc" id="L203">		OWLImportsDeclaration importDeclaration = this.manager.getOWLDataFactory().getOWLImportsDeclaration(this.baseOntology.getOntologyID().getOntologyIRI().get());</span>
+<span class="nc" id="L204">		this.manager.applyChange(new AddImport(newOntology,importDeclaration));</span>
+		
+<span class="nc" id="L206">		OWLNamedIndividual user = newOntology.getOWLOntologyManager().getOWLDataFactory().getOWLNamedIndividual(IRI.create(this.prefix.getPrefix(fileName + &quot;:&quot;) + fileName));</span>
+<span class="nc" id="L207">		OWLClass userClass = newOntology.getOWLOntologyManager().getOWLDataFactory().getOWLClass(IRI.create(this.prefix.getPrefix(&quot;foaf:&quot;) + &quot;Person&quot;));</span>
+<span class="nc" id="L208">		OWLClassAssertionAxiom userAxiom = newOntology.getOWLOntologyManager().getOWLDataFactory().getOWLClassAssertionAxiom(userClass, user);</span>
+<span class="nc" id="L209">		this.manager.applyChange(new AddAxiom(newOntology, userAxiom));</span>
+				
+		//Save the new ontology
+<span class="nc" id="L212">		File file = new File(/*prop.getProperty(&quot;baseAddress&quot;) + */prop.getProperty(&quot;ontologyDir&quot;) + fileName + &quot;.owl&quot;);</span>
+<span class="nc" id="L213">		BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file));	</span>
+<span class="nc" id="L214">		manager.saveOntology(newOntology, outputStream);</span>
+
+<span class="nc" id="L216">		OWLReasoner userReasoner = this.initHermiTReasoner(newOntology);</span>
+<span class="nc" id="L217">		this.userReasoners.put(fileName, userReasoner);</span>
+<span class="nc" id="L218">		logger.info(&quot;Ontology succesfully added&quot;);</span>
+<span class="nc" id="L219">	}</span>
+
+	/**
+	 * This method returns the IRI of the base ontology
+	 */
+	@Override
+	public IRI getBaseIRI() {
+<span class="nc" id="L226">		return baseOntology.getOntologyID().getOntologyIRI().get();</span>
+	}
+	
+
+	@Override
+	public Set&lt;Service&gt; getAllServices() throws InterruptedException {
+<span class="nc" id="L232">		OWLReasoner reasoner = this.reasoners.take();</span>
+<span class="nc" id="L233">		Set&lt;Service&gt; services = new HashSet&lt;Service&gt;();</span>
+		try{
+<span class="nc" id="L235">			services.addAll(this.getTriggerServices());</span>
+<span class="nc" id="L236">			services.addAll(this.getActionServices());</span>
+		}finally{
+<span class="nc bnc" id="L238" title="All 2 branches missed.">			if(reasoner != null) this.reasoners.put(reasoner);</span>
+		}
+<span class="nc" id="L240">		return services;</span>
+	}
+	
+	@Override
+	public Map&lt;Long, List&lt;Service&gt;&gt; getServicesMap() throws InterruptedException {
+<span class="nc" id="L245">		OWLReasoner reasoner = this.reasoners.take();</span>
+<span class="nc" id="L246">		Map&lt;Long, List&lt;Service&gt;&gt; map = new HashMap&lt;Long, List&lt;Service&gt;&gt;();</span>
+		try{
+<span class="nc" id="L248">			OWLClass serviceClass = this.manager.getOWLDataFactory().getOWLClass(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;Channel&quot;));</span>
+<span class="nc" id="L249">			OWLDataProperty image = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;image&quot;));</span>
+<span class="nc" id="L250">			OWLDataProperty name = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;name&quot;));</span>
+<span class="nc" id="L251">			OWLDataProperty id = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;id&quot;));</span>
+<span class="nc" id="L252">			OWLDataProperty color = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;color&quot;));</span>
+<span class="nc" id="L253">			Set&lt;OWLClass&gt; owlServiceClasses = reasoner.getSubClasses(serviceClass, true).getFlattened();</span>
+<span class="nc bnc" id="L254" title="All 2 branches missed.">			for(OWLClass owlServiceClass : owlServiceClasses){</span>
+<span class="nc" id="L255">				Set&lt;OWLNamedIndividual&gt; owlServices = reasoner.getInstances(owlServiceClass, true).getFlattened();</span>
+<span class="nc" id="L256">				List&lt;Service&gt; services = new ArrayList&lt;Service&gt;();</span>
+
+<span class="nc bnc" id="L258" title="All 2 branches missed.">				for(OWLNamedIndividual owlService : owlServices){</span>
+<span class="nc" id="L259">					Service service = new Service();</span>
+<span class="nc" id="L260">					service.setURL(owlService.getIRI().toString());</span>
+<span class="nc" id="L261">					service.setId(prefix.getShortForm(owlService.getIRI()).substring(1));</span>
+					
+<span class="nc" id="L263">					try{service.setName(reasoner.getDataPropertyValues(owlService,name).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L264">					try{service.setWebId(Long.valueOf(reasoner.getDataPropertyValues(owlService,id).iterator().next().getLiteral()));}catch(Throwable t){}</span>
+<span class="nc" id="L265">					try{service.setColor(reasoner.getDataPropertyValues(owlService,color).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L266">					try{service.setImage(reasoner.getDataPropertyValues(owlService,image).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L267">					services.add(service);</span>
+					
+<span class="nc" id="L269">				}</span>
+<span class="nc bnc" id="L270" title="All 2 branches missed.">				if(services.size() &gt; 0)</span>
+<span class="nc" id="L271">					map.put(services.get(0).getWebId(), services);</span>
+<span class="nc" id="L272">			}</span>
+			
+		}finally{
+<span class="nc bnc" id="L275" title="All 2 branches missed.">			if(reasoner != null) this.reasoners.put(reasoner);</span>
+		}
+<span class="nc" id="L277">		return map;</span>
+	}
+	
+	@Override
+	public Collection&lt;Service&gt; getTriggerServices(String username) throws InterruptedException, OWLOntologyCreationException {
+		
+<span class="nc" id="L283">		OWLReasoner reasoner = this.reasoners.take();</span>
+<span class="nc" id="L284">		Set&lt;Service&gt; services = new HashSet&lt;Service&gt;();</span>
+<span class="nc" id="L285">		OWLReasoner userReasoner = this.userReasoners.get(username);</span>
+		
+<span class="nc bnc" id="L287" title="All 2 branches missed.">		if(userReasoner == null){</span>
+<span class="nc" id="L288">			IRI userIRI = IRI.create(this.getBaseIRI() + &quot;/&quot; + username);</span>
+<span class="nc" id="L289">			OWLOntology userOntology = this.manager.getOntology(userIRI);</span>
+<span class="nc bnc" id="L290" title="All 2 branches missed.">			if(userOntology == null)</span>
+<span class="nc" id="L291">				userOntology = this.loadFromFile(username + &quot;.owl&quot;);</span>
+<span class="nc" id="L292">			this.prefix.setPrefix(username + &quot;:&quot;, userIRI + &quot;#&quot;);</span>
+<span class="nc" id="L293">			userReasoner = this.initHermiTReasoner(userOntology);</span>
+<span class="nc" id="L294">			this.userReasoners.put(username, userReasoner);</span>
+		}
+		
+		try{
+<span class="nc" id="L298">			OWLObjectProperty hasRegisteredEntity = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;hasRegisteredEntity&quot;));			</span>
+<span class="nc" id="L299">			OWLClass serviceClass = this.manager.getOWLDataFactory().getOWLClass(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;Channel&quot;));</span>
+<span class="nc" id="L300">			OWLDataProperty image = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;image&quot;));</span>
+<span class="nc" id="L301">			OWLDataProperty name = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;name&quot;));</span>
+<span class="nc" id="L302">			OWLDataProperty id = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;id&quot;));</span>
+<span class="nc" id="L303">			OWLDataProperty color = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;color&quot;));</span>
+<span class="nc" id="L304">			OWLObjectProperty offerTrigger = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;offerTrigger&quot;));</span>
+<span class="nc" id="L305">			Set&lt;OWLClass&gt; owlServiceClasses = reasoner.getSubClasses(serviceClass, true).getFlattened();</span>
+			
+<span class="nc bnc" id="L307" title="All 2 branches missed.">			for(OWLClass owlServiceClass : owlServiceClasses){</span>
+<span class="nc" id="L308">				Set&lt;OWLNamedIndividual&gt; owlServices = reasoner.getInstances(owlServiceClass, true).getFlattened();</span>
+<span class="nc" id="L309">				boolean add = false;</span>
+<span class="nc" id="L310">				Set&lt;Service&gt; tempServices = new HashSet&lt;Service&gt;();</span>
+	
+<span class="nc bnc" id="L312" title="All 2 branches missed.">				for(OWLNamedIndividual owlService : owlServices){</span>
+					
+<span class="nc bnc" id="L314" title="All 6 branches missed.">					if(reasoner.getObjectPropertyValues(owlService, offerTrigger).getFlattened().size() &gt; 0 &amp; userReasoner.getObjectPropertyValues(owlService, hasRegisteredEntity).getFlattened().size() &gt; 0)</span>
+<span class="nc" id="L315">						add = true;</span>
+									
+<span class="nc" id="L317">					Service service = new Service();</span>
+<span class="nc" id="L318">					service.setURL(owlService.getIRI().toString());</span>
+<span class="nc" id="L319">					service.setId(prefix.getShortForm(owlService.getIRI()).substring(1));</span>
+					
+<span class="nc" id="L321">					try{service.setName(reasoner.getDataPropertyValues(owlService,name).iterator().next().getLiteral() + &quot; Triggers&quot;);}catch(Throwable t){}</span>
+<span class="nc" id="L322">					try{service.setWebId(Long.valueOf(reasoner.getDataPropertyValues(owlService,id).iterator().next().getLiteral()));}catch(Throwable t){}</span>
+<span class="nc" id="L323">					try{service.setColor(reasoner.getDataPropertyValues(owlService,color).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L324">					try{service.setImage(reasoner.getDataPropertyValues(owlService,image).iterator().next().getLiteral());}catch(Throwable t){}</span>
+	
+<span class="nc" id="L326">					tempServices.add(service);</span>
+<span class="nc" id="L327">				}</span>
+<span class="nc bnc" id="L328" title="All 2 branches missed.">				if(add)</span>
+<span class="nc" id="L329">					services.addAll(tempServices);</span>
+<span class="nc" id="L330">			}</span>
+		
+		}finally{
+<span class="nc bnc" id="L333" title="All 2 branches missed.">			if(reasoner != null) this.reasoners.put(reasoner);</span>
+		}
+<span class="nc" id="L335">		return services;</span>
+	}
+
+
+	@Override
+	public Collection&lt;Service&gt; getActionServices(String username) throws InterruptedException, OWLOntologyCreationException {
+<span class="nc" id="L341">		OWLReasoner reasoner = this.reasoners.take();</span>
+<span class="nc" id="L342">		Set&lt;Service&gt; services = new HashSet&lt;Service&gt;();</span>
+		
+<span class="nc" id="L344">		OWLReasoner userReasoner = this.userReasoners.get(username);</span>
+		
+<span class="nc bnc" id="L346" title="All 2 branches missed.">		if(userReasoner == null){</span>
+<span class="nc" id="L347">			IRI userIRI = IRI.create(this.getBaseIRI() + &quot;/&quot; + username);</span>
+<span class="nc" id="L348">			OWLOntology userOntology = this.manager.getOntology(userIRI);</span>
+<span class="nc bnc" id="L349" title="All 2 branches missed.">			if(userOntology == null)</span>
+<span class="nc" id="L350">				userOntology = this.loadFromFile(username + &quot;.owl&quot;);</span>
+<span class="nc" id="L351">			this.prefix.setPrefix(username + &quot;:&quot;, userIRI + &quot;#&quot;);</span>
+<span class="nc" id="L352">			userReasoner = this.initHermiTReasoner(userOntology);</span>
+<span class="nc" id="L353">			this.userReasoners.put(username, userReasoner);</span>
+		}
+		try{
+<span class="nc" id="L356">			OWLObjectProperty hasRegisteredEntity = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;hasRegisteredEntity&quot;));			</span>
+<span class="nc" id="L357">			OWLClass serviceClass = this.manager.getOWLDataFactory().getOWLClass(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;Channel&quot;));</span>
+<span class="nc" id="L358">			OWLDataProperty image = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;image&quot;));</span>
+<span class="nc" id="L359">			OWLDataProperty name = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;name&quot;));</span>
+<span class="nc" id="L360">			OWLDataProperty id = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;id&quot;));</span>
+<span class="nc" id="L361">			OWLDataProperty color = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;color&quot;));</span>
+<span class="nc" id="L362">			OWLObjectProperty offerAction = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;offerAction&quot;));</span>
+			
+<span class="nc" id="L364">			Set&lt;OWLClass&gt; owlServiceClasses = reasoner.getSubClasses(serviceClass, true).getFlattened();</span>
+			
+<span class="nc bnc" id="L366" title="All 2 branches missed.">			for(OWLClass owlServiceClass : owlServiceClasses){</span>
+<span class="nc" id="L367">				Set&lt;OWLNamedIndividual&gt; owlServices = reasoner.getInstances(owlServiceClass, true).getFlattened();</span>
+<span class="nc" id="L368">				boolean add = false;</span>
+<span class="nc" id="L369">				Set&lt;Service&gt; tempServices = new HashSet&lt;Service&gt;();</span>
+	
+<span class="nc bnc" id="L371" title="All 2 branches missed.">				for(OWLNamedIndividual owlService : owlServices){</span>
+					
+<span class="nc bnc" id="L373" title="All 6 branches missed.">					if(reasoner.getObjectPropertyValues(owlService, offerAction).getFlattened().size() &gt; 0 &amp; userReasoner.getObjectPropertyValues(owlService, hasRegisteredEntity).getFlattened().size() &gt; 0)</span>
+<span class="nc" id="L374">						add = true;</span>
+					
+<span class="nc" id="L376">					Service service = new Service();</span>
+<span class="nc" id="L377">					service.setURL(owlService.getIRI().toString());</span>
+<span class="nc" id="L378">					service.setId(prefix.getShortForm(owlService.getIRI()).substring(1));</span>
+<span class="nc" id="L379">					try{service.setName(reasoner.getDataPropertyValues(owlService,name).iterator().next().getLiteral() + &quot; Actions&quot;);}catch(Throwable t){}</span>
+<span class="nc" id="L380">					try{service.setWebId(Long.valueOf(reasoner.getDataPropertyValues(owlService,id).iterator().next().getLiteral()));}catch(Throwable t){}</span>
+<span class="nc" id="L381">					try{service.setColor(reasoner.getDataPropertyValues(owlService,color).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L382">					try{service.setImage(reasoner.getDataPropertyValues(owlService,image).iterator().next().getLiteral());}catch(Throwable t){}</span>
+	
+<span class="nc" id="L384">					tempServices.add(service);</span>
+<span class="nc" id="L385">				}</span>
+<span class="nc bnc" id="L386" title="All 2 branches missed.">				if(add)</span>
+<span class="nc" id="L387">					services.addAll(tempServices);</span>
+<span class="nc" id="L388">		}</span>
+		}finally{
+<span class="nc bnc" id="L390" title="All 2 branches missed.">			if(reasoner != null)  this.reasoners.put(reasoner);</span>
+		}
+<span class="nc" id="L392">		return services;</span>
+	}
+	
+	@Override
+	public Set&lt;Service&gt; getTriggerServices() throws InterruptedException {
+		
+<span class="nc" id="L398">		OWLReasoner reasoner = this.reasoners.take();</span>
+<span class="nc" id="L399">		Set&lt;Service&gt; services = new HashSet&lt;Service&gt;();</span>
+
+		try{
+			
+<span class="nc" id="L403">			OWLClass serviceClass = this.manager.getOWLDataFactory().getOWLClass(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;Channel&quot;));</span>
+<span class="nc" id="L404">			OWLDataProperty image = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;image&quot;));</span>
+<span class="nc" id="L405">			OWLDataProperty name = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;name&quot;));</span>
+<span class="nc" id="L406">			OWLDataProperty id = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;id&quot;));</span>
+<span class="nc" id="L407">			OWLDataProperty color = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;color&quot;));</span>
+<span class="nc" id="L408">			OWLObjectProperty offerTrigger = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;offerTrigger&quot;));</span>
+<span class="nc" id="L409">			Set&lt;OWLClass&gt; owlServiceClasses = reasoner.getSubClasses(serviceClass, true).getFlattened();</span>
+			
+<span class="nc bnc" id="L411" title="All 2 branches missed.">			for(OWLClass owlServiceClass : owlServiceClasses){</span>
+<span class="nc" id="L412">				Set&lt;OWLNamedIndividual&gt; owlServices = reasoner.getInstances(owlServiceClass, true).getFlattened();</span>
+<span class="nc" id="L413">				boolean add = false;</span>
+<span class="nc" id="L414">				Set&lt;Service&gt; tempServices = new HashSet&lt;Service&gt;();</span>
+	
+<span class="nc bnc" id="L416" title="All 2 branches missed.">				for(OWLNamedIndividual owlService : owlServices){</span>
+					
+<span class="nc bnc" id="L418" title="All 2 branches missed.">					if(reasoner.getObjectPropertyValues(owlService, offerTrigger).getFlattened().size() &gt; 0)</span>
+<span class="nc" id="L419">						add = true;</span>
+					
+<span class="nc" id="L421">					Service service = new Service();</span>
+<span class="nc" id="L422">					service.setURL(owlService.getIRI().toString());</span>
+<span class="nc" id="L423">					service.setId(prefix.getShortForm(owlService.getIRI()).substring(1));</span>
+					
+<span class="nc" id="L425">					try{service.setName(reasoner.getDataPropertyValues(owlService,name).iterator().next().getLiteral() + &quot; Triggers&quot;);}catch(Throwable t){}</span>
+<span class="nc" id="L426">					try{service.setWebId(Long.valueOf(reasoner.getDataPropertyValues(owlService,id).iterator().next().getLiteral()));}catch(Throwable t){}</span>
+<span class="nc" id="L427">					try{service.setColor(reasoner.getDataPropertyValues(owlService,color).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L428">					try{service.setImage(reasoner.getDataPropertyValues(owlService,image).iterator().next().getLiteral());}catch(Throwable t){}</span>
+	
+<span class="nc" id="L430">					tempServices.add(service);</span>
+<span class="nc" id="L431">				}</span>
+<span class="nc bnc" id="L432" title="All 2 branches missed.">				if(add)</span>
+<span class="nc" id="L433">					services.addAll(tempServices);</span>
+<span class="nc" id="L434">			}</span>
+		
+		}finally{
+<span class="nc bnc" id="L437" title="All 2 branches missed.">			if(reasoner != null) this.reasoners.put(reasoner);</span>
+		}
+<span class="nc" id="L439">		return services;</span>
+	}
+	
+	@Override
+	public Trigger getTrigger(String url, String username) throws OWLOntologyCreationException, InterruptedException {
+<span class="nc" id="L444">		OWLReasoner reasoner = this.reasoners.take();</span>
+<span class="nc" id="L445">		Trigger trigger = new Trigger();</span>
+		try{
+<span class="nc" id="L447">			OWLObjectProperty isOfChannel = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;isOfChannel&quot;));</span>
+<span class="nc" id="L448">			OWLDataProperty description = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;description&quot;));</span>
+<span class="nc" id="L449">			OWLDataProperty image = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;image&quot;));</span>
+<span class="nc" id="L450">			OWLDataProperty name = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;name&quot;));</span>
+<span class="nc" id="L451">			OWLDataProperty id = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;id&quot;));</span>
+<span class="nc" id="L452">			OWLDataProperty color = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;color&quot;));</span>
+			
+			
+<span class="nc" id="L455">			OWLNamedIndividual owlTrigger = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(url));</span>
+<span class="nc" id="L456">			trigger.setURL(owlTrigger.getIRI().toString());</span>
+<span class="nc" id="L457">			trigger.setId(this.prefix.getShortForm(owlTrigger.getIRI()).substring(1));</span>
+<span class="nc" id="L458">			try{trigger.setName(reasoner.getDataPropertyValues(owlTrigger,name).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L459">			try{trigger.setDescription(reasoner.getDataPropertyValues(owlTrigger,description).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L460">			Set&lt;OWLNamedIndividual&gt; channels = reasoner.getObjectPropertyValues(owlTrigger, isOfChannel).getFlattened();</span>
+<span class="nc" id="L461">			OWLNamedIndividual owlService = channels.iterator().next();</span>
+<span class="nc bnc" id="L462" title="All 2 branches missed.">			if(owlService != null){</span>
+<span class="nc" id="L463">				Service service = new Service();</span>
+<span class="nc" id="L464">				service.setURL(owlService.getIRI().toString());</span>
+<span class="nc" id="L465">				service.setId(prefix.getShortForm(owlService.getIRI()).substring(1));</span>
+<span class="nc" id="L466">				try{service.setName(reasoner.getDataPropertyValues(owlService,name).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L467">				try{service.setWebId(Long.valueOf(reasoner.getDataPropertyValues(owlService,id).iterator().next().getLiteral()));}catch(Throwable t){}</span>
+<span class="nc" id="L468">				try{service.setColor(reasoner.getDataPropertyValues(owlService,color).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L469">				try{service.setImage(reasoner.getDataPropertyValues(owlService,image).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L470">				trigger.setService(service);</span>
+<span class="nc" id="L471">				trigger.setDetails(this.getTriggerDetails(reasoner, service.getId(), trigger.getId(), username));</span>
+			}
+		}
+		finally{
+<span class="nc bnc" id="L475" title="All 2 branches missed.">			if(reasoner != null)  this.reasoners.put(reasoner);</span>
+		}
+<span class="nc" id="L477">		return trigger;</span>
+	}
+
+	
+	@Override
+	public Set&lt;Trigger&gt; getTriggers(String service, String username) throws InterruptedException, OWLOntologyCreationException {
+<span class="nc" id="L483">		OWLReasoner reasoner = this.reasoners.take();</span>
+<span class="nc" id="L484">		Set&lt;Trigger&gt; triggers = new HashSet&lt;Trigger&gt;();</span>
+		try{
+<span class="nc" id="L486">			OWLDataProperty description = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;description&quot;));</span>
+<span class="nc" id="L487">			OWLDataProperty image = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;image&quot;));</span>
+<span class="nc" id="L488">			OWLDataProperty name = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;name&quot;));</span>
+<span class="nc" id="L489">			OWLDataProperty id = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;id&quot;));</span>
+<span class="nc" id="L490">			OWLDataProperty color = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;color&quot;));</span>
+<span class="nc" id="L491">			OWLNamedIndividual owlService = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(this.prefix.getDefaultPrefix() + service));</span>
+<span class="nc" id="L492">			Service s = new Service();</span>
+<span class="nc" id="L493">			s.setURL(owlService.getIRI().toString());</span>
+<span class="nc" id="L494">			s.setId(prefix.getShortForm(owlService.getIRI()).substring(1));</span>
+<span class="nc" id="L495">			try{s.setName(reasoner.getDataPropertyValues(owlService,name).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L496">			try{s.setWebId(Long.valueOf(reasoner.getDataPropertyValues(owlService,id).iterator().next().getLiteral()));}catch(Throwable t){}</span>
+<span class="nc" id="L497">			try{s.setColor(reasoner.getDataPropertyValues(owlService,color).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L498">			try{s.setImage(reasoner.getDataPropertyValues(owlService,image).iterator().next().getLiteral());}catch(Throwable t){}</span>
+			
+			
+<span class="nc" id="L501">			OWLObjectProperty offerTrigger = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;offerTrigger&quot;));</span>
+			
+			Set&lt;OWLNamedIndividual&gt; owlTriggers;
+		
+<span class="nc bnc" id="L505" title="All 4 branches missed.">			if(reasoner != null &amp;&amp; reasoner.getObjectPropertyValues(owlService, offerTrigger) != null){</span>
+<span class="nc" id="L506">				owlTriggers = reasoner.getObjectPropertyValues(owlService, offerTrigger).getFlattened();</span>
+<span class="nc bnc" id="L507" title="All 2 branches missed.">				for(OWLNamedIndividual owlTrigger : owlTriggers){</span>
+<span class="nc" id="L508">					Trigger trigger = new Trigger();</span>
+<span class="nc" id="L509">					trigger.setURL(owlTrigger.getIRI().toString());</span>
+<span class="nc" id="L510">					trigger.setId(this.prefix.getShortForm(owlTrigger.getIRI()).substring(1));</span>
+<span class="nc" id="L511">					trigger.setService(s);</span>
+<span class="nc" id="L512">					try{trigger.setName(reasoner.getDataPropertyValues(owlTrigger,name).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L513">					try{trigger.setDescription(reasoner.getDataPropertyValues(owlTrigger,description).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L514">					triggers.add(trigger);</span>
+<span class="nc" id="L515">					trigger.setDetails(this.getTriggerDetails(reasoner, s.getId(), trigger.getId(), username));</span>
+
+<span class="nc" id="L517">				}</span>
+			}
+		}
+		finally{
+<span class="nc bnc" id="L521" title="All 2 branches missed.">			if(reasoner != null) this.reasoners.put(reasoner);</span>
+		}
+<span class="nc" id="L523">		return triggers;</span>
+	}
+
+
+
+	@Override
+	public List&lt;Detail&gt; getTriggerDetails(OWLReasoner reasoner, String service, String trigger, String username) throws OWLOntologyCreationException, InterruptedException {
+<span class="nc" id="L530">		List&lt;Detail&gt; details = new LinkedList&lt;Detail&gt;();</span>
+<span class="nc" id="L531">		boolean taken = false;</span>
+<span class="nc bnc" id="L532" title="All 2 branches missed.">		if(reasoner == null){</span>
+<span class="nc" id="L533">			taken = true;</span>
+<span class="nc" id="L534">			reasoner = this.reasoners.take();</span>
+		}
+		
+<span class="nc" id="L537">		OWLReasoner userReasoner = this.userReasoners.get(username);</span>
+		
+<span class="nc bnc" id="L539" title="All 2 branches missed.">		if(userReasoner == null){</span>
+<span class="nc" id="L540">			IRI userIRI = IRI.create(this.getBaseIRI() + &quot;/&quot; + username);</span>
+<span class="nc" id="L541">			OWLOntology userOntology = this.manager.getOntology(userIRI);</span>
+<span class="nc bnc" id="L542" title="All 2 branches missed.">			if(userOntology == null)</span>
+<span class="nc" id="L543">				userOntology = this.loadFromFile(username + &quot;.owl&quot;);</span>
+<span class="nc" id="L544">			this.prefix.setPrefix(username + &quot;:&quot;, userIRI + &quot;#&quot;);</span>
+<span class="nc" id="L545">			userReasoner = this.initHermiTReasoner(userOntology);</span>
+<span class="nc" id="L546">			this.userReasoners.put(username, userReasoner);</span>
+		}
+		
+		try{
+<span class="nc" id="L550">			OWLClass owlLocationClass = this.manager.getOWLDataFactory().getOWLClass(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;Location&quot;));</span>
+
+<span class="nc" id="L552">			OWLNamedIndividual owlTrigger = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(this.prefix.getDefaultPrefix() + trigger));</span>
+<span class="nc" id="L553">			OWLObjectProperty offerDetail = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;offerDetail&quot;));</span>
+<span class="nc" id="L554">			OWLDataProperty name = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;name&quot;));</span>
+<span class="nc" id="L555">			OWLDataProperty type = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;type&quot;));</span>
+<span class="nc" id="L556">			OWLDataProperty type2 = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;type&quot;));</span>
+
+<span class="nc" id="L558">			Set&lt;OWLNamedIndividual&gt; owlDetails = reasoner.getObjectPropertyValues(owlTrigger, offerDetail).getFlattened();</span>
+			
+			
+<span class="nc" id="L561">			Set&lt;Object&gt; entities = new HashSet&lt;Object&gt;();</span>
+<span class="nc bnc" id="L562" title="All 2 branches missed.">			for(IoTEntity entity : this.getIoTEntitiesByService(service, username)){</span>
+<span class="nc" id="L563">				entities.add(entity);</span>
+<span class="nc" id="L564">			}</span>
+			
+			
+<span class="nc" id="L567">			boolean entityDetail = false;</span>
+			
+<span class="nc bnc" id="L569" title="All 2 branches missed.">			for(OWLNamedIndividual owlDetail : owlDetails){</span>
+<span class="nc" id="L570">				Detail detail = new Detail();</span>
+<span class="nc" id="L571">				detail.setId(this.prefix.getShortForm(owlDetail.getIRI()).substring(1));</span>
+<span class="nc" id="L572">				detail.setURL(owlDetail.getIRI().toString());</span>
+<span class="nc" id="L573">				try{detail.setName(reasoner.getDataPropertyValues(owlDetail,name).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L574">				String detailType = null;</span>
+<span class="nc" id="L575">				try{detailType = reasoner.getDataPropertyValues(owlDetail,type).iterator().next().getLiteral();}catch(Throwable t){}</span>
+<span class="nc bnc" id="L576" title="All 2 branches missed.">				if(detailType == null)</span>
+<span class="nc" id="L577">					try{detailType = reasoner.getDataPropertyValues(owlDetail,type2).iterator().next().getLiteral();}catch(Throwable t){}</span>
+
+<span class="nc" id="L579">				detail.setType(detailType);</span>
+				
+<span class="nc bnc" id="L581" title="All 2 branches missed.">				if(detailType.equals(&quot;entity&quot;)){</span>
+<span class="nc" id="L582">					entityDetail = true;</span>
+<span class="nc" id="L583">					detail.setAlternatives(entities);</span>
+				}
+<span class="nc bnc" id="L585" title="All 2 branches missed.">				if(detailType.equals(&quot;location&quot;)){</span>
+<span class="nc" id="L586">					Set&lt;Object&gt; locations = new HashSet&lt;Object&gt;();</span>
+					
+<span class="nc" id="L588">					Set&lt;OWLNamedIndividual&gt; owlLocations = userReasoner.getInstances(owlLocationClass, false).getFlattened();</span>
+<span class="nc bnc" id="L589" title="All 2 branches missed.">					for (OWLNamedIndividual owlLocation : owlLocations) {</span>
+<span class="nc" id="L590">						Location loc = new Location();</span>
+<span class="nc" id="L591">						loc.setURL(owlLocation.getIRI().toString());</span>
+<span class="nc" id="L592">						try{loc.setName(userReasoner.getDataPropertyValues(owlLocation,name).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L593">						locations.add(loc);</span>
+<span class="nc" id="L594">					}</span>
+					
+
+<span class="nc" id="L597">					detail.setAlternatives(locations);</span>
+				}
+<span class="nc" id="L599">				details.add(detail);</span>
+<span class="nc" id="L600">			}</span>
+			
+<span class="nc bnc" id="L602" title="All 4 branches missed.">			if(!entityDetail &amp;&amp; entities.size() &gt; 0){</span>
+<span class="nc" id="L603">				Detail detail = new Detail();</span>
+<span class="nc" id="L604">				detail.setName(&quot;Which entity?&quot;);</span>
+<span class="nc" id="L605">				detail.setType(&quot;entity&quot;);</span>
+<span class="nc" id="L606">				detail.setURL(&quot;entity_detail&quot;);</span>
+<span class="nc" id="L607">				detail.setAlternatives(entities);</span>
+<span class="nc" id="L608">				details.add(detail);</span>
+			}
+		}
+		finally{
+<span class="nc bnc" id="L612" title="All 4 branches missed.">			if(taken &amp;&amp; reasoner != null) this.reasoners.put(reasoner);</span>
+		}
+<span class="nc" id="L614">		return details;</span>
+	}
+
+	
+	@Override
+	public Set&lt;Service&gt; getActionServices() throws InterruptedException {
+<span class="nc" id="L620">		OWLReasoner reasoner = this.reasoners.take();</span>
+<span class="nc" id="L621">		Set&lt;Service&gt; services = new HashSet&lt;Service&gt;();</span>
+		try{
+<span class="nc" id="L623">			OWLClass serviceClass = this.manager.getOWLDataFactory().getOWLClass(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;Channel&quot;));</span>
+<span class="nc" id="L624">			OWLDataProperty image = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;image&quot;));</span>
+<span class="nc" id="L625">			OWLDataProperty name = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;name&quot;));</span>
+<span class="nc" id="L626">			OWLDataProperty id = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;id&quot;));</span>
+<span class="nc" id="L627">			OWLDataProperty color = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;color&quot;));</span>
+<span class="nc" id="L628">			OWLObjectProperty offerAction = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;offerAction&quot;));</span>
+			
+<span class="nc" id="L630">			Set&lt;OWLClass&gt; owlServiceClasses = reasoner.getSubClasses(serviceClass, true).getFlattened();</span>
+			
+<span class="nc bnc" id="L632" title="All 2 branches missed.">			for(OWLClass owlServiceClass : owlServiceClasses){</span>
+<span class="nc" id="L633">				Set&lt;OWLNamedIndividual&gt; owlServices = reasoner.getInstances(owlServiceClass, true).getFlattened();</span>
+<span class="nc" id="L634">				boolean add = false;</span>
+<span class="nc" id="L635">				Set&lt;Service&gt; tempServices = new HashSet&lt;Service&gt;();</span>
+	
+<span class="nc bnc" id="L637" title="All 2 branches missed.">				for(OWLNamedIndividual owlService : owlServices){</span>
+					
+<span class="nc" id="L639">					Set&lt;OWLObjectProperty&gt; x = this.baseOntology.getObjectPropertiesInSignature();</span>
+
+<span class="nc bnc" id="L641" title="All 2 branches missed.">					if(reasoner.getObjectPropertyValues(owlService, offerAction).getFlattened().size() &gt; 0)</span>
+<span class="nc" id="L642">						add = true;</span>
+					
+<span class="nc" id="L644">					Service service = new Service();</span>
+<span class="nc" id="L645">					service.setURL(owlService.getIRI().toString());</span>
+<span class="nc" id="L646">					service.setId(prefix.getShortForm(owlService.getIRI()).substring(1));</span>
+					
+<span class="nc" id="L648">					try{service.setName(reasoner.getDataPropertyValues(owlService,name).iterator().next().getLiteral() + &quot; Actions&quot;);}catch(Throwable t){}</span>
+<span class="nc" id="L649">					try{service.setWebId(Long.valueOf(reasoner.getDataPropertyValues(owlService,id).iterator().next().getLiteral()));}catch(Throwable t){}</span>
+<span class="nc" id="L650">					try{service.setColor(reasoner.getDataPropertyValues(owlService,color).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L651">					try{service.setImage(reasoner.getDataPropertyValues(owlService,image).iterator().next().getLiteral());}catch(Throwable t){}</span>
+	
+<span class="nc" id="L653">					tempServices.add(service);</span>
+<span class="nc" id="L654">				}</span>
+<span class="nc bnc" id="L655" title="All 2 branches missed.">				if(add)</span>
+<span class="nc" id="L656">					services.addAll(tempServices);</span>
+<span class="nc" id="L657">		}</span>
+		}finally{
+<span class="nc bnc" id="L659" title="All 2 branches missed.">			if(reasoner != null)  this.reasoners.put(reasoner);</span>
+		}
+<span class="nc" id="L661">		return services;</span>
+	}
+	
+	@Override
+	public Action getAction(String url, String username) throws OWLOntologyCreationException, InterruptedException {
+<span class="nc" id="L666">		OWLReasoner reasoner = this.reasoners.take();</span>
+<span class="nc" id="L667">		Action action = new Action();</span>
+		try{
+<span class="nc" id="L669">			OWLObjectProperty isOfChannel = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;isOfChannel&quot;));</span>
+<span class="nc" id="L670">			OWLDataProperty description = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;description&quot;));</span>
+<span class="nc" id="L671">			OWLDataProperty image = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;image&quot;));</span>
+<span class="nc" id="L672">			OWLDataProperty name = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;name&quot;));</span>
+<span class="nc" id="L673">			OWLDataProperty id = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;id&quot;));</span>
+<span class="nc" id="L674">			OWLDataProperty color = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;color&quot;));</span>
+			
+			
+<span class="nc" id="L677">			OWLNamedIndividual owlAction = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(url));</span>
+<span class="nc" id="L678">			action.setURL(owlAction.getIRI().toString());</span>
+<span class="nc" id="L679">			action.setId(this.prefix.getShortForm(owlAction.getIRI()).substring(1));</span>
+<span class="nc" id="L680">			try{action.setName(reasoner.getDataPropertyValues(owlAction,name).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L681">			try{action.setDescription(reasoner.getDataPropertyValues(owlAction,description).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L682">			Set&lt;OWLNamedIndividual&gt; channels = reasoner.getObjectPropertyValues(owlAction, isOfChannel).getFlattened();</span>
+<span class="nc" id="L683">			OWLNamedIndividual owlService = channels.iterator().next();</span>
+<span class="nc bnc" id="L684" title="All 2 branches missed.">			if(owlService != null){</span>
+<span class="nc" id="L685">				Service service = new Service();</span>
+<span class="nc" id="L686">				service.setURL(owlService.getIRI().toString());</span>
+<span class="nc" id="L687">				service.setId(prefix.getShortForm(owlService.getIRI()).substring(1));</span>
+<span class="nc" id="L688">				try{service.setName(reasoner.getDataPropertyValues(owlService,name).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L689">				try{service.setWebId(Long.valueOf(reasoner.getDataPropertyValues(owlService,id).iterator().next().getLiteral()));}catch(Throwable t){}</span>
+<span class="nc" id="L690">				try{service.setColor(reasoner.getDataPropertyValues(owlService,color).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L691">				try{service.setImage(reasoner.getDataPropertyValues(owlService,image).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L692">				action.setService(service);</span>
+<span class="nc" id="L693">				action.setDetails(this.getActionDetails(reasoner, service.getId(), action.getId(), username));</span>
+		}
+		} finally {
+<span class="nc bnc" id="L696" title="All 2 branches missed.">			if(reasoner != null)  this.reasoners.put(reasoner);</span>
+		}
+<span class="nc" id="L698">		return action;</span>
+	}
+	
+	
+	@Override
+	public Set&lt;Action&gt; getActions(String service, String username) throws InterruptedException, OWLOntologyCreationException {
+<span class="nc" id="L704">		OWLReasoner reasoner = this.reasoners.take();</span>
+<span class="nc" id="L705">		Set&lt;Action&gt; actions = new HashSet&lt;Action&gt;();</span>
+		try{
+<span class="nc" id="L707">			OWLDataProperty description = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;description&quot;));</span>
+<span class="nc" id="L708">			OWLDataProperty image = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;image&quot;));</span>
+<span class="nc" id="L709">			OWLDataProperty name = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;name&quot;));</span>
+<span class="nc" id="L710">			OWLDataProperty id = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;id&quot;));</span>
+<span class="nc" id="L711">			OWLDataProperty color = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;color&quot;));</span>
+			
+<span class="nc" id="L713">			OWLNamedIndividual owlService = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(this.prefix.getDefaultPrefix() + service));</span>
+			
+<span class="nc" id="L715">			OWLObjectProperty offerAction = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;offerAction&quot;));</span>
+			Set&lt;OWLNamedIndividual&gt; owlActions;
+			
+<span class="nc bnc" id="L718" title="All 4 branches missed.">			if(reasoner != null &amp;&amp; reasoner.getObjectPropertyValues(owlService, offerAction) != null){</span>
+<span class="nc" id="L719">				owlActions = reasoner.getObjectPropertyValues(owlService, offerAction).getFlattened();</span>
+			
+			
+<span class="nc" id="L722">				Service s = new Service();</span>
+<span class="nc" id="L723">				s.setURL(owlService.getIRI().toString());</span>
+<span class="nc" id="L724">				s.setId(prefix.getShortForm(owlService.getIRI()).substring(1));</span>
+<span class="nc" id="L725">				try{s.setName(reasoner.getDataPropertyValues(owlService,name).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L726">				try{s.setWebId(Long.valueOf(reasoner.getDataPropertyValues(owlService,id).iterator().next().getLiteral()));}catch(Throwable t){}</span>
+<span class="nc" id="L727">				try{s.setColor(reasoner.getDataPropertyValues(owlService,color).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L728">				try{s.setImage(reasoner.getDataPropertyValues(owlService,image).iterator().next().getLiteral());}catch(Throwable t){}</span>
+				
+<span class="nc bnc" id="L730" title="All 2 branches missed.">				for(OWLNamedIndividual owlAction : owlActions){</span>
+<span class="nc" id="L731">					Action action = new Action();</span>
+<span class="nc" id="L732">					action.setURL(owlAction.getIRI().toString());</span>
+<span class="nc" id="L733">					action.setId(this.prefix.getShortForm(owlAction.getIRI()).substring(1));</span>
+<span class="nc" id="L734">					action.setService(s);</span>
+<span class="nc" id="L735">					try{action.setName(reasoner.getDataPropertyValues(owlAction,name).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L736">					try{action.setDescription(reasoner.getDataPropertyValues(owlAction,description).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L737">					actions.add(action);</span>
+<span class="nc" id="L738">					action.setDetails(this.getActionDetails(reasoner, s.getId(), action.getId(), username));</span>
+<span class="nc" id="L739">				}</span>
+			}
+		}
+		finally{
+<span class="nc bnc" id="L743" title="All 2 branches missed.">			if(reasoner != null) this.reasoners.put(reasoner);</span>
+		}
+<span class="nc" id="L745">		return actions;</span>
+	}
+	
+	@Override
+	public List&lt;Detail&gt; getActionDetails(OWLReasoner reasoner, String service, String action, String username) throws OWLOntologyCreationException, InterruptedException {
+
+<span class="nc" id="L751">		List&lt;Detail&gt; details = new LinkedList&lt;Detail&gt;();</span>
+<span class="nc" id="L752">		boolean taken = false;</span>
+<span class="nc bnc" id="L753" title="All 2 branches missed.">		if(reasoner == null){</span>
+<span class="nc" id="L754">			taken = true;</span>
+<span class="nc" id="L755">			reasoner = this.reasoners.take();</span>
+		}
+		
+<span class="nc" id="L758">		OWLReasoner userReasoner = this.userReasoners.get(username);</span>
+		
+<span class="nc bnc" id="L760" title="All 2 branches missed.">		if(userReasoner == null){</span>
+<span class="nc" id="L761">			IRI userIRI = IRI.create(this.getBaseIRI() + &quot;/&quot; + username);</span>
+<span class="nc" id="L762">			OWLOntology userOntology = this.manager.getOntology(userIRI);</span>
+<span class="nc bnc" id="L763" title="All 2 branches missed.">			if(userOntology == null)</span>
+<span class="nc" id="L764">				userOntology = this.loadFromFile(username + &quot;.owl&quot;);</span>
+<span class="nc" id="L765">			this.prefix.setPrefix(username + &quot;:&quot;, userIRI + &quot;#&quot;);</span>
+<span class="nc" id="L766">			userReasoner = this.initHermiTReasoner(userOntology);</span>
+<span class="nc" id="L767">			this.userReasoners.put(username, userReasoner);</span>
+		}
+		
+		try{
+<span class="nc" id="L771">			OWLClass owlLocationClass = this.manager.getOWLDataFactory().getOWLClass(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;Location&quot;));</span>
+
+<span class="nc" id="L773">			OWLNamedIndividual owlAction = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(this.prefix.getDefaultPrefix() + action));</span>
+<span class="nc" id="L774">			OWLObjectProperty offerDetail = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;offerDetail&quot;));</span>
+<span class="nc" id="L775">			OWLDataProperty name = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;name&quot;));</span>
+<span class="nc" id="L776">			OWLDataProperty type = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;type&quot;));</span>
+<span class="nc" id="L777">			OWLDataProperty type2 = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;type&quot;));</span>
+
+<span class="nc" id="L779">			Set&lt;OWLNamedIndividual&gt; owlDetails = reasoner.getObjectPropertyValues(owlAction, offerDetail).getFlattened();</span>
+			
+<span class="nc" id="L781">			Set&lt;Object&gt; entities = new HashSet&lt;Object&gt;();</span>
+<span class="nc bnc" id="L782" title="All 2 branches missed.">			for(IoTEntity entity : this.getIoTEntitiesByService(service, username)){</span>
+<span class="nc" id="L783">				entities.add(entity);</span>
+<span class="nc" id="L784">			}</span>
+			
+<span class="nc" id="L786">			boolean entityDetail = false;</span>
+<span class="nc bnc" id="L787" title="All 2 branches missed.">			for(OWLNamedIndividual owlDetail : owlDetails){</span>
+<span class="nc" id="L788">				Detail detail = new Detail();</span>
+<span class="nc" id="L789">				detail.setId(this.prefix.getShortForm(owlDetail.getIRI()).substring(1));</span>
+<span class="nc" id="L790">				detail.setURL(owlDetail.getIRI().toString());</span>
+<span class="nc" id="L791">				try{detail.setName(reasoner.getDataPropertyValues(owlDetail,name).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L792">				String detailType = null;</span>
+<span class="nc" id="L793">				try{detailType = reasoner.getDataPropertyValues(owlDetail,type).iterator().next().getLiteral();}catch(Throwable t){}</span>
+<span class="nc bnc" id="L794" title="All 2 branches missed.">				if(detailType == null)</span>
+<span class="nc" id="L795">					try{detailType = reasoner.getDataPropertyValues(owlDetail,type2).iterator().next().getLiteral();}catch(Throwable t){}</span>
+
+				
+<span class="nc" id="L798">				detail.setType(detailType);</span>
+				
+<span class="nc bnc" id="L800" title="All 2 branches missed.">				if(detailType.equals(&quot;entity&quot;)){</span>
+<span class="nc" id="L801">					entityDetail = true;</span>
+<span class="nc" id="L802">					detail.setAlternatives(entities);</span>
+				}
+<span class="nc bnc" id="L804" title="All 2 branches missed.">				if(detailType.equals(&quot;location&quot;)){</span>
+<span class="nc" id="L805">					Set&lt;Object&gt; locations = new HashSet&lt;Object&gt;();</span>
+					
+<span class="nc" id="L807">					Set&lt;OWLNamedIndividual&gt; owlLocations = userReasoner.getInstances(owlLocationClass, false).getFlattened();</span>
+<span class="nc bnc" id="L808" title="All 2 branches missed.">					for (OWLNamedIndividual owlLocation : owlLocations) {</span>
+<span class="nc" id="L809">						Location loc = new Location();</span>
+<span class="nc" id="L810">						loc.setURL(owlLocation.getIRI().toString());</span>
+<span class="nc" id="L811">						try{loc.setName(userReasoner.getDataPropertyValues(owlLocation,name).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L812">						locations.add(loc);</span>
+<span class="nc" id="L813">					}</span>
+					
+
+<span class="nc" id="L816">					detail.setAlternatives(locations);</span>
+				}
+<span class="nc" id="L818">				details.add(detail);</span>
+<span class="nc" id="L819">			}</span>
+			
+<span class="nc bnc" id="L821" title="All 4 branches missed.">			if(!entityDetail &amp;&amp; entities.size() &gt; 0){</span>
+<span class="nc" id="L822">				Detail detail = new Detail();</span>
+<span class="nc" id="L823">				detail.setName(&quot;Which entity?&quot;);</span>
+<span class="nc" id="L824">				detail.setType(&quot;entity&quot;);</span>
+<span class="nc" id="L825">				detail.setURL(&quot;entity_detail&quot;);</span>
+<span class="nc" id="L826">				detail.setAlternatives(entities);</span>
+<span class="nc" id="L827">				details.add(detail);</span>
+			}
+		}
+		finally{
+<span class="nc bnc" id="L831" title="All 4 branches missed.">			if(taken &amp;&amp; reasoner != null) this.reasoners.put(reasoner);</span>
+		}
+<span class="nc" id="L833">		return details;</span>
+	}
+	
+	@Override
+	public IoTEntity getIoTEntityByUrl(String url, String username) throws OWLOntologyCreationException {
+<span class="nc" id="L838">		OWLDataProperty name = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;name&quot;));</span>
+<span class="nc" id="L839">		OWLDataProperty id = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;id&quot;));</span>
+
+<span class="nc" id="L841">		OWLReasoner userReasoner = this.userReasoners.get(username);</span>
+		
+<span class="nc bnc" id="L843" title="All 2 branches missed.">		if(userReasoner == null){</span>
+<span class="nc" id="L844">			IRI userIRI = IRI.create(this.getBaseIRI() + &quot;/&quot; + username);</span>
+<span class="nc" id="L845">			OWLOntology userOntology = this.manager.getOntology(userIRI);</span>
+<span class="nc bnc" id="L846" title="All 2 branches missed.">			if(userOntology == null)</span>
+<span class="nc" id="L847">				userOntology = this.loadFromFile(username + &quot;.owl&quot;);</span>
+<span class="nc" id="L848">			this.prefix.setPrefix(username + &quot;:&quot;, userIRI + &quot;#&quot;);</span>
+<span class="nc" id="L849">			userReasoner = this.initHermiTReasoner(userOntology);</span>
+<span class="nc" id="L850">			this.userReasoners.put(username, userReasoner);</span>
+		}
+		
+<span class="nc" id="L853">		OWLNamedIndividual owlEntity = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(url));</span>
+<span class="nc" id="L854">		IoTEntity e = new IoTEntity();</span>
+<span class="nc" id="L855">		try{e.setName(userReasoner.getDataPropertyValues(owlEntity,name).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L856">		try{e.setId(userReasoner.getDataPropertyValues(owlEntity,id).iterator().next().getLiteral());}catch(Throwable t){}</span>
+
+<span class="nc" id="L858">		e.setURL(owlEntity.getIRI().toString());				</span>
+<span class="nc" id="L859">		List&lt;Service&gt; services = this.getServicesByIoTEntity(e.getURL(),username);</span>
+<span class="nc" id="L860">		Set&lt;String&gt; servicesURLS = new HashSet&lt;String&gt;();</span>
+<span class="nc bnc" id="L861" title="All 2 branches missed.">		for(Service service : services)</span>
+<span class="nc" id="L862">			servicesURLS.add(this.prefix.getShortForm(IRI.create(service.getURL())).substring(1));</span>
+<span class="nc" id="L863">		e.setServices(servicesURLS);</span>
+		try{
+<span class="nc" id="L865">			e.setType(this.prefix.getShortForm(userReasoner.getTypes(owlEntity, true).getFlattened().iterator().next()).replace(&quot;eupont:&quot;, &quot;&quot;).toLowerCase());</span>
+<span class="nc" id="L866">		}catch(Throwable t) {}</span>
+		
+	
+<span class="nc" id="L869">		return e;</span>
+	}
+	
+
+	@Override
+	public Set&lt;Command&gt; getCommands(Action action, Location location, String username) throws InterruptedException, OWLOntologyCreationException {
+<span class="nc" id="L875">		Set&lt;Command&gt; commands = new HashSet&lt;Command&gt;();</span>
+<span class="nc" id="L876">		OWLObjectProperty reproduceBy = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;reproduceBy&quot;));</span>
+<span class="nc" id="L877">		OWLObjectProperty commandIsOfService = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;commandIsOfService&quot;));</span>
+<span class="nc" id="L878">		OWLObjectProperty isOfEntity = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;isOfEntity&quot;));</span>
+<span class="nc" id="L879">		OWLObjectProperty position = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;position&quot;));</span>
+
+<span class="nc" id="L881">		OWLNamedIndividual owlAction = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(action.getURL()));</span>
+
+<span class="nc" id="L883">		OWLDataProperty id = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;id&quot;));</span>
+<span class="nc" id="L884">		OWLDataProperty type = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;type&quot;));</span>
+<span class="nc" id="L885">		OWLDataProperty type2 = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;type&quot;));</span>
+
+<span class="nc" id="L887">		OWLReasoner userReasoner = this.userReasoners.get(username);</span>
+		
+<span class="nc bnc" id="L889" title="All 2 branches missed.">		if(userReasoner == null){</span>
+<span class="nc" id="L890">			IRI userIRI = IRI.create(this.getBaseIRI() + &quot;/&quot; + username);</span>
+<span class="nc" id="L891">			OWLOntology userOntology = this.manager.getOntology(userIRI);</span>
+<span class="nc bnc" id="L892" title="All 2 branches missed.">			if(userOntology == null)</span>
+<span class="nc" id="L893">				userOntology = this.loadFromFile(username + &quot;.owl&quot;);</span>
+<span class="nc" id="L894">			this.prefix.setPrefix(username + &quot;:&quot;, userIRI + &quot;#&quot;);</span>
+			
+<span class="nc" id="L896">			userReasoner = this.initHermiTReasoner(userOntology);</span>
+			
+<span class="nc" id="L898">			this.userReasoners.put(username, userReasoner);</span>
+		}
+		
+<span class="nc" id="L901">		userReasoner.precomputeInferences(InferenceType.values());</span>
+		
+<span class="nc" id="L903">		Set&lt;OWLNamedIndividual&gt; owlCommands = userReasoner.getObjectPropertyValues(owlAction, reproduceBy).getFlattened();</span>
+		
+<span class="nc bnc" id="L905" title="All 2 branches missed.">		for (OWLNamedIndividual owlCommand : owlCommands) {</span>
+			
+			//getIoTEntity
+<span class="nc" id="L908">			OWLNamedIndividual owlService = userReasoner.getObjectPropertyValues(owlCommand, commandIsOfService).getFlattened().iterator().next();</span>
+<span class="nc" id="L909">			OWLNamedIndividual owlEntity = userReasoner.getObjectPropertyValues(owlService, isOfEntity).getFlattened().iterator().next();</span>
+
+			//check IoTEntitiy position
+<span class="nc bnc" id="L912" title="All 4 branches missed.">			if(location != null &amp;&amp; ! location.getName().equals(&quot;Entire Home&quot;)) {</span>
+				try{
+<span class="nc" id="L914">					OWLNamedIndividual owlLocation = userReasoner.getObjectPropertyValues(owlEntity, position).getFlattened().iterator().next();</span>
+<span class="nc bnc" id="L915" title="All 4 branches missed.">					if(owlLocation != null &amp;&amp; ! owlLocation.getIRI().toString().equals(location.getURL()))</span>
+<span class="nc" id="L916">						continue;</span>
+<span class="nc" id="L917">				}catch (Throwable t) {</span>
+<span class="nc" id="L918">					System.err.print(t.getStackTrace());</span>
+<span class="nc" id="L919">				}</span>
+			}
+			
+<span class="nc" id="L922">			Command command = new Command();</span>
+<span class="nc" id="L923">			command.setURL(this.prefix.getShortForm(owlCommand.getIRI()).substring(1));</span>
+<span class="nc" id="L924">			try{command.setId(userReasoner.getDataPropertyValues(owlCommand,id).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L925">			try{command.setType(userReasoner.getDataPropertyValues(owlCommand,type).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc bnc" id="L926" title="All 2 branches missed.">			if(command.getType() == null) {</span>
+<span class="nc" id="L927">				try{command.setType(userReasoner.getDataPropertyValues(owlCommand,type2).iterator().next().getLiteral());}catch(Throwable t){}</span>
+			}
+			
+<span class="nc" id="L930">			command.setEntitiy(this.getIoTEntityByUrl(owlEntity.getIRI().toString(), username));</span>
+			
+<span class="nc" id="L932">			commands.add(command);</span>
+<span class="nc" id="L933">		}</span>
+		
+		
+<span class="nc" id="L936">		return commands;</span>
+	}
+
+
+	@Override
+	public Set&lt;Notification&gt; getNotifications(Trigger trigger, Location location, String username)
+			throws InterruptedException, OWLOntologyCreationException {
+<span class="nc" id="L943">		Set&lt;Notification&gt; notifications = new HashSet&lt;Notification&gt;();</span>
+<span class="nc" id="L944">		OWLObjectProperty allowTo = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;allowTo&quot;));</span>
+<span class="nc" id="L945">		OWLObjectProperty notificationIsOfService = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;notificationIsOfService&quot;));</span>
+<span class="nc" id="L946">		OWLObjectProperty isOfEntity = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;isOfEntity&quot;));</span>
+<span class="nc" id="L947">		OWLObjectProperty position = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;position&quot;));</span>
+
+<span class="nc" id="L949">		OWLNamedIndividual owlTrigger = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(trigger.getURL()));</span>
+
+<span class="nc" id="L951">		OWLDataProperty id = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;id&quot;));</span>
+		
+<span class="nc" id="L953">		OWLReasoner userReasoner = this.userReasoners.get(username);</span>
+		
+<span class="nc bnc" id="L955" title="All 2 branches missed.">		if(userReasoner == null){</span>
+<span class="nc" id="L956">			IRI userIRI = IRI.create(this.getBaseIRI() + &quot;/&quot; + username);</span>
+<span class="nc" id="L957">			OWLOntology userOntology = this.manager.getOntology(userIRI);</span>
+<span class="nc bnc" id="L958" title="All 2 branches missed.">			if(userOntology == null)</span>
+<span class="nc" id="L959">				userOntology = this.loadFromFile(username + &quot;.owl&quot;);</span>
+<span class="nc" id="L960">			this.prefix.setPrefix(username + &quot;:&quot;, userIRI + &quot;#&quot;);</span>
+<span class="nc" id="L961">			userReasoner = this.initHermiTReasoner(userOntology);</span>
+<span class="nc" id="L962">			this.userReasoners.put(username, userReasoner);</span>
+		}
+		
+<span class="nc" id="L965">		Set&lt;OWLNamedIndividual&gt; owlNotifications = userReasoner.getObjectPropertyValues(owlTrigger, allowTo).getFlattened();</span>
+<span class="nc bnc" id="L966" title="All 2 branches missed.">		for (OWLNamedIndividual owlNotification : owlNotifications) {</span>
+			
+			//getIoTEntity
+<span class="nc" id="L969">			OWLNamedIndividual owlService = userReasoner.getObjectPropertyValues(owlNotification, notificationIsOfService).getFlattened().iterator().next();</span>
+<span class="nc" id="L970">			OWLNamedIndividual owlEntity = userReasoner.getObjectPropertyValues(owlService, isOfEntity).getFlattened().iterator().next();</span>
+
+			//check IoTEntitiy position
+<span class="nc bnc" id="L973" title="All 2 branches missed.">			if(location != null) {</span>
+<span class="nc" id="L974">				OWLNamedIndividual owlLocation = userReasoner.getObjectPropertyValues(owlEntity, position).getFlattened().iterator().next();</span>
+<span class="nc bnc" id="L975" title="All 4 branches missed.">				if(owlLocation != null &amp;&amp; ! owlLocation.getIRI().toString().equals(location.getURL()))</span>
+<span class="nc" id="L976">					continue;</span>
+			}
+			
+<span class="nc" id="L979">			Notification notification = new Notification();</span>
+<span class="nc" id="L980">			notification.setURL(this.prefix.getShortForm(owlNotification.getIRI()).substring(1));</span>
+<span class="nc" id="L981">			try{notification.setId(userReasoner.getDataPropertyValues(owlNotification,id).iterator().next().getLiteral());}catch(Throwable t){}</span>
+			
+			
+<span class="nc" id="L984">			notification.setEntitiy(this.getIoTEntityByUrl(owlEntity.getIRI().toString(), username));</span>
+<span class="nc" id="L985">		}</span>
+		
+		
+<span class="nc" id="L988">		return notifications;		</span>
+		
+	}
+	
+	@Override
+	public List&lt;Service&gt; getServicesByIoTEntity(String url, String username) throws OWLOntologyCreationException {
+<span class="nc" id="L994">		List&lt;Service&gt; services = new LinkedList&lt;Service&gt;();</span>
+<span class="nc" id="L995">		OWLReasoner userReasoner = this.userReasoners.get(username);</span>
+		
+<span class="nc bnc" id="L997" title="All 2 branches missed.">		if(userReasoner == null){</span>
+<span class="nc" id="L998">			IRI userIRI = IRI.create(this.getBaseIRI() + &quot;/&quot; + username);</span>
+<span class="nc" id="L999">			OWLOntology userOntology = this.manager.getOntology(userIRI);</span>
+<span class="nc bnc" id="L1000" title="All 2 branches missed.">			if(userOntology == null)</span>
+<span class="nc" id="L1001">				userOntology = this.loadFromFile(username + &quot;.owl&quot;);</span>
+<span class="nc" id="L1002">			this.prefix.setPrefix(username + &quot;:&quot;, userIRI + &quot;#&quot;);</span>
+<span class="nc" id="L1003">			userReasoner = this.initHermiTReasoner(userOntology);</span>
+<span class="nc" id="L1004">			this.userReasoners.put(username, userReasoner);</span>
+		}
+		
+<span class="nc" id="L1007">		OWLObjectProperty hasTechnology = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;hasTechnology&quot;));</span>
+<span class="nc" id="L1008">		OWLNamedIndividual owlEntity = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(url));</span>
+
+<span class="nc" id="L1010">		OWLDataProperty image = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;image&quot;));</span>
+<span class="nc" id="L1011">		OWLDataProperty name = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;name&quot;));</span>
+<span class="nc" id="L1012">		OWLDataProperty id = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;id&quot;));</span>
+<span class="nc" id="L1013">		OWLDataProperty color = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;color&quot;));</span>
+		
+<span class="nc" id="L1015">		Set&lt;OWLNamedIndividual&gt; owlServices = userReasoner.getObjectPropertyValues(owlEntity,hasTechnology).getFlattened();</span>
+<span class="nc bnc" id="L1016" title="All 2 branches missed.">		for(OWLNamedIndividual owlService : owlServices){</span>
+<span class="nc" id="L1017">			Service service = new Service();</span>
+<span class="nc" id="L1018">			service.setURL(owlService.getIRI().toString());</span>
+<span class="nc" id="L1019">			service.setId(prefix.getShortForm(owlService.getIRI()).substring(1));</span>
+			
+<span class="nc" id="L1021">			try{service.setName(userReasoner.getDataPropertyValues(owlService,name).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L1022">			try{service.setWebId(Long.valueOf(userReasoner.getDataPropertyValues(owlService,id).iterator().next().getLiteral()));}catch(Throwable t){}</span>
+<span class="nc" id="L1023">			try{service.setColor(userReasoner.getDataPropertyValues(owlService,color).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L1024">			try{service.setImage(userReasoner.getDataPropertyValues(owlService,image).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L1025">			services.add(service);</span>
+			
+<span class="nc" id="L1027">		}</span>
+		
+<span class="nc" id="L1029">		return services;</span>
+	}
+
+
+	@Override
+	public Collection&lt;IoTEntity&gt; getIoTEntitiesByService(String service, String username) throws OWLOntologyCreationException {
+		
+<span class="nc" id="L1036">		OWLDataProperty name = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;name&quot;));</span>
+
+<span class="nc" id="L1038">		OWLReasoner userReasoner = this.userReasoners.get(username);</span>
+		
+<span class="nc bnc" id="L1040" title="All 2 branches missed.">		if(userReasoner == null){</span>
+<span class="nc" id="L1041">			IRI userIRI = IRI.create(this.getBaseIRI() + &quot;/&quot; + username);</span>
+<span class="nc" id="L1042">			OWLOntology userOntology = this.manager.getOntology(userIRI);</span>
+<span class="nc bnc" id="L1043" title="All 2 branches missed.">			if(userOntology == null)</span>
+<span class="nc" id="L1044">				userOntology = this.loadFromFile(username + &quot;.owl&quot;);</span>
+<span class="nc" id="L1045">			this.prefix.setPrefix(username + &quot;:&quot;, userIRI + &quot;#&quot;);</span>
+<span class="nc" id="L1046">			userReasoner = this.initHermiTReasoner(userOntology);</span>
+<span class="nc" id="L1047">			this.userReasoners.put(username, userReasoner);</span>
+		}
+
+<span class="nc" id="L1050">		Set&lt;IoTEntity&gt; entities = new HashSet&lt;IoTEntity&gt;();</span>
+<span class="nc" id="L1051">		OWLNamedIndividual owlService = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(this.prefix.getDefaultPrefix() + service));</span>
+<span class="nc" id="L1052">		OWLObjectProperty hasRegisteredEntity = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;hasRegisteredEntity&quot;));</span>
+<span class="nc" id="L1053">		Set&lt;OWLNamedIndividual&gt; owlEntities = userReasoner.getObjectPropertyValues(owlService, hasRegisteredEntity).getFlattened();</span>
+<span class="nc bnc" id="L1054" title="All 2 branches missed.">		for(OWLNamedIndividual owlEntity : owlEntities){</span>
+<span class="nc" id="L1055">			IoTEntity e = new IoTEntity();</span>
+<span class="nc" id="L1056">			try{e.setName(userReasoner.getDataPropertyValues(owlEntity,name).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L1057">			e.setId(this.prefix.getShortForm(owlEntity.getIRI()).substring(1));</span>
+<span class="nc" id="L1058">			e.setURL(owlEntity.getIRI().toString());</span>
+<span class="nc" id="L1059">			entities.add(e);</span>
+<span class="nc" id="L1060">		}</span>
+
+<span class="nc" id="L1062">		return entities;</span>
+	}
+	
+	@Override
+	public Collection&lt;Trigger&gt; getSupportedTriggers(String username) throws OWLOntologyCreationException, InterruptedException{
+<span class="nc" id="L1067">		Set&lt;Trigger&gt; triggers = new HashSet&lt;Trigger&gt;();</span>
+<span class="nc" id="L1068">		OWLReasoner userReasoner = this.userReasoners.get(username);</span>
+		
+<span class="nc bnc" id="L1070" title="All 2 branches missed.">		if(userReasoner == null){</span>
+<span class="nc" id="L1071">			IRI userIRI = IRI.create(this.getBaseIRI() + &quot;/&quot; + username);</span>
+<span class="nc" id="L1072">			OWLOntology userOntology = this.manager.getOntology(userIRI);</span>
+<span class="nc bnc" id="L1073" title="All 2 branches missed.">			if(userOntology == null)</span>
+<span class="nc" id="L1074">				userOntology = this.loadFromFile(username + &quot;.owl&quot;);</span>
+<span class="nc" id="L1075">			this.prefix.setPrefix(username + &quot;:&quot;, userIRI + &quot;#&quot;);</span>
+<span class="nc" id="L1076">			userReasoner = this.initHermiTReasoner(userOntology);</span>
+<span class="nc" id="L1077">			this.userReasoners.put(username, userReasoner);</span>
+		}
+
+<span class="nc" id="L1080">		OWLNamedIndividual userIndividual = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(this.prefix.getPrefix(username + &quot;:&quot;) + username));</span>
+<span class="nc" id="L1081">		OWLObjectProperty canControlProp = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;canControl&quot;));</span>
+<span class="nc" id="L1082">		OWLObjectProperty hasTechnologyProp = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;hasTechnology&quot;));</span>
+
+<span class="nc" id="L1084">		Set&lt;OWLNamedIndividual&gt; owlEntities = userReasoner.getObjectPropertyValues(userIndividual, canControlProp).getFlattened();</span>
+		
+<span class="nc bnc" id="L1086" title="All 2 branches missed.">		for(OWLNamedIndividual owlEntity : owlEntities){</span>
+<span class="nc" id="L1087">			Set&lt;OWLNamedIndividual&gt; owlServices = userReasoner.getObjectPropertyValues(owlEntity, hasTechnologyProp).getFlattened();</span>
+<span class="nc bnc" id="L1088" title="All 2 branches missed.">			for(OWLNamedIndividual owlService : owlServices){</span>
+<span class="nc" id="L1089">				triggers.addAll(this.getTriggers(this.prefix.getShortForm(owlService.getIRI()).substring(1), username));</span>
+<span class="nc" id="L1090">			}</span>
+<span class="nc" id="L1091">		}</span>
+		
+<span class="nc" id="L1093">		return triggers;</span>
+	}
+	
+	@Override
+	public Collection&lt;Trigger&gt; getSupportedTriggers(Collection&lt;IoTEntity&gt; entities,String username) throws OWLOntologyCreationException, InterruptedException{
+<span class="nc" id="L1098">		Set&lt;Trigger&gt; triggers = new HashSet&lt;Trigger&gt;();</span>
+<span class="nc" id="L1099">		OWLReasoner userReasoner = this.userReasoners.get(username);</span>
+		
+<span class="nc bnc" id="L1101" title="All 2 branches missed.">		if(userReasoner == null){</span>
+<span class="nc" id="L1102">			IRI userIRI = IRI.create(this.getBaseIRI() + &quot;/&quot; + username);</span>
+<span class="nc" id="L1103">			OWLOntology userOntology = this.manager.getOntology(userIRI);</span>
+<span class="nc bnc" id="L1104" title="All 2 branches missed.">			if(userOntology == null)</span>
+<span class="nc" id="L1105">				userOntology = this.loadFromFile(username + &quot;.owl&quot;);</span>
+<span class="nc" id="L1106">			this.prefix.setPrefix(username + &quot;:&quot;, userIRI + &quot;#&quot;);</span>
+<span class="nc" id="L1107">			userReasoner = this.initHermiTReasoner(userOntology);</span>
+<span class="nc" id="L1108">			this.userReasoners.put(username, userReasoner);</span>
+		}
+
+<span class="nc" id="L1111">		OWLObjectProperty hasTechnologyProp = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;hasTechnology&quot;));</span>
+
+<span class="nc" id="L1113">		Set&lt;OWLNamedIndividual&gt; owlEntities = new HashSet&lt;OWLNamedIndividual&gt;();</span>
+<span class="nc bnc" id="L1114" title="All 2 branches missed.">		for(IoTEntity entity : entities) {</span>
+<span class="nc" id="L1115">			owlEntities.add(this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(entity.getURL())));</span>
+<span class="nc" id="L1116">		}</span>
+				
+<span class="nc bnc" id="L1118" title="All 2 branches missed.">		for(OWLNamedIndividual owlEntity : owlEntities){</span>
+<span class="nc" id="L1119">			Set&lt;OWLNamedIndividual&gt; owlServices = userReasoner.getObjectPropertyValues(owlEntity, hasTechnologyProp).getFlattened();</span>
+<span class="nc bnc" id="L1120" title="All 2 branches missed.">			for(OWLNamedIndividual owlService : owlServices){</span>
+<span class="nc" id="L1121">				triggers.addAll(this.getTriggers(this.prefix.getShortForm(owlService.getIRI()).substring(1), username));</span>
+<span class="nc" id="L1122">			}</span>
+<span class="nc" id="L1123">		}</span>
+		
+<span class="nc" id="L1125">		return triggers;</span>
+	}
+	
+	@Override
+	public Collection&lt;Action&gt; getSupportedActions(String username) throws OWLOntologyCreationException, InterruptedException{
+<span class="nc" id="L1130">		Set&lt;Action&gt; actions = new HashSet&lt;Action&gt;();</span>
+<span class="nc" id="L1131">		OWLReasoner userReasoner = this.userReasoners.get(username);</span>
+		
+<span class="nc bnc" id="L1133" title="All 2 branches missed.">		if(userReasoner == null){</span>
+<span class="nc" id="L1134">			IRI userIRI = IRI.create(this.getBaseIRI() + &quot;/&quot; + username);</span>
+<span class="nc" id="L1135">			OWLOntology userOntology = this.manager.getOntology(userIRI);</span>
+<span class="nc bnc" id="L1136" title="All 2 branches missed.">			if(userOntology == null)</span>
+<span class="nc" id="L1137">				userOntology = this.loadFromFile(username + &quot;.owl&quot;);</span>
+<span class="nc" id="L1138">			this.prefix.setPrefix(username + &quot;:&quot;, userIRI + &quot;#&quot;);</span>
+<span class="nc" id="L1139">			userReasoner = this.initHermiTReasoner(userOntology);</span>
+<span class="nc" id="L1140">			this.userReasoners.put(username, userReasoner);</span>
+		}
+
+<span class="nc" id="L1143">		OWLNamedIndividual userIndividual = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(this.prefix.getPrefix(username + &quot;:&quot;) + username));</span>
+<span class="nc" id="L1144">		OWLObjectProperty canControlProp = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;canControl&quot;));</span>
+<span class="nc" id="L1145">		OWLObjectProperty hasTechnologyProp = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;hasTechnology&quot;));</span>
+
+<span class="nc" id="L1147">		Set&lt;OWLNamedIndividual&gt; owlEntities = userReasoner.getObjectPropertyValues(userIndividual, canControlProp).getFlattened();</span>
+		
+<span class="nc bnc" id="L1149" title="All 2 branches missed.">		for(OWLNamedIndividual owlEntity : owlEntities){</span>
+<span class="nc" id="L1150">			Set&lt;OWLNamedIndividual&gt; owlServices = userReasoner.getObjectPropertyValues(owlEntity, hasTechnologyProp).getFlattened();</span>
+<span class="nc bnc" id="L1151" title="All 2 branches missed.">			for(OWLNamedIndividual owlService : owlServices){</span>
+<span class="nc" id="L1152">				actions.addAll(this.getActions(this.prefix.getShortForm(owlService.getIRI()).substring(1), username));</span>
+<span class="nc" id="L1153">			}</span>
+<span class="nc" id="L1154">		}</span>
+		
+<span class="nc" id="L1156">		return actions;</span>
+	}
+	
+	@Override
+	public Collection&lt;Action&gt; getSupportedActions(Collection&lt;IoTEntity&gt; entities, String username)
+			throws OWLOntologyCreationException, InterruptedException {
+<span class="nc" id="L1162">		Set&lt;Action&gt; actions = new HashSet&lt;Action&gt;();</span>
+<span class="nc" id="L1163">		OWLReasoner userReasoner = this.userReasoners.get(username);</span>
+		
+<span class="nc bnc" id="L1165" title="All 2 branches missed.">		if(userReasoner == null){</span>
+<span class="nc" id="L1166">			IRI userIRI = IRI.create(this.getBaseIRI() + &quot;/&quot; + username);</span>
+<span class="nc" id="L1167">			OWLOntology userOntology = this.manager.getOntology(userIRI);</span>
+<span class="nc bnc" id="L1168" title="All 2 branches missed.">			if(userOntology == null)</span>
+<span class="nc" id="L1169">				userOntology = this.loadFromFile(username + &quot;.owl&quot;);</span>
+<span class="nc" id="L1170">			this.prefix.setPrefix(username + &quot;:&quot;, userIRI + &quot;#&quot;);</span>
+<span class="nc" id="L1171">			userReasoner = this.initHermiTReasoner(userOntology);</span>
+<span class="nc" id="L1172">			this.userReasoners.put(username, userReasoner);</span>
+		}
+
+<span class="nc" id="L1175">		OWLObjectProperty hasTechnologyProp = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;hasTechnology&quot;));</span>
+
+<span class="nc" id="L1177">		Set&lt;OWLNamedIndividual&gt; owlEntities = new HashSet&lt;OWLNamedIndividual&gt;();</span>
+<span class="nc bnc" id="L1178" title="All 2 branches missed.">		for(IoTEntity entity : entities) {</span>
+<span class="nc" id="L1179">			owlEntities.add(this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(entity.getURL())));</span>
+<span class="nc" id="L1180">		}</span>
+				
+<span class="nc bnc" id="L1182" title="All 2 branches missed.">		for(OWLNamedIndividual owlEntity : owlEntities){</span>
+<span class="nc" id="L1183">			Set&lt;OWLNamedIndividual&gt; owlServices = userReasoner.getObjectPropertyValues(owlEntity, hasTechnologyProp).getFlattened();</span>
+<span class="nc bnc" id="L1184" title="All 2 branches missed.">			for(OWLNamedIndividual owlService : owlServices){</span>
+<span class="nc" id="L1185">				actions.addAll(this.getActions(this.prefix.getShortForm(owlService.getIRI()).substring(1), username));</span>
+<span class="nc" id="L1186">			}</span>
+<span class="nc" id="L1187">		}</span>
+<span class="nc" id="L1188">		return actions;</span>
+	}
+	
+	
+	@Override
+	public Collection&lt;IoTEntity&gt; getIoTEntitiesByServices(List&lt;Service&gt; services, String username) throws OWLOntologyCreationException {
+<span class="nc" id="L1194">		OWLDataProperty name = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;name&quot;));</span>
+
+<span class="nc" id="L1196">		OWLReasoner userReasoner = this.userReasoners.get(username);</span>
+		
+<span class="nc bnc" id="L1198" title="All 2 branches missed.">		if(userReasoner == null){</span>
+<span class="nc" id="L1199">			IRI userIRI = IRI.create(this.getBaseIRI() + &quot;/&quot; + username);</span>
+<span class="nc" id="L1200">			OWLOntology userOntology = this.manager.getOntology(userIRI);</span>
+<span class="nc bnc" id="L1201" title="All 2 branches missed.">			if(userOntology == null)</span>
+<span class="nc" id="L1202">				userOntology = this.loadFromFile(username + &quot;.owl&quot;);</span>
+<span class="nc" id="L1203">			this.prefix.setPrefix(username + &quot;:&quot;, userIRI + &quot;#&quot;);</span>
+<span class="nc" id="L1204">			userReasoner = this.initHermiTReasoner(userOntology);</span>
+<span class="nc" id="L1205">			this.userReasoners.put(username, userReasoner);</span>
+		}
+
+<span class="nc" id="L1208">		Set&lt;IoTEntity&gt; entities = new HashSet&lt;IoTEntity&gt;();</span>
+<span class="nc bnc" id="L1209" title="All 2 branches missed.">		for(Service service : services){</span>
+<span class="nc" id="L1210">			OWLNamedIndividual owlService = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(this.prefix.getDefaultPrefix() + service.getId()));</span>
+<span class="nc" id="L1211">			OWLObjectProperty hasRegisteredEntity = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;hasRegisteredEntity&quot;));</span>
+<span class="nc" id="L1212">			Set&lt;OWLNamedIndividual&gt; owlEntities = userReasoner.getObjectPropertyValues(owlService, hasRegisteredEntity).getFlattened();</span>
+<span class="nc bnc" id="L1213" title="All 2 branches missed.">			for(OWLNamedIndividual owlEntity : owlEntities){</span>
+<span class="nc" id="L1214">				IoTEntity e = new IoTEntity();</span>
+<span class="nc" id="L1215">				try{e.setName(userReasoner.getDataPropertyValues(owlEntity,name).iterator().next().getLiteral());}catch(Throwable t){}</span>
+<span class="nc" id="L1216">				e.setId(this.prefix.getShortForm(owlEntity.getIRI()).substring(1));</span>
+<span class="nc" id="L1217">				e.setURL(owlEntity.getIRI().toString());</span>
+<span class="nc" id="L1218">				entities.add(e);</span>
+<span class="nc" id="L1219">			}</span>
+<span class="nc" id="L1220">		}</span>
+<span class="nc" id="L1221">		return entities;</span>
+	}
+
+	
+	
+	@Override
+	public boolean triggers(Action action, Trigger trigger) throws InterruptedException {
+<span class="nc" id="L1228">		OWLReasoner reasoner = this.reasoners.take();</span>
+		try{
+<span class="nc" id="L1230">			OWLNamedIndividual owlAction = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(action.getURL()));</span>
+<span class="nc" id="L1231">			OWLObjectProperty owlTriggersProp = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;triggers&quot;));</span>
+			
+<span class="nc" id="L1233">			Set&lt;OWLNamedIndividual&gt; owlTriggers = reasoner.getObjectPropertyValues(owlAction, owlTriggersProp).getFlattened();</span>
+<span class="nc bnc" id="L1234" title="All 2 branches missed.">			for(OWLNamedIndividual owlTrigger : owlTriggers){</span>
+<span class="nc bnc" id="L1235" title="All 2 branches missed.">				if(owlTrigger.getIRI().toString().equals(trigger.getURL()))</span>
+<span class="nc" id="L1236">					return true;</span>
+<span class="nc" id="L1237">			}</span>
+		}
+		finally{
+<span class="nc bnc" id="L1240" title="All 2 branches missed.">			if(reasoner != null) this.reasoners.put(reasoner);</span>
+		}
+<span class="nc" id="L1242">		return false;</span>
+	}
+	
+	@Override
+	public void saveRule(Rule rule) {
+		
+		
+<span class="nc" id="L1249">	}</span>
+	/**
+	 * This method returns a Technology object that contains all the details of the specified technology
+	 * 
+	 * @param technologyName the name of the technology
+	 * @return Technology
+	 * @throws InterruptedException 
+	 */
+	@Override
+	public Technology getTechnologyFromName(String technologyName) throws InterruptedException {
+<span class="nc" id="L1259">		OWLReasoner reasoner = this.reasoners.take();</span>
+<span class="nc" id="L1260">		Technology technology = new Technology();</span>
+
+		try{
+<span class="nc" id="L1263">			logger.info(&quot;Get the technology named &quot; + technologyName);</span>
+	
+<span class="nc bnc" id="L1265" title="All 2 branches missed.">			if(!this.baseOntology.containsEntityInSignature(IRI.create(this.prefix.getDefaultPrefix() + technologyName)))</span>
+<span class="nc" id="L1266">				return null;</span>
+			
+			//Get onological entitities
+<span class="nc" id="L1269">			OWLClass technologyClass = this.manager.getOWLDataFactory().getOWLClass(IRI.create(this.prefix.getDefaultPrefix() + technologyName));</span>
+<span class="nc" id="L1270">			OWLObjectProperty offerAction = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;offerAction&quot;));</span>
+<span class="nc" id="L1271">			OWLObjectProperty offerTrigger = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;offerTrigger&quot;));</span>
+<span class="nc" id="L1272">			OWLObjectProperty offerDetail = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;offerDetail&quot;));</span>
+<span class="nc" id="L1273">			OWLDataProperty name = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getPrefix(&quot;foaf:&quot;) + &quot;name&quot;));</span>
+<span class="nc" id="L1274">			OWLDataProperty description = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;description&quot;));</span>
+			
+<span class="nc" id="L1276">			technology.setId(technologyName);</span>
+<span class="nc" id="L1277">			technology.setURL(this.prefix.getDefaultPrefix() + technologyName);</span>
+			
+<span class="nc" id="L1279">			Set&lt;Service&gt; services = new HashSet&lt;Service&gt;();</span>
+			//Get services
+<span class="nc" id="L1281">			Set&lt;OWLNamedIndividual&gt; technologyServices = reasoner.getInstances(technologyClass, false).getFlattened();</span>
+<span class="nc bnc" id="L1282" title="All 2 branches missed.">			for(OWLNamedIndividual technologyService : technologyServices){</span>
+<span class="nc" id="L1283">				Service service = new Service();</span>
+<span class="nc" id="L1284">				service.setId(this.prefix.getShortForm(technologyService).substring(1));</span>
+<span class="nc" id="L1285">				service.setURL(technologyService.getIRI().toString());</span>
+<span class="nc" id="L1286">				Set&lt;Action&gt; actions = new HashSet&lt;Action&gt;();</span>
+<span class="nc" id="L1287">				Set&lt;Trigger&gt; triggers = new HashSet&lt;Trigger&gt;();</span>
+				
+				//Get offered triggers
+<span class="nc" id="L1290">				Set&lt;OWLNamedIndividual&gt; serviceTriggers = reasoner.getObjectPropertyValues(technologyService, offerTrigger).getFlattened();</span>
+				//Get offered actions
+<span class="nc" id="L1292">				Set&lt;OWLNamedIndividual&gt; serviceActions = reasoner.getObjectPropertyValues(technologyService, offerAction).getFlattened();</span>
+				
+<span class="nc bnc" id="L1294" title="All 2 branches missed.">				for(OWLNamedIndividual serviceTrigger : serviceTriggers){</span>
+<span class="nc" id="L1295">					Trigger trigger = new Trigger();</span>
+<span class="nc" id="L1296">					trigger.setId(this.prefix.getShortForm(serviceTrigger));</span>
+<span class="nc" id="L1297">					trigger.setURL(serviceTrigger.getIRI().toString());</span>
+<span class="nc" id="L1298">					String triggerDescription = null;</span>
+<span class="nc" id="L1299">					try{triggerDescription = reasoner.getDataPropertyValues(serviceTrigger, description).iterator().next().getLiteral();}catch(Throwable t){}</span>
+<span class="nc bnc" id="L1300" title="All 2 branches missed.">					if(triggerDescription != null)</span>
+<span class="nc" id="L1301">						trigger.setDescription(triggerDescription);</span>
+					//Get trigger details
+<span class="nc" id="L1303">					Set&lt;OWLNamedIndividual&gt; triggerDetails = reasoner.getObjectPropertyValues(serviceTrigger, offerDetail).getFlattened();</span>
+<span class="nc" id="L1304">					List&lt;Detail&gt; details = new LinkedList&lt;Detail&gt;();</span>
+<span class="nc bnc" id="L1305" title="All 2 branches missed.">					for(OWLNamedIndividual triggerDetail : triggerDetails){</span>
+<span class="nc" id="L1306">						Detail detail = new Detail();</span>
+<span class="nc" id="L1307">						detail.setId(this.prefix.getShortForm(triggerDetail));</span>
+<span class="nc" id="L1308">						detail.setURL(triggerDetail.getIRI().toString());</span>
+<span class="nc" id="L1309">						String detailName = null;</span>
+<span class="nc" id="L1310">						try{detailName = reasoner.getDataPropertyValues(triggerDetail, name).iterator().next().getLiteral();}catch(Throwable t){}</span>
+<span class="nc bnc" id="L1311" title="All 2 branches missed.">						if(detailName == null)</span>
+<span class="nc" id="L1312">							detail.setName(detailName);</span>
+<span class="nc" id="L1313">						details.add(detail);</span>
+<span class="nc" id="L1314">					}</span>
+<span class="nc" id="L1315">					trigger.setDetails(details);</span>
+<span class="nc" id="L1316">					triggers.add(trigger);</span>
+<span class="nc" id="L1317">				}</span>
+				
+<span class="nc bnc" id="L1319" title="All 2 branches missed.">				for(OWLNamedIndividual serviceAction : serviceActions){</span>
+<span class="nc" id="L1320">					Action action = new Action();</span>
+<span class="nc" id="L1321">					action.setId(this.prefix.getShortForm(serviceAction));</span>
+<span class="nc" id="L1322">					action.setURL(serviceAction.getIRI().toString());</span>
+<span class="nc" id="L1323">					String actionDescription = null;</span>
+<span class="nc" id="L1324">					try{actionDescription = reasoner.getDataPropertyValues(serviceAction, description).iterator().next().getLiteral();}catch(Throwable t){}</span>
+<span class="nc bnc" id="L1325" title="All 2 branches missed.">					if(actionDescription != null)</span>
+<span class="nc" id="L1326">						action.setDescription(actionDescription);</span>
+					//Get action details
+<span class="nc" id="L1328">					Set&lt;OWLNamedIndividual&gt; actionDetails = reasoner.getObjectPropertyValues(serviceAction, offerDetail).getFlattened();</span>
+<span class="nc" id="L1329">					List&lt;Detail&gt; details = new LinkedList&lt;Detail&gt;();</span>
+<span class="nc bnc" id="L1330" title="All 2 branches missed.">					for(OWLNamedIndividual actionDetail : actionDetails){</span>
+<span class="nc" id="L1331">						Detail detail = new Detail();</span>
+<span class="nc" id="L1332">						detail.setId(this.prefix.getShortForm(actionDetail));</span>
+<span class="nc" id="L1333">						detail.setURL(actionDetail.getIRI().toString());</span>
+<span class="nc" id="L1334">						String detailName = null;</span>
+<span class="nc" id="L1335">						try{detailName = reasoner.getDataPropertyValues(actionDetail, name).iterator().next().getLiteral();}catch(Throwable t){}</span>
+<span class="nc bnc" id="L1336" title="All 2 branches missed.">						if(detailName == null)</span>
+<span class="nc" id="L1337">							detail.setName(detailName);</span>
+<span class="nc" id="L1338">						details.add(detail);</span>
+<span class="nc" id="L1339">					}</span>
+<span class="nc" id="L1340">					action.setDetails(details);</span>
+<span class="nc" id="L1341">					actions.add(action);</span>
+<span class="nc" id="L1342">				}</span>
+				
+<span class="nc" id="L1344">				service.setActions(actions);</span>
+<span class="nc" id="L1345">				service.setTriggers(triggers);</span>
+<span class="nc" id="L1346">				services.add(service);</span>
+<span class="nc" id="L1347">			}</span>
+<span class="nc" id="L1348">			technology.setServices(services);</span>
+<span class="nc" id="L1349">			logger.info(&quot;Technology succesfully retrieved&quot;);</span>
+		}
+		finally{
+<span class="nc bnc" id="L1352" title="All 2 branches missed.">			if(reasoner != null) this.reasoners.put(reasoner);</span>
+		}
+<span class="nc" id="L1354">		return technology;</span>
+	}
+
+
+	@Override
+	public void deleteAllEntities(String username) throws OWLOntologyCreationException, OWLOntologyStorageException, FileNotFoundException {
+<span class="nc" id="L1360">		IRI userIRI = IRI.create(this.getBaseIRI() + &quot;/&quot; + username);</span>
+<span class="nc" id="L1361">		OWLOntology userOntology = this.manager.getOntology(userIRI);</span>
+<span class="nc bnc" id="L1362" title="All 2 branches missed.">		if(userOntology == null){</span>
+<span class="nc" id="L1363">			userOntology = this.loadFromFile(username + &quot;.owl&quot;);</span>
+<span class="nc" id="L1364">			this.prefix.setPrefix(username + &quot;:&quot;, userIRI + &quot;#&quot;);</span>
+		}
+<span class="nc" id="L1366">		List&lt;Dbentity&gt; dbentities = this.dbService.getEntities(username);</span>
+<span class="nc" id="L1367">		OWLEntityRemover remover = new OWLEntityRemover(Collections.singleton(userOntology));</span>
+
+<span class="nc bnc" id="L1369" title="All 2 branches missed.">		for(Dbentity e : dbentities) {</span>
+<span class="nc" id="L1370">			OWLNamedIndividual ind = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(e.getUrl()));</span>
+<span class="nc" id="L1371">			remover.visit(ind);</span>
+<span class="nc" id="L1372">		}</span>
+<span class="nc" id="L1373">		manager.applyChanges(remover.getChanges());</span>
+
+<span class="nc" id="L1375">		ClassLoader classLoader = getClass().getClassLoader();</span>
+<span class="nc" id="L1376">		File file = new File(/*prop.getProperty(&quot;baseAddress&quot;) + */prop.getProperty(&quot;ontologyDir&quot;) + username + &quot;.owl&quot;);</span>
+<span class="nc" id="L1377">		BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file));	</span>
+<span class="nc" id="L1378">		manager.saveOntology(userOntology, outputStream);</span>
+<span class="nc" id="L1379">	}</span>
+	
+	/**
+	 * This method save an IoT Entity in the ontology
+	 * 
+	 *  @param entity the IoT entity
+	 *  @param username the username of the user
+	 *  @return IoTEntity the saved IoT Entity object
+	 * @throws OWLOntologyCreationException 
+	 * @throws OWLOntologyStorageException 
+	 * @throws FileNotFoundException 
+	 */
+	@Override
+	public IoTEntity createEntity(IoTEntity entity, String username) throws OWLOntologyCreationException, OWLOntologyStorageException, FileNotFoundException {
+<span class="nc" id="L1393">		IRI userIRI = IRI.create(this.getBaseIRI() + &quot;/&quot; + username);</span>
+<span class="nc" id="L1394">		OWLOntology userOntology = this.manager.getOntology(userIRI);</span>
+<span class="nc bnc" id="L1395" title="All 2 branches missed.">		if(userOntology == null){</span>
+<span class="nc" id="L1396">			userOntology = this.loadFromFile(username + &quot;.owl&quot;);</span>
+<span class="nc" id="L1397">			this.prefix.setPrefix(username + &quot;:&quot;, userIRI + &quot;#&quot;);</span>
+		}
+<span class="nc" id="L1399">		OWLNamedIndividual entityIndividual = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(this.prefix.getPrefix(username + &quot;:&quot;) + entity.getId()));</span>
+<span class="nc" id="L1400">		OWLNamedIndividual userIndividual = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(this.prefix.getPrefix(username + &quot;:&quot;) + username));</span>
+<span class="nc" id="L1401">		OWLClass entityClass = this.manager.getOWLDataFactory().getOWLClass(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + entity.getType()));</span>
+<span class="nc" id="L1402">		OWLObjectProperty hasTechnologyProp = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;hasTechnology&quot;));</span>
+<span class="nc" id="L1403">		OWLObjectProperty canControlProp = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;canControl&quot;));</span>
+<span class="nc" id="L1404">		OWLDataProperty name = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;name&quot;));</span>
+
+<span class="nc" id="L1406">		OWLClassAssertionAxiom entityClassAxiom = this.manager.getOWLDataFactory().getOWLClassAssertionAxiom(entityClass, entityIndividual);</span>
+<span class="nc" id="L1407">		this.manager.applyChange(new AddAxiom(userOntology, entityClassAxiom));</span>
+		
+<span class="nc" id="L1409">		OWLObjectPropertyAssertionAxiom entityUserPropAxiom = this.manager.getOWLDataFactory().getOWLObjectPropertyAssertionAxiom(canControlProp, userIndividual, entityIndividual);</span>
+<span class="nc" id="L1410">		this.manager.applyChange(new AddAxiom(userOntology, entityUserPropAxiom));</span>
+		
+<span class="nc" id="L1412">		OWLDataPropertyAssertionAxiom entityNamePropAxiom = this.manager.getOWLDataFactory().getOWLDataPropertyAssertionAxiom(name, entityIndividual, entity.getName());</span>
+<span class="nc" id="L1413">		this.manager.applyChange(new AddAxiom(userOntology, entityNamePropAxiom));</span>
+
+		
+<span class="nc bnc" id="L1416" title="All 2 branches missed.">		if(entity.getServices() != null){</span>
+<span class="nc bnc" id="L1417" title="All 2 branches missed.">			for(String service : entity.getServices()){</span>
+<span class="nc" id="L1418">				OWLNamedIndividual serviceIndividual = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(service));</span>
+<span class="nc" id="L1419">				OWLObjectPropertyAssertionAxiom entityServicePropAxiom = this.manager.getOWLDataFactory().getOWLObjectPropertyAssertionAxiom(hasTechnologyProp,entityIndividual,serviceIndividual);</span>
+<span class="nc" id="L1420">				this.manager.applyChange(new AddAxiom(userOntology, entityServicePropAxiom));</span>
+<span class="nc" id="L1421">			}</span>
+		}
+				
+<span class="nc" id="L1424">		ClassLoader classLoader = getClass().getClassLoader();</span>
+<span class="nc" id="L1425">		File file = new File(/*prop.getProperty(&quot;baseAddress&quot;) + */prop.getProperty(&quot;ontologyDir&quot;) + username + &quot;.owl&quot;);</span>
+<span class="nc" id="L1426">		BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file));	</span>
+<span class="nc" id="L1427">		manager.saveOntology(userOntology, outputStream);</span>
+	
+		//manager.saveOntology(userOntology);
+		/*OWLReasoner userReasoner = this.userReasoners.get(username);
+		if(userReasoner == null){
+			this.prefix.setPrefix(username + &quot;:&quot;, userIRI + &quot;#&quot;);
+			userReasoner = this.initHermiTReasoner(userOntology);
+			userReasoner.precomputeInferences(InferenceType.values());
+			this.userReasoners.put(username, userReasoner);
+		}*/
+<span class="nc" id="L1437">		entity.setURL(entityIndividual.getIRI().toString());</span>
+<span class="nc" id="L1438">		prop.setProperty(&quot;extractOwl&quot;, String.valueOf(true));</span>
+		
+<span class="nc" id="L1440">		return entity;</span>
+	}
+	
+	/**
+	 * This method save an IoT Entity in the ontology
+	 * 
+	 *  @param entity the IoT entity
+	 *  @param location the location of the entity
+	 *  @param username the username of the user
+	 *  @return IoTEntity the saved IoT Entity object
+	 * @throws OWLOntologyCreationException 
+	 * @throws OWLOntologyStorageException 
+	 * @throws FileNotFoundException 
+	 */
+	@Override
+	public IoTEntity createEntity(IoTEntity entity, String location, String username) throws OWLOntologyCreationException, OWLOntologyStorageException, FileNotFoundException {
+<span class="nc" id="L1456">		IRI userIRI = IRI.create(this.getBaseIRI() + &quot;/&quot; + username);</span>
+<span class="nc" id="L1457">		OWLOntology userOntology = this.manager.getOntology(userIRI);</span>
+<span class="nc bnc" id="L1458" title="All 2 branches missed.">		if(userOntology == null){</span>
+<span class="nc" id="L1459">			userOntology = this.loadFromFile(username + &quot;.owl&quot;);</span>
+<span class="nc" id="L1460">			this.prefix.setPrefix(username + &quot;:&quot;, userIRI + &quot;#&quot;);</span>
+		}
+<span class="nc" id="L1462">		OWLNamedIndividual entityIndividual = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(this.prefix.getPrefix(username + &quot;:&quot;) + entity.getId()));</span>
+<span class="nc" id="L1463">		OWLNamedIndividual userIndividual = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(this.prefix.getPrefix(username + &quot;:&quot;) + username));</span>
+		
+<span class="nc" id="L1465">		OWLNamedIndividual locationIndividual = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(this.prefix.getPrefix(username + &quot;:&quot;) + location));</span>
+
+		
+<span class="nc" id="L1468">		OWLClass entityClass = this.manager.getOWLDataFactory().getOWLClass(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + entity.getType()));</span>
+<span class="nc" id="L1469">		OWLObjectProperty hasTechnologyProp = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;hasTechnology&quot;));</span>
+<span class="nc" id="L1470">		OWLObjectProperty canControlProp = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;canControl&quot;));</span>
+<span class="nc" id="L1471">		OWLObjectProperty locationProp = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;location&quot;));</span>
+		
+<span class="nc" id="L1473">		OWLDataProperty name = this.manager.getOWLDataFactory().getOWLDataProperty(IRI.create(this.prefix.getDefaultPrefix() + &quot;name&quot;));</span>
+
+<span class="nc" id="L1475">		OWLClassAssertionAxiom entityClassAxiom = this.manager.getOWLDataFactory().getOWLClassAssertionAxiom(entityClass, entityIndividual);</span>
+<span class="nc" id="L1476">		this.manager.applyChange(new AddAxiom(userOntology, entityClassAxiom));</span>
+		
+<span class="nc" id="L1478">		OWLObjectPropertyAssertionAxiom entityUserPropAxiom = this.manager.getOWLDataFactory().getOWLObjectPropertyAssertionAxiom(canControlProp, userIndividual, entityIndividual);</span>
+<span class="nc" id="L1479">		this.manager.applyChange(new AddAxiom(userOntology, entityUserPropAxiom));</span>
+		
+<span class="nc" id="L1481">		OWLDataPropertyAssertionAxiom entityNamePropAxiom = this.manager.getOWLDataFactory().getOWLDataPropertyAssertionAxiom(name, entityIndividual, entity.getName());</span>
+<span class="nc" id="L1482">		this.manager.applyChange(new AddAxiom(userOntology, entityNamePropAxiom));</span>
+
+		
+<span class="nc bnc" id="L1485" title="All 2 branches missed.">		if(entity.getServices() != null){</span>
+<span class="nc bnc" id="L1486" title="All 2 branches missed.">			for(String service : entity.getServices()){</span>
+<span class="nc" id="L1487">				OWLNamedIndividual serviceIndividual = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(service));</span>
+<span class="nc" id="L1488">				OWLObjectPropertyAssertionAxiom entityServicePropAxiom = this.manager.getOWLDataFactory().getOWLObjectPropertyAssertionAxiom(hasTechnologyProp,entityIndividual,serviceIndividual);</span>
+<span class="nc" id="L1489">				this.manager.applyChange(new AddAxiom(userOntology, entityServicePropAxiom));</span>
+<span class="nc" id="L1490">			}</span>
+		}
+		
+<span class="nc" id="L1493">		OWLObjectPropertyAssertionAxiom entityLocationPropAxiom = this.manager.getOWLDataFactory().getOWLObjectPropertyAssertionAxiom(locationProp,entityIndividual,locationIndividual);</span>
+<span class="nc" id="L1494">		this.manager.applyChange(new AddAxiom(userOntology, entityLocationPropAxiom));</span>
+				
+<span class="nc" id="L1496">		ClassLoader classLoader = getClass().getClassLoader();</span>
+<span class="nc" id="L1497">		File file = new File(/*prop.getProperty(&quot;baseAddress&quot;) + */prop.getProperty(&quot;ontologyDir&quot;) + username + &quot;.owl&quot;);</span>
+<span class="nc" id="L1498">		BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file));	</span>
+<span class="nc" id="L1499">		manager.saveOntology(userOntology, outputStream);</span>
+	
+		//manager.saveOntology(userOntology);
+		/*OWLReasoner userReasoner = this.userReasoners.get(username);
+		if(userReasoner == null){
+			this.prefix.setPrefix(username + &quot;:&quot;, userIRI + &quot;#&quot;);
+			userReasoner = this.initHermiTReasoner(userOntology);
+			userReasoner.precomputeInferences(InferenceType.values());
+			this.userReasoners.put(username, userReasoner);
+		}*/
+<span class="nc" id="L1509">		entity.setURL(entityIndividual.getIRI().toString());</span>
+<span class="nc" id="L1510">		prop.setProperty(&quot;extractOwl&quot;, String.valueOf(true));</span>
+		
+<span class="nc" id="L1512">		return entity;</span>
+	}
+
+	
+	
+	private void addClass(String id, String cl, String username) throws OWLOntologyCreationException, OWLOntologyStorageException, FileNotFoundException {
+	
+<span class="nc" id="L1519">		IRI userIRI = IRI.create(this.getBaseIRI() + &quot;/&quot; + username);</span>
+<span class="nc" id="L1520">		OWLOntology userOntology = this.manager.getOntology(userIRI);</span>
+<span class="nc bnc" id="L1521" title="All 2 branches missed.">		if(userOntology == null){</span>
+<span class="nc" id="L1522">			userOntology = this.loadFromFile(username + &quot;.owl&quot;);</span>
+<span class="nc" id="L1523">			this.prefix.setPrefix(username + &quot;:&quot;, userIRI + &quot;#&quot;);</span>
+		}
+<span class="nc" id="L1525">		OWLNamedIndividual entityIndividual = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(this.prefix.getPrefix(username + &quot;:&quot;) +id));</span>
+<span class="nc" id="L1526">		OWLClass entityClass = this.manager.getOWLDataFactory().getOWLClass(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + cl));</span>
+	
+<span class="nc" id="L1528">		OWLClassAssertionAxiom entityClassAxiom = this.manager.getOWLDataFactory().getOWLClassAssertionAxiom(entityClass, entityIndividual);</span>
+<span class="nc" id="L1529">		this.manager.applyChange(new AddAxiom(userOntology, entityClassAxiom));</span>
+		
+					
+<span class="nc" id="L1532">		ClassLoader classLoader = getClass().getClassLoader();</span>
+<span class="nc" id="L1533">		File file = new File(/*prop.getProperty(&quot;baseAddress&quot;) + */prop.getProperty(&quot;ontologyDir&quot;) + username + &quot;.owl&quot;);</span>
+<span class="nc" id="L1534">		BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file));	</span>
+<span class="nc" id="L1535">		manager.saveOntology(userOntology, outputStream);</span>
+<span class="nc" id="L1536">	}</span>
+
+
+	
+
+	@Override
+	public boolean equalsML(Action action1, Action action2) {
+<span class="nc" id="L1543">		OWLNamedIndividual owlAction1 = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(action1.getURL()));</span>
+<span class="nc" id="L1544">		OWLNamedIndividual owlAction2 = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(action2.getURL()));</span>
+
+<span class="nc" id="L1546">		Collection&lt;OWLClassExpression&gt; action1Types = (Collection&lt;OWLClassExpression&gt;) EntitySearcher.getTypes(owlAction1, this.baseOntology);</span>
+<span class="nc" id="L1547">		Collection&lt;OWLClassExpression&gt; action2Types = (Collection&lt;OWLClassExpression&gt;) EntitySearcher.getTypes(owlAction2, this.baseOntology);</span>
+		
+<span class="nc bnc" id="L1549" title="All 2 branches missed.">		for(OWLClassExpression c1 : action1Types){</span>
+<span class="nc bnc" id="L1550" title="All 2 branches missed.">			for(OWLClassExpression c2 : action2Types){</span>
+<span class="nc bnc" id="L1551" title="All 2 branches missed.">				if(c1.equals(c2))</span>
+<span class="nc" id="L1552">					return true;</span>
+<span class="nc" id="L1553">			}</span>
+<span class="nc" id="L1554">		}</span>
+<span class="nc" id="L1555">		return false;</span>
+	}
+
+
+	@Override
+	public Set&lt;OWLClass&gt; getSubClasses(String className) throws InterruptedException {
+<span class="nc" id="L1561">		OWLReasoner reasoner = this.reasoners.take();</span>
+<span class="nc" id="L1562">		Set&lt;OWLClass&gt; classes = new HashSet&lt;OWLClass&gt;();</span>
+		try{
+<span class="nc" id="L1564">			OWLClass owlClass = this.manager.getOWLDataFactory().getOWLClass(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + className));</span>
+<span class="nc" id="L1565">			classes.addAll(reasoner.getSubClasses(owlClass, false).getFlattened());</span>
+		}
+		finally{
+<span class="nc bnc" id="L1568" title="All 2 branches missed.">			if(reasoner != null) this.reasoners.put(reasoner);</span>
+		}
+<span class="nc" id="L1570">		return classes;		</span>
+	}
+
+	@Override
+	public List&lt;String&gt; getDirectClasses(String individualURL) throws InterruptedException {
+<span class="nc" id="L1575">		OWLReasoner reasoner = this.reasoners.take();</span>
+<span class="nc" id="L1576">		List&lt;String&gt; classes = new LinkedList&lt;String&gt;();</span>
+		try{
+<span class="nc" id="L1578">			OWLNamedIndividual owlIndividual = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(individualURL));</span>
+<span class="nc" id="L1579">			Set&lt;OWLClass&gt; owlClasses = reasoner.getTypes(owlIndividual, true).getFlattened();</span>
+<span class="nc bnc" id="L1580" title="All 2 branches missed.">			for(OWLClass owlClass : owlClasses){</span>
+<span class="nc" id="L1581">				classes.add(owlClass.getIRI().toString());</span>
+<span class="nc" id="L1582">			}</span>
+
+		}finally{
+<span class="nc bnc" id="L1585" title="All 2 branches missed.">			if(reasoner != null) this.reasoners.put(reasoner);</span>
+		}
+<span class="nc" id="L1587">		return classes;</span>
+	}
+
+
+	@Override
+	public List&lt;String&gt; getClasses(String individualURL) throws InterruptedException {
+<span class="nc" id="L1593">		OWLReasoner reasoner = this.reasoners.take();</span>
+<span class="nc" id="L1594">		List&lt;String&gt; classes = new LinkedList&lt;String&gt;();</span>
+		try{
+<span class="nc" id="L1596">			OWLNamedIndividual owlIndividual = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(this.prefix.getDefaultPrefix() + individualURL.replace(&quot;_&quot;, &quot;&quot;)));</span>
+<span class="nc" id="L1597">			Set&lt;OWLClass&gt; owlClasses = reasoner.getTypes(owlIndividual, false).getFlattened();</span>
+<span class="nc bnc" id="L1598" title="All 2 branches missed.">			for(OWLClass owlClass : owlClasses){</span>
+<span class="nc" id="L1599">				classes.add(owlClass.getIRI().toString());</span>
+<span class="nc" id="L1600">			}</span>
+
+		}finally{
+<span class="nc bnc" id="L1603" title="All 2 branches missed.">			if(reasoner != null) this.reasoners.put(reasoner);</span>
+		}
+<span class="nc" id="L1605">		return classes;</span>
+	}
+	
+	public List&lt;String&gt; getClasses(String individualURL, String username) throws OWLOntologyCreationException {
+<span class="nc" id="L1609">		OWLReasoner userReasoner = this.userReasoners.get(username);</span>
+<span class="nc" id="L1610">		List&lt;String&gt; classes = new LinkedList&lt;String&gt;();</span>
+
+<span class="nc bnc" id="L1612" title="All 2 branches missed.">		if(userReasoner == null){</span>
+<span class="nc" id="L1613">			IRI userIRI = IRI.create(this.getBaseIRI() + &quot;/&quot; + username);</span>
+<span class="nc" id="L1614">			OWLOntology userOntology = this.manager.getOntology(userIRI);</span>
+<span class="nc bnc" id="L1615" title="All 2 branches missed.">			if(userOntology == null)</span>
+<span class="nc" id="L1616">				userOntology = this.loadFromFile(username + &quot;.owl&quot;);</span>
+<span class="nc" id="L1617">			this.prefix.setPrefix(username + &quot;:&quot;, userIRI + &quot;#&quot;);</span>
+<span class="nc" id="L1618">			userReasoner = this.initHermiTReasoner(userOntology);</span>
+<span class="nc" id="L1619">			this.userReasoners.put(username, userReasoner);</span>
+		}
+			
+<span class="nc" id="L1622">		OWLNamedIndividual owlIndividual = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(individualURL));</span>
+
+<span class="nc" id="L1624">		Set&lt;OWLClass&gt; owlClasses = userReasoner.getTypes(owlIndividual, false).getFlattened();</span>
+<span class="nc bnc" id="L1625" title="All 2 branches missed.">		for(OWLClass owlClass : owlClasses){</span>
+<span class="nc" id="L1626">			classes.add(owlClass.getIRI().toString());</span>
+<span class="nc" id="L1627">		}</span>
+<span class="nc" id="L1628">		return classes;</span>
+	}
+
+
+	@Override
+	public String getTechnology(String url, int type) throws InterruptedException {
+<span class="nc" id="L1634">		OWLReasoner reasoner = this.reasoners.take();</span>
+		Set&lt;OWLNamedIndividual&gt; results;
+		try{
+<span class="nc" id="L1637">			OWLNamedIndividual ind = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(this.prefix.getDefaultPrefix() + url.replace(&quot;_&quot;, &quot;&quot;)));</span>
+			
+			OWLObjectProperty op;
+<span class="nc bnc" id="L1640" title="All 2 branches missed.">			if(type == 1)</span>
+<span class="nc" id="L1641">				op = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;isOfChannel&quot;));</span>
+			else
+<span class="nc" id="L1643">				op = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;isOfChannel&quot;));</span>
+			
+<span class="nc" id="L1645">			results = reasoner.getObjectPropertyValues(ind, op).getFlattened();</span>
+
+			
+			
+		}finally{
+<span class="nc bnc" id="L1650" title="All 2 branches missed.">			if(reasoner != null) this.reasoners.put(reasoner);</span>
+		}
+		
+<span class="nc bnc" id="L1653" title="All 2 branches missed.">		if(results.iterator().hasNext())</span>
+<span class="nc" id="L1654">			return prefix.getShortForm(results.iterator().next()).substring(1);</span>
+		else 
+<span class="nc" id="L1656">			return null;</span>
+	}
+
+
+	@Override
+	public Collection&lt;IoTEntity&gt; getIoTEntities(String username) throws OWLOntologyCreationException {
+<span class="nc" id="L1662">		Set&lt;IoTEntity&gt; entities = new HashSet&lt;IoTEntity&gt;();</span>
+<span class="nc" id="L1663">		OWLReasoner userReasoner = this.userReasoners.get(username);</span>
+		
+<span class="nc bnc" id="L1665" title="All 2 branches missed.">		if(userReasoner == null){</span>
+<span class="nc" id="L1666">			IRI userIRI = IRI.create(this.getBaseIRI() + &quot;/&quot; + username);</span>
+<span class="nc" id="L1667">			OWLOntology userOntology = this.manager.getOntology(userIRI);</span>
+<span class="nc bnc" id="L1668" title="All 2 branches missed.">			if(userOntology == null)</span>
+<span class="nc" id="L1669">				userOntology = this.loadFromFile(username + &quot;.owl&quot;);</span>
+<span class="nc" id="L1670">			this.prefix.setPrefix(username + &quot;:&quot;, userIRI + &quot;#&quot;);</span>
+<span class="nc" id="L1671">			userReasoner = this.initHermiTReasoner(userOntology);</span>
+<span class="nc" id="L1672">			this.userReasoners.put(username, userReasoner);</span>
+		}
+
+<span class="nc" id="L1675">		OWLNamedIndividual userIndividual = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(this.prefix.getPrefix(username + &quot;:&quot;) + username));</span>
+<span class="nc" id="L1676">		OWLObjectProperty canControlProp = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;canControl&quot;));</span>
+		//OWLObjectProperty hasTechnologyProp = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;hasTechnology&quot;));
+
+<span class="nc" id="L1679">		Set&lt;OWLNamedIndividual&gt; owlEntities = userReasoner.getObjectPropertyValues(userIndividual, canControlProp).getFlattened();</span>
+<span class="nc bnc" id="L1680" title="All 2 branches missed.">		for(OWLNamedIndividual e : owlEntities)</span>
+<span class="nc" id="L1681">			entities.add(this.getIoTEntityByUrl(e.getIRI().toString(), username));</span>
+<span class="nc" id="L1682">		return entities;</span>
+	}
+
+
+	@Override
+	public List&lt;String&gt; getLocation(IoTEntity e, String username) {
+<span class="nc" id="L1688">		OWLReasoner userReasoner = this.userReasoners.get(username);</span>
+		
+		try {
+<span class="nc bnc" id="L1691" title="All 2 branches missed.">			if(userReasoner == null){</span>
+<span class="nc" id="L1692">				IRI userIRI = IRI.create(this.getBaseIRI() + &quot;/&quot; + username);</span>
+<span class="nc" id="L1693">				OWLOntology userOntology = this.manager.getOntology(userIRI);</span>
+<span class="nc bnc" id="L1694" title="All 2 branches missed.">				if(userOntology == null)</span>
+<span class="nc" id="L1695">					userOntology = this.loadFromFile(username + &quot;.owl&quot;);</span>
+<span class="nc" id="L1696">				this.prefix.setPrefix(username + &quot;:&quot;, userIRI + &quot;#&quot;);</span>
+<span class="nc" id="L1697">				userReasoner = this.initHermiTReasoner(userOntology);</span>
+<span class="nc" id="L1698">				this.userReasoners.put(username, userReasoner);</span>
+			}
+<span class="nc" id="L1700">			OWLObjectProperty isInProp = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;location&quot;));</span>
+<span class="nc" id="L1701">			OWLNamedIndividual owlEntity = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(e.getURL()));</span>
+			
+<span class="nc" id="L1703">			Set&lt;OWLNamedIndividual&gt; owlLocations = userReasoner.getObjectPropertyValues(owlEntity, isInProp).getFlattened();</span>
+			
+<span class="nc bnc" id="L1705" title="All 4 branches missed.">			if(owlLocations == null || owlLocations.size() == 0)</span>
+<span class="nc" id="L1706">				return null;</span>
+			
+<span class="nc" id="L1708">			List&lt;String&gt; locations = new ArrayList&lt;String&gt;();</span>
+<span class="nc bnc" id="L1709" title="All 2 branches missed.">			for(OWLNamedIndividual owlLocation : owlLocations) {</span>
+<span class="nc" id="L1710">				locations.add(owlLocation.getIRI().toString());</span>
+<span class="nc" id="L1711">			}</span>
+<span class="nc" id="L1712">			return locations;</span>
+<span class="nc" id="L1713">		} catch (Throwable t) {</span>
+<span class="nc" id="L1714">			t.printStackTrace();</span>
+<span class="nc" id="L1715">			return null;</span>
+		}
+	}
+	
+	@Override
+	public boolean isIn(IoTEntity e, String triggerWhere, String username)  {
+<span class="nc" id="L1721">		OWLReasoner userReasoner = this.userReasoners.get(username);</span>
+		
+		try {
+<span class="nc bnc" id="L1724" title="All 2 branches missed.">			if(userReasoner == null){</span>
+<span class="nc" id="L1725">				IRI userIRI = IRI.create(this.getBaseIRI() + &quot;/&quot; + username);</span>
+<span class="nc" id="L1726">				OWLOntology userOntology = this.manager.getOntology(userIRI);</span>
+<span class="nc bnc" id="L1727" title="All 2 branches missed.">				if(userOntology == null)</span>
+<span class="nc" id="L1728">					userOntology = this.loadFromFile(username + &quot;.owl&quot;);</span>
+<span class="nc" id="L1729">				this.prefix.setPrefix(username + &quot;:&quot;, userIRI + &quot;#&quot;);</span>
+<span class="nc" id="L1730">				userReasoner = this.initHermiTReasoner(userOntology);</span>
+<span class="nc" id="L1731">				this.userReasoners.put(username, userReasoner);</span>
+			}
+<span class="nc" id="L1733">			OWLObjectProperty isInProp = this.manager.getOWLDataFactory().getOWLObjectProperty(IRI.create(this.prefix.getPrefix(&quot;eupont:&quot;) + &quot;location&quot;));</span>
+<span class="nc" id="L1734">			OWLNamedIndividual owlEntity = this.manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(e.getURL()));</span>
+			
+<span class="nc" id="L1736">			Set&lt;OWLNamedIndividual&gt; owlLocations = userReasoner.getObjectPropertyValues(owlEntity, isInProp).getFlattened();</span>
+			
+<span class="nc bnc" id="L1738" title="All 2 branches missed.">			for(OWLNamedIndividual owlLocation : owlLocations) {</span>
+				
+<span class="nc bnc" id="L1740" title="All 2 branches missed.">				for(String cl : this.getClasses(owlLocation.getIRI().toString(), username)) {</span>
+<span class="nc bnc" id="L1741" title="All 4 branches missed.">					if(cl.replace(&quot; &quot;,&quot;&quot;).toLowerCase().contains(triggerWhere.replace(&quot; &quot;,&quot;&quot;).toLowerCase()) || cl.replace(&quot; &quot;,&quot;&quot;).toLowerCase().equals(triggerWhere.replace(&quot; &quot;,&quot;&quot;).toLowerCase()))</span>
+<span class="nc" id="L1742">						return true;</span>
+<span class="nc" id="L1743">				}</span>
+<span class="nc" id="L1744">			}</span>
+<span class="nc" id="L1745">		} catch (Throwable t) {</span>
+<span class="nc" id="L1746">			t.printStackTrace();</span>
+<span class="nc" id="L1747">			return false;</span>
+<span class="nc" id="L1748">		}</span>
+<span class="nc" id="L1749">		return false;</span>
+	}
+
+
+	@Override
+	public boolean isA(String id, String cl)  {
+		List&lt;String&gt; classes;
+		try {
+<span class="nc" id="L1757">			classes = this.getClasses(id);</span>
+<span class="nc bnc" id="L1758" title="All 2 branches missed.">			for(String c : classes) {</span>
+<span class="nc bnc" id="L1759" title="All 4 branches missed.">				if(c.replace(&quot; &quot;,&quot;&quot;).toLowerCase().contains(cl.replace(&quot; &quot;,&quot;&quot;).toLowerCase()) || c.replace(&quot; &quot;,&quot;&quot;).toLowerCase().equals(cl.replace(&quot; &quot;,&quot;&quot;).toLowerCase()))</span>
+<span class="nc" id="L1760">					return true;</span>
+<span class="nc" id="L1761">			}</span>
+<span class="nc" id="L1762">			return false;</span>
+<span class="nc" id="L1763">		} catch (InterruptedException e) {</span>
+<span class="nc" id="L1764">			e.printStackTrace();</span>
+<span class="nc" id="L1765">			return false;</span>
+		}
+	}
+	
+	@Override
+	public boolean isA(String url, String cl, String username)  {
+		List&lt;String&gt; classes;
+		try {
+<span class="nc" id="L1773">			classes = this.getClasses(url,username);</span>
+<span class="nc bnc" id="L1774" title="All 2 branches missed.">			for(String c : classes) {</span>
+<span class="nc bnc" id="L1775" title="All 4 branches missed.">				if(c.replace(&quot; &quot;,&quot;&quot;).toLowerCase().contains(cl.replace(&quot; &quot;,&quot;&quot;).toLowerCase()) || c.replace(&quot; &quot;,&quot;&quot;).toLowerCase().equals(cl.replace(&quot; &quot;,&quot;&quot;).toLowerCase()))</span>
+<span class="nc" id="L1776">					return true;</span>
+<span class="nc" id="L1777">			}</span>
+<span class="nc" id="L1778">			return false;</span>
+<span class="nc" id="L1779">		} catch (Throwable t) {</span>
+<span class="nc" id="L1780">			t.printStackTrace();</span>
+<span class="nc" id="L1781">			return false;</span>
+		}
+	}
+
+
+	@Override
+	public void registerDemoPlot() throws OWLOntologyCreationException, OWLOntologyStorageException,
+			FileNotFoundException, InterruptedException {
+		// TODO Auto-generated method stub
+<span class="nc" id="L1790">	}</span>
+
+
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

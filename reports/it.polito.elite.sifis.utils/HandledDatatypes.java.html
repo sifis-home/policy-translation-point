@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HandledDatatypes.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sifis</a> &gt; <a href="index.source.html" class="el_package">it.polito.elite.sifis.utils</a> &gt; <span class="el_source">HandledDatatypes.java</span></div><h1>HandledDatatypes.java</h1><pre class="source lang-java linenums">package it.polito.elite.sifis.utils;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDatatype;
+import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.vocab.OWL2Datatype;
+import org.semanticweb.owlapi.vocab.XSDVocabulary;
+
+<span class="nc" id="L14">public enum HandledDatatypes {</span>
+	
+<span class="nc" id="L16">	DOUBLE(XSDVocabulary.DOUBLE.getIRI(), &quot;double&quot;, &quot;Double&quot;) {</span>
+		
+		public Object getObject(OWLLiteral literal) {
+<span class="nc" id="L19">			return literal.getLiteral();</span>
+		}
+		
+		public OWLLiteral getLiteral(OWLDataFactory factory, Object o) {
+<span class="nc bnc" id="L23" title="All 2 branches missed.">			if (o instanceof Double) {</span>
+<span class="nc" id="L24">				return factory.getOWLLiteral((Double) o);</span>
+			}
+			else {
+<span class="nc" id="L27">				return null;</span>
+			}
+		}
+	},
+<span class="nc" id="L31">	STRING(XSDVocabulary.STRING.getIRI(), &quot;String&quot;, &quot;String&quot;) {</span>
+		
+		public Object getObject(OWLLiteral literal) {
+<span class="nc" id="L34">			return literal.getLiteral();</span>
+		}
+		
+		public OWLLiteral getLiteral(OWLDataFactory factory, Object o) {
+<span class="nc bnc" id="L38" title="All 2 branches missed.">			if (o instanceof String) {</span>
+<span class="nc" id="L39">				return factory.getOWLLiteral((String) o);</span>
+			}
+			else {
+<span class="nc" id="L42">				return null;</span>
+			}
+		}
+	},
+<span class="nc" id="L46">	FLOAT(XSDVocabulary.FLOAT.getIRI(), &quot;float&quot;, &quot;Float&quot;) {</span>
+	
+		public Object getObject(OWLLiteral literal) {
+<span class="nc" id="L49">			return Float.parseFloat(literal.getLiteral());</span>
+		}
+		
+		public OWLLiteral getLiteral(OWLDataFactory factory, Object o) {
+<span class="nc bnc" id="L53" title="All 2 branches missed.">			if (o instanceof Float) {</span>
+<span class="nc" id="L54">				return factory.getOWLLiteral((Float) o);</span>
+			}
+			else {
+<span class="nc" id="L57">				return null;</span>
+			}
+		}
+	},
+<span class="nc" id="L61">	BOOLEAN(XSDVocabulary.BOOLEAN.getIRI(), &quot;boolean&quot;, &quot;Boolean&quot;) {</span>
+		
+		public Object getObject(OWLLiteral literal) {
+<span class="nc" id="L64">			return Boolean.parseBoolean(literal.getLiteral());</span>
+		}
+		
+		public OWLLiteral getLiteral(OWLDataFactory factory, Object o) {
+<span class="nc bnc" id="L68" title="All 2 branches missed.">			if (o instanceof Boolean) {</span>
+<span class="nc" id="L69">				return factory.getOWLLiteral((Boolean) o);</span>
+			}
+			else {
+<span class="nc" id="L72">				return null;</span>
+			}
+		}
+	},
+<span class="nc" id="L76">	INTEGER(XSDVocabulary.INTEGER.getIRI(), &quot;int&quot;, &quot;Integer&quot;) {</span>
+		
+		public Object getObject(OWLLiteral literal) {
+<span class="nc" id="L79">			return Integer.parseInt(literal.getLiteral());</span>
+		}
+		
+		public OWLLiteral getLiteral(OWLDataFactory factory, Object o) {
+<span class="nc bnc" id="L83" title="All 2 branches missed.">			if (o instanceof Integer) {</span>
+<span class="nc" id="L84">				return factory.getOWLLiteral((Integer) o);</span>
+			}
+			else {
+<span class="nc" id="L87">				return null;</span>
+			}
+		}
+		
+		@Override
+		public boolean isMatch(OWLDatatype dt) {
+<span class="nc bnc" id="L93" title="All 4 branches missed.">			return dt.getIRI().equals(XSDVocabulary.INT.getIRI()) || dt.getIRI().equals(XSDVocabulary.INTEGER.getIRI());</span>
+		}
+	},
+<span class="nc" id="L96">	LONG(XSDVocabulary.LONG.getIRI(), &quot;long&quot;, &quot;Long&quot;) {</span>
+		
+		public Object getObject(OWLLiteral literal) {
+<span class="nc" id="L99">			return Long.parseLong(literal.getLiteral());</span>
+		}
+		
+		public OWLLiteral getLiteral(OWLDataFactory factory, Object o) {
+<span class="nc bnc" id="L103" title="All 2 branches missed.">			if (o instanceof Long) {</span>
+<span class="nc" id="L104">				return factory.getOWLLiteral(o.toString(), OWL2Datatype.XSD_LONG);</span>
+			}
+			else {
+<span class="nc" id="L107">				return null;</span>
+			}
+		}
+		
+		@Override
+		public boolean isMatch(OWLDatatype dt) {
+<span class="nc" id="L113">			return dt.getIRI().equals(XSDVocabulary.LONG.getIRI());</span>
+		}
+	},
+<span class="nc" id="L116">	URI(XSDVocabulary.ANY_URI.getIRI(), &quot;URI&quot;, &quot;URI&quot;) {</span>
+
+		public Object getObject(OWLLiteral literal) {
+<span class="nc" id="L119">			return java.net.URI.create(literal.getLiteral());</span>
+		}
+
+		public OWLLiteral getLiteral(OWLDataFactory factory, Object o) {
+<span class="nc bnc" id="L123" title="All 2 branches missed.">			if (o instanceof java.net.URI) {</span>
+<span class="nc" id="L124">				return factory.getOWLLiteral(o.toString(), OWL2Datatype.XSD_ANY_URI);</span>
+			}
+			else {
+<span class="nc" id="L127">				return null;</span>
+			}
+		}
+
+		@Override
+		public boolean isMatch(OWLDatatype dt) {
+<span class="nc" id="L133">			return dt.getIRI().equals(XSDVocabulary.ANY_URI.getIRI());</span>
+		}
+	},
+<span class="nc" id="L136">	DATE_TIME(XSDVocabulary.DATE_TIME.getIRI(), &quot;XMLGregorianCalendar&quot;, &quot;XMLGregorianCalendar&quot;) {</span>
+
+		public Object getObject(OWLLiteral literal) {
+			try {
+<span class="nc" id="L140">				return DatatypeFactory.newInstance().newXMLGregorianCalendar(literal.getLiteral());</span>
+<span class="nc" id="L141">			} catch (DatatypeConfigurationException e) {</span>
+<span class="nc" id="L142">				throw new RuntimeException(e);</span>
+			}
+		}
+
+		public OWLLiteral getLiteral(OWLDataFactory factory, Object o) {
+<span class="nc bnc" id="L147" title="All 2 branches missed.">			if (o instanceof XMLGregorianCalendar) {</span>
+<span class="nc" id="L148">				return factory.getOWLLiteral(o.toString(), OWL2Datatype.XSD_DATE_TIME);</span>
+			}
+			else {
+<span class="nc" id="L151">				return null;</span>
+			}
+		}
+
+		@Override
+		public boolean isMatch(OWLDatatype dt) {
+<span class="nc" id="L157">			return dt.getIRI().equals(XSDVocabulary.DATE_TIME.getIRI());</span>
+		}
+	}
+	;
+	
+	private IRI iri;
+	private String javaType;
+	private String javaClass;
+	
+<span class="nc" id="L166">	private HandledDatatypes(IRI iri, String javaType, String javaClass) {</span>
+<span class="nc" id="L167">		this.iri = iri;</span>
+<span class="nc" id="L168">		this.javaType = javaType;</span>
+<span class="nc" id="L169">		this.javaClass = javaClass;</span>
+<span class="nc" id="L170">	}</span>
+	
+	public IRI getIri() {
+<span class="nc" id="L173">		return iri;</span>
+	}
+	
+	public String getJavaType() {
+<span class="nc" id="L177">		return javaType;</span>
+	}
+	
+	public String getJavaClass() {
+<span class="nc" id="L181">		return javaClass;</span>
+	}
+
+	public boolean isMatch(OWLDatatype dt) {
+<span class="nc" id="L185">		return dt.getIRI().equals(iri);</span>
+	}
+	
+	public abstract Object getObject(OWLLiteral literal);
+	
+	public abstract OWLLiteral getLiteral(OWLDataFactory factory, Object o);
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
