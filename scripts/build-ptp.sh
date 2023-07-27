@@ -15,7 +15,7 @@ then
   sudo systemctl start mysql.service
   echo "root" > db.pwd # Root username
   echo "rootroot" >> db.pwd # Root pw
-  sudo mysql -h 127.0.0.1 --port 3306 -u root -prootroot < schema.sql
+  mysql -h 127.0.0.1 --port 3306 -u root -prootroot
 fi
 
 # Run mvn on ace-entities
