@@ -13,7 +13,7 @@ then
   echo "mysql-server mysql-server/root_password_again password rootroot" | sudo debconf-set-selections
   sudo apt-get -y install mysql-server
   sudo systemctl start mysql.service
-  echo "rootroot" > db.pwd # Root username
+  echo "root" > db.pwd # Root username
   echo "rootroot" >> db.pwd # Root pw
 fi
 
