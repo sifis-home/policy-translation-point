@@ -294,27 +294,8 @@ public class DBServiceImpl implements DBService {
 		ruleRepository.delete(rule);
 	}
 	
-	@Override
-	public void deleteAllRules(String username) throws OWLOntologyCreationException, InterruptedException {
-		User u = userService.findUserByUsername(username);
-		List<Dbrule> rules = ruleRepository.findByUser(u);
-		for(Dbrule r : rules) {
-			ruleRepository.delete(r);
-		}
-	}
-	@Override
-	public List<Dbentity> getEntities(String username) {
-		User u = userService.findUserByUsername(username);
-		return this.entityRepository.findByUser(u);
-	}
-
-	@Override
-	public void deleteAllEntities(String username) {
-		User u = userService.findUserByUsername(username);
-		List<Dbentity> entities = entityRepository.findByUser(u);
-		for(Dbentity e : entities)
-			entityRepository.delete(e);
-	}
+	
+	
 
 	@Override
 	public Set<Trigger> getDefinedTriggersByType(String type, String username) throws OWLOntologyCreationException, InterruptedException {
@@ -325,43 +306,7 @@ public class DBServiceImpl implements DBService {
 		return triggers;
 	}
 
-	@Override
-	public Rule getRule(Long ruleId, String username) throws OWLOntologyCreationException, InterruptedException {
-		Dbrule dbRule = ruleRepository.findById(ruleId).get();
-		Rule rule = new Rule();
-		rule.setDbId(dbRule.getId());
-		Trigger trigger = new Trigger();
-		Action action = new Action();
-		Dbtrigger dbTrigger = dbRule.getTriggers().iterator().next();
-		Dbaction dbAction = dbRule.getActions().iterator().next();
-		
-		trigger = owlService.getTrigger(dbTrigger.getUrl(), username);
-		action = owlService.getAction(dbAction.getUrl(), username);
-
-		for(Dbdetail db : dbTrigger.getDetails()){
-			for(Detail d : trigger.getDetails()){
-				if(d.getType().equals("entity"))
-					d.setValue(dbTrigger.getEntity().getUrl());
-				if(d.getURL() != null && db.getUrl() != null && d.getURL().equals(db.getUrl())){
-					d.setValue(db.getValue());
-				}
-			}
-		}
-		for(Dbdetail db : dbAction.getDetails()){
-			for(Detail d : action.getDetails()){
-				if(d.getType().equals("entity"))
-					d.setValue(dbAction.getEntity().getUrl());
-				else if(d.getURL() != null && db.getUrl() != null && d.getURL().equals(db.getUrl())){
-					d.setValue(db.getValue());
-				}
-				
-			}
-		}
-		rule.setAction(action);
-		rule.setTrigger(trigger);
-		return rule;
-	}
-
+	
 	
 
 }

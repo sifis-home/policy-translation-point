@@ -23,11 +23,5 @@ public interface DBService {
 
 	public Set<Trigger> getDefinedTriggersByType(String type, String username) throws OWLOntologyCreationException, InterruptedException;
 
-	public Rule getRule(Long ruleId, String username) throws OWLOntologyCreationException, InterruptedException;
 
-	public void deleteAllRules(String username) throws OWLOntologyCreationException, InterruptedException;
-
-	public void deleteAllEntities(String username);
-
-	public List<Dbentity> getEntities(String username);
 }
