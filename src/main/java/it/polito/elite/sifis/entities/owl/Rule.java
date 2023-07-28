@@ -3,6 +3,7 @@ package it.polito.elite.sifis.entities.owl;
 import java.util.List;
 
 public class Rule {
+	
 	private Long dbId;
 	private Trigger trigger;
 	private Action action;

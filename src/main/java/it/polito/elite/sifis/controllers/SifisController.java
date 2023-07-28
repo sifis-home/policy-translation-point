@@ -161,7 +161,7 @@ public class SifisController {
 	
 	@PostMapping(value = "/sifis/rule")
 	@ResponseStatus(value = HttpStatus.OK)
-	public void saveRule(@RequestBody Rule rule, Principal user) throws OWLOntologyCreationException{
+	public Long saveRule(@RequestBody Rule rule, Principal user) throws OWLOntologyCreationException{
 		for(Detail d : rule.getAction().getDetails()){
 			if(d.getType().equals("entity")){
 				ObjectMapper mapper = new ObjectMapper();
@@ -181,6 +181,7 @@ public class SifisController {
 		}
 		Dbrule dbrule = dbService.saveRule(rule, "sifis", user.getName());
 		rule.setDbId(dbrule.getId());
+		return dbrule.getId();
 	}
 	
 	@PostMapping(value = "/sifis/translate")

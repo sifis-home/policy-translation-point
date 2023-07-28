@@ -6,6 +6,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import it.polito.elite.sifis.entities.owl.Rule;
+
 @SpringBootApplication
 @RestController
 public class SifisApplication {

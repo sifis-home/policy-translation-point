@@ -136,6 +136,13 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.10</version>
+			 	<configuration>
+			        <excludes>
+			            <exclude>it/polito/elite/sifis/utils/*</exclude>
+			            <exclude>it/polito/elite/sifis/entities/xacml/*</exclude>
+
+			        </excludes>
+			     </configuration>
                 <executions>
                    	<execution>
                         <id>jacoco-initialize</id>

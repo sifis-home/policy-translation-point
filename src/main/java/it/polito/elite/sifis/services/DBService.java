@@ -25,8 +25,6 @@ public interface DBService {
 
 	public Rule getRule(Long ruleId, String username) throws OWLOntologyCreationException, InterruptedException;
 
-	public List<Rule> getPossibleRules(String type, String username) throws InterruptedException, OWLOntologyCreationException;
-
 	public void deleteAllRules(String username) throws OWLOntologyCreationException, InterruptedException;
 
 	public void deleteAllEntities(String username);

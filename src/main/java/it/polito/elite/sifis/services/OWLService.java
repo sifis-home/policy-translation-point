@@ -33,8 +33,6 @@ public interface OWLService {
 	OWLReasoner initHermiTReasoner(OWLOntology ontology) ;
 	void addOntology(String fileName,IRI iri) throws OWLOntologyStorageException, FileNotFoundException, OWLOntologyCreationException ;
 	IRI getBaseIRI();
-	Technology getTechnologyFromName(String technologyName) throws InterruptedException;
-	IoTEntity createEntity(IoTEntity entity, String name) throws OWLOntologyCreationException, OWLOntologyStorageException, FileNotFoundException ;
 	Collection<Service> getTriggerServices() throws InterruptedException;
 	Set<Trigger> getTriggers(String service, String username) throws InterruptedException, OWLOntologyCreationException;
 	List<Detail> getTriggerDetails(OWLReasoner reasoner, String service, String trigger, String username) throws OWLOntologyCreationException, InterruptedException;
@@ -48,38 +46,11 @@ public interface OWLService {
 	boolean triggers(Action action, Trigger trigger) throws InterruptedException;
 	boolean equalsML(Action action, Action ruleAction);
 	IoTEntity getIoTEntityByUrl(String url, String username) throws OWLOntologyCreationException;
-	Collection<IoTEntity> getIoTEntitiesByServices(List<Service> services, String username) throws OWLOntologyCreationException;
-	Collection<Trigger> getSupportedTriggers(String username) throws OWLOntologyCreationException, InterruptedException;
-	Collection<Action> getSupportedActions(String username) throws OWLOntologyCreationException, InterruptedException;
 	Set<OWLClass> getSubClasses(String string) throws InterruptedException;
-	Set<Service> getAllServices() throws InterruptedException;
 	List<String> getClasses(String individualURL) throws InterruptedException;
 	String getTechnology(String triggerUrl, int type) throws InterruptedException;
-	Map<Long, List<Service>> getServicesMap() throws InterruptedException;
-	void deleteAllEntities(String username) throws OWLOntologyCreationException, OWLOntologyStorageException, FileNotFoundException;
-		Collection<Service> getTriggerServices(String username) throws InterruptedException, OWLOntologyCreationException;
-	Collection<Service> getActionServices(String username) throws InterruptedException, OWLOntologyCreationException;
 	Set<Command> getCommands(Action action, Location location, String username) throws InterruptedException, OWLOntologyCreationException;
-	Set<Notification> getNotifications(Trigger trigger, Location location, String username) throws InterruptedException, OWLOntologyCreationException;
-	
-	Collection<Trigger> getSupportedTriggers(Collection<IoTEntity> entities, String username)
-			throws OWLOntologyCreationException, InterruptedException;
-	Collection<Action> getSupportedActions(Collection<IoTEntity> entities, String string)
-			throws OWLOntologyCreationException, InterruptedException;
-
-	
-	Collection<IoTEntity> getIoTEntities(String string) throws OWLOntologyCreationException;
-	boolean isIn(IoTEntity e, String triggerWhere, String username);
-	boolean isA(String url, String string);
-	boolean isA(String url, String cl, String username);
-	IoTEntity createEntity(IoTEntity entity, String location, String username)
-			throws OWLOntologyCreationException, OWLOntologyStorageException, FileNotFoundException;
-	
 	List<Service> getServicesByIoTEntity(String url, String username) throws OWLOntologyCreationException;
-	List<String> getLocation(IoTEntity entity, String username);
-	
-	void registerDemoPlot() throws OWLOntologyCreationException, OWLOntologyStorageException,
-	FileNotFoundException, InterruptedException;
 	List<String> getDirectClasses(String individualURL) throws InterruptedException;
 	
 

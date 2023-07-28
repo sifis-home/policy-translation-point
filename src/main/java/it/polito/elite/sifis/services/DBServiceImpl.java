@@ -362,31 +362,6 @@ public class DBServiceImpl implements DBService {
 		return rule;
 	}
 
-	@Override
-	public List<Rule> getPossibleRules(String type, String username) throws InterruptedException, OWLOntologyCreationException {
-		List<Rule> rules = new LinkedList<Rule>();
-		
-		Collection <Service> triggerServices = owlService.getTriggerServices();
-		Collection <Service> actionServices = owlService.getTriggerServices();
-		
-		Collection<Trigger> triggers = new LinkedList<Trigger>();
-		Collection<Action> actions = new LinkedList<Action>();
-		for(Service service : triggerServices)
-			triggers.addAll(owlService.getTriggers(service.getId(), username));
-		for(Service service : actionServices)
-			actions.addAll(owlService.getActions(service.getId(), username));
-		
-		
-		for(Trigger trigger : triggers) {
-			for(Action action : actions) {
-				Rule rule = new Rule();
-				rule.setTrigger(trigger);
-				rule.setAction(action);
-				rules.add(rule);
-			}
-		}
-		
-		return rules;
-	}
+	
 
 }
