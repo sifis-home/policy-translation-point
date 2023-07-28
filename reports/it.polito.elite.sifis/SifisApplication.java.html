@@ -6,17 +6,22 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import it.polito.elite.sifis.entities.owl.Rule;
+
 @SpringBootApplication
 @RestController
-<span class="fc" id="L11">public class SifisApplication {</span>
+<span class="fc" id="L16">public class SifisApplication {</span>
 
 	public static void main(String[] args) {
-<span class="nc" id="L14">		SpringApplication.run(SifisApplication.class, args);</span>
-<span class="nc" id="L15">	}</span>
+<span class="nc" id="L19">		SpringApplication.run(SifisApplication.class, args);</span>
+<span class="nc" id="L20">	}</span>
 	
 	@GetMapping(&quot;/hello&quot;)
 	public String hello(@RequestParam(value = &quot;name&quot;, defaultValue = &quot;World&quot;) String name) {
-<span class="nc" id="L19">		return String.format(&quot;Hello %s!&quot;, name);</span>
+<span class="nc" id="L24">		return String.format(&quot;Hello %s!&quot;, name);</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

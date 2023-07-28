@@ -54,11 +54,11 @@ import it.polito.elite.sifis.services.UserService;
 	@PostMapping(value = &quot;/registration&quot;)
 	@ResponseStatus(value = HttpStatus.OK)
 	public User createNewUser(@Valid @RequestBody User user, BindingResult bindingResult) throws OWLOntologyStorageException, FileNotFoundException, OWLOntologyCreationException, InterruptedException {
-<span class="nc" id="L57">		IRI userIRI = IRI.create(this.owlService.getBaseIRI().toString() + &quot;/&quot; + user.getUsername());</span>
-<span class="nc" id="L58">		user.setOntologyIRI(userIRI.toString());</span>
-<span class="nc" id="L59">		owlService.addOntology(user.getUsername(), userIRI);</span>
-<span class="nc" id="L60">		userService.saveUser(user);		</span>
-<span class="nc" id="L61">		return user;</span>
+<span class="fc" id="L57">		IRI userIRI = IRI.create(this.owlService.getBaseIRI().toString() + &quot;/&quot; + user.getUsername());</span>
+<span class="fc" id="L58">		user.setOntologyIRI(userIRI.toString());</span>
+<span class="fc" id="L59">		owlService.addOntology(user.getUsername(), userIRI);</span>
+<span class="fc" id="L60">		userService.saveUser(user);		</span>
+<span class="fc" id="L61">		return user;</span>
 	}
 	
 

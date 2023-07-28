@@ -38,17 +38,22 @@ import it.polito.elite.sifis.repositories.UserRepository;
 	public User findUserByUsername(String username) {
 <span class="fc" id="L39">		return userRepository.findByUsername(username);</span>
 	}
+	
+	@Override	
+	public void deleteUser(User u) {
+<span class="fc" id="L44">		userRepository.delete(u);</span>
+<span class="fc" id="L45">	}</span>
 
 	@Override
 	public void saveUser(User user) throws InterruptedException, OWLOntologyCreationException, OWLOntologyStorageException, FileNotFoundException {
 		//user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-<span class="nc" id="L45">		user.setPassword(user.getPassword());</span>
-<span class="nc" id="L46">        user.setActive(1);</span>
-<span class="nc" id="L47">        Role userRole = roleRepository.findByRole(&quot;ADMIN&quot;);</span>
+<span class="fc" id="L50">		user.setPassword(user.getPassword());</span>
+<span class="fc" id="L51">        user.setActive(1);</span>
+<span class="fc" id="L52">        Role userRole = roleRepository.findByRole(&quot;ADMIN&quot;);</span>
         
-<span class="nc" id="L49">        user.setRoles(new HashSet&lt;Role&gt;(Arrays.asList(userRole)));</span>
-<span class="nc" id="L50">		userRepository.save(user);</span>
+<span class="fc" id="L54">        user.setRoles(new HashSet&lt;Role&gt;(Arrays.asList(userRole)));</span>
+<span class="fc" id="L55">		userRepository.save(user);</span>
 		
-<span class="nc" id="L52">	}</span>
+<span class="fc" id="L57">	}</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

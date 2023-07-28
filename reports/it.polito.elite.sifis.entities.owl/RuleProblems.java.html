@@ -22,15 +22,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 <span class="nc" id="L22">	}</span>
 	@JsonIgnore
 	public void addRedundantRules(List&lt;Rule&gt; rules){
-<span class="pc bpc" id="L25" title="1 of 2 branches missed.">		if(redundantRules == null) redundantRules = new HashSet&lt;List&lt;Rule&gt;&gt;();</span>
-<span class="fc" id="L26">		redundantRules.add(rules);</span>
-<span class="fc" id="L27">	}</span>
+<span class="nc bnc" id="L25" title="All 2 branches missed.">		if(redundantRules == null) redundantRules = new HashSet&lt;List&lt;Rule&gt;&gt;();</span>
+<span class="nc" id="L26">		redundantRules.add(rules);</span>
+<span class="nc" id="L27">	}</span>
 
 	@JsonIgnore
 	public void addInconsistentRules(List&lt;Rule&gt; rules){
-<span class="nc bnc" id="L31" title="All 2 branches missed.">		if(inconsistentRules == null) inconsistentRules =  new HashSet&lt;List&lt;Rule&gt;&gt;();</span>
-<span class="nc" id="L32">		inconsistentRules.add(rules);</span>
-<span class="nc" id="L33">	}</span>
+<span class="pc bpc" id="L31" title="1 of 2 branches missed.">		if(inconsistentRules == null) inconsistentRules =  new HashSet&lt;List&lt;Rule&gt;&gt;();</span>
+<span class="fc" id="L32">		inconsistentRules.add(rules);</span>
+<span class="fc" id="L33">	}</span>
 	
 	public Set&lt;List&lt;Rule&gt;&gt; getLoops() {
 <span class="fc" id="L36">		return loops;</span>
@@ -61,27 +61,27 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 	}
 	
 	public void setRule(Rule rule) {
-<span class="nc" id="L64">		this.rule = rule;</span>
-<span class="nc" id="L65">	}</span>
+<span class="fc" id="L64">		this.rule = rule;</span>
+<span class="fc" id="L65">	}</span>
 	@JsonIgnore
 	public boolean containsInconsistency(List&lt;Rule&gt; inconsistent) {
-<span class="nc bnc" id="L68" title="All 4 branches missed.">		if(this.inconsistentRules == null || this.inconsistentRules.size() == 0)</span>
-<span class="nc" id="L69">			return false;</span>
-<span class="nc bnc" id="L70" title="All 2 branches missed.">		for(List&lt;Rule&gt; inconsistency : this.inconsistentRules){</span>
-<span class="nc bnc" id="L71" title="All 2 branches missed.">			if(inconsistency.containsAll(inconsistent))</span>
-<span class="nc" id="L72">				return true;</span>
+<span class="pc bpc" id="L68" title="1 of 4 branches missed.">		if(this.inconsistentRules == null || this.inconsistentRules.size() == 0)</span>
+<span class="fc" id="L69">			return false;</span>
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">		for(List&lt;Rule&gt; inconsistency : this.inconsistentRules){</span>
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">			if(inconsistency.containsAll(inconsistent))</span>
+<span class="fc" id="L72">				return true;</span>
 <span class="nc" id="L73">		}</span>
 
 <span class="nc" id="L75">		return false;</span>
 	}
 	@JsonIgnore
 	public boolean containsRedundancy(List&lt;Rule&gt; redundant) {
-<span class="pc bpc" id="L79" title="1 of 4 branches missed.">		if(this.redundantRules == null || this.redundantRules.size() == 0)</span>
-<span class="fc" id="L80">			return false;</span>
+<span class="nc bnc" id="L79" title="All 4 branches missed.">		if(this.redundantRules == null || this.redundantRules.size() == 0)</span>
+<span class="nc" id="L80">			return false;</span>
 
-<span class="pc bpc" id="L82" title="1 of 2 branches missed.">		for(List&lt;Rule&gt; redundancy : this.redundantRules){</span>
-<span class="pc bpc" id="L83" title="1 of 2 branches missed.">			if(redundancy.containsAll(redundant))</span>
-<span class="fc" id="L84">				return true;</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">		for(List&lt;Rule&gt; redundancy : this.redundantRules){</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">			if(redundancy.containsAll(redundant))</span>
+<span class="nc" id="L84">				return true;</span>
 <span class="nc" id="L85">		}</span>
 
 <span class="nc" id="L87">		return false;</span>

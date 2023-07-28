@@ -290,9 +290,9 @@ import it.polito.elite.sifis.repositories.TriggerRepository;
 
 	@Override
 	public void deleteRule(Long ruleId) {
-<span class="nc" id="L293">		Dbrule rule = ruleRepository.findById(ruleId).get();</span>
-<span class="nc" id="L294">		ruleRepository.delete(rule);</span>
-<span class="nc" id="L295">	}</span>
+<span class="fc" id="L293">		Dbrule rule = ruleRepository.findById(ruleId).get();</span>
+<span class="fc" id="L294">		ruleRepository.delete(rule);</span>
+<span class="fc" id="L295">	}</span>
 	
 	@Override
 	public void deleteAllRules(String username) throws OWLOntologyCreationException, InterruptedException {
@@ -362,32 +362,7 @@ import it.polito.elite.sifis.repositories.TriggerRepository;
 <span class="nc" id="L362">		return rule;</span>
 	}
 
-	@Override
-	public List&lt;Rule&gt; getPossibleRules(String type, String username) throws InterruptedException, OWLOntologyCreationException {
-<span class="nc" id="L367">		List&lt;Rule&gt; rules = new LinkedList&lt;Rule&gt;();</span>
-		
-<span class="nc" id="L369">		Collection &lt;Service&gt; triggerServices = owlService.getTriggerServices();</span>
-<span class="nc" id="L370">		Collection &lt;Service&gt; actionServices = owlService.getTriggerServices();</span>
-		
-<span class="nc" id="L372">		Collection&lt;Trigger&gt; triggers = new LinkedList&lt;Trigger&gt;();</span>
-<span class="nc" id="L373">		Collection&lt;Action&gt; actions = new LinkedList&lt;Action&gt;();</span>
-<span class="nc bnc" id="L374" title="All 2 branches missed.">		for(Service service : triggerServices)</span>
-<span class="nc" id="L375">			triggers.addAll(owlService.getTriggers(service.getId(), username));</span>
-<span class="nc bnc" id="L376" title="All 2 branches missed.">		for(Service service : actionServices)</span>
-<span class="nc" id="L377">			actions.addAll(owlService.getActions(service.getId(), username));</span>
-		
-		
-<span class="nc bnc" id="L380" title="All 2 branches missed.">		for(Trigger trigger : triggers) {</span>
-<span class="nc bnc" id="L381" title="All 2 branches missed.">			for(Action action : actions) {</span>
-<span class="nc" id="L382">				Rule rule = new Rule();</span>
-<span class="nc" id="L383">				rule.setTrigger(trigger);</span>
-<span class="nc" id="L384">				rule.setAction(action);</span>
-<span class="nc" id="L385">				rules.add(rule);</span>
-<span class="nc" id="L386">			}</span>
-<span class="nc" id="L387">		}</span>
-		
-<span class="nc" id="L389">		return rules;</span>
-	}
+	
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

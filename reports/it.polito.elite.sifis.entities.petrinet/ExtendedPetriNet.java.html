@@ -53,7 +53,7 @@ public class ExtendedPetriNet extends PetriNet{
 <span class="fc" id="L53">	}</span>
 	
 	public void addActionPlace(ActionPlace place){
-<span class="fc bfc" id="L56" title="All 2 branches covered.">		if(!this.actionPlaces.containsKey(place.getAction())){</span>
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">		if(!this.actionPlaces.containsKey(place.getAction())){</span>
 <span class="fc" id="L57">			this.actionPlaces.put(place.getAction(), place);</span>
 		}
 <span class="fc" id="L59">	}</span>

@@ -161,7 +161,7 @@ import it.polito.elite.sifis.utils.PropertyFileReader;
 	
 	@PostMapping(value = &quot;/sifis/rule&quot;)
 	@ResponseStatus(value = HttpStatus.OK)
-	public void saveRule(@RequestBody Rule rule, Principal user) throws OWLOntologyCreationException{
+	public Long saveRule(@RequestBody Rule rule, Principal user) throws OWLOntologyCreationException{
 <span class="fc bfc" id="L165" title="All 2 branches covered.">		for(Detail d : rule.getAction().getDetails()){</span>
 <span class="pc bpc" id="L166" title="1 of 2 branches missed.">			if(d.getType().equals(&quot;entity&quot;)){</span>
 <span class="nc" id="L167">				ObjectMapper mapper = new ObjectMapper();</span>
@@ -181,201 +181,202 @@ import it.polito.elite.sifis.utils.PropertyFileReader;
 		}
 <span class="fc" id="L182">		Dbrule dbrule = dbService.saveRule(rule, &quot;sifis&quot;, user.getName());</span>
 <span class="fc" id="L183">		rule.setDbId(dbrule.getId());</span>
-<span class="fc" id="L184">	}</span>
+<span class="fc" id="L184">		return dbrule.getId();</span>
+	}
 	
 	@PostMapping(value = &quot;/sifis/translate&quot;)
 	@ResponseStatus(value = HttpStatus.OK)
 	public void translate(HttpServletResponse response, @RequestBody Rule rule, Principal user) throws OWLOntologyCreationException, InterruptedException, JAXBException, IOException {
-<span class="fc" id="L189">		prop = PropertyFileReader.loadProperties(configFile);</span>
+<span class="fc" id="L190">		prop = PropertyFileReader.loadProperties(configFile);</span>
 
-<span class="fc" id="L191">		ClassLoader classloader = Thread.currentThread().getContextClassLoader();</span>
-<span class="fc" id="L192">		File policyDir = new File(classloader.getResource(prop.getProperty(&quot;policiesDir&quot;)).getFile());</span>
-<span class="fc" id="L193">		FileUtils.cleanDirectory(policyDir); </span>
+<span class="fc" id="L192">		ClassLoader classloader = Thread.currentThread().getContextClassLoader();</span>
+<span class="fc" id="L193">		File policyDir = new File(classloader.getResource(prop.getProperty(&quot;policiesDir&quot;)).getFile());</span>
+<span class="fc" id="L194">		FileUtils.cleanDirectory(policyDir); </span>
 		        
 
-<span class="fc" id="L196">		List&lt;PolicyType&gt; policies = xacmlService.translate(rule, user.getName());</span>
+<span class="fc" id="L197">		List&lt;PolicyType&gt; policies = xacmlService.translate(rule, user.getName());</span>
 		
-<span class="fc" id="L198">		JAXBContext jaxbContext = JAXBContext.newInstance(PolicyType.class);</span>
-<span class="fc" id="L199">		Marshaller jaxbMarshaller = jaxbContext.createMarshaller();</span>
+<span class="fc" id="L199">		JAXBContext jaxbContext = JAXBContext.newInstance(PolicyType.class);</span>
+<span class="fc" id="L200">		Marshaller jaxbMarshaller = jaxbContext.createMarshaller();</span>
 
-<span class="fc bfc" id="L201" title="All 2 branches covered.">		for(PolicyType policy : policies) {</span>
-<span class="fc" id="L202">			File policyFile = new File(policyDir.getAbsolutePath() + &quot;/&quot; + policy.getPolicyId()+ &quot;.xml&quot;);</span>
-<span class="fc" id="L203">		    jaxbMarshaller.marshal(policy, policyFile);</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">		for(PolicyType policy : policies) {</span>
+<span class="fc" id="L203">			File policyFile = new File(policyDir.getAbsolutePath() + &quot;/&quot; + policy.getPolicyId()+ &quot;.xml&quot;);</span>
+<span class="fc" id="L204">		    jaxbMarshaller.marshal(policy, policyFile);</span>
 		    
-<span class="fc" id="L205">		    dhtService.publishPolicy(policyFile, policy);</span>
+<span class="fc" id="L206">		    dhtService.publishPolicy(policyFile, policy);</span>
 
-<span class="fc" id="L207">		}</span>
+<span class="fc" id="L208">		}</span>
 	        
-<span class="fc" id="L209">	}</span>
+<span class="fc" id="L210">	}</span>
 	
 	@GetMapping(value = &quot;/sifis/download&quot;, produces=&quot;application/zip&quot;)
 	public ResponseEntity&lt;StreamingResponseBody&gt; download(HttpServletResponse response, Principal user) throws IOException {
-<span class="fc" id="L213">		ClassLoader classloader = Thread.currentThread().getContextClassLoader();</span>
-<span class="fc" id="L214">		File policyDir = new File(classloader.getResource(prop.getProperty(&quot;policiesDir&quot;)).getFile());</span>
+<span class="fc" id="L214">		ClassLoader classloader = Thread.currentThread().getContextClassLoader();</span>
+<span class="fc" id="L215">		File policyDir = new File(classloader.getResource(prop.getProperty(&quot;policiesDir&quot;)).getFile());</span>
 	    
-<span class="fc" id="L216">		int BUFFER_SIZE = 1024;</span>
+<span class="fc" id="L217">		int BUFFER_SIZE = 1024;</span>
 
-<span class="fc" id="L218">		StreamingResponseBody streamResponseBody = out -&gt; {</span>
+<span class="fc" id="L219">		StreamingResponseBody streamResponseBody = out -&gt; {</span>
 
-<span class="fc" id="L220">			final ZipOutputStream zipOutputStream = new ZipOutputStream(response.getOutputStream());</span>
-<span class="fc" id="L221">			ZipEntry zipEntry = null;</span>
-<span class="fc" id="L222">			InputStream inputStream = null;</span>
+<span class="fc" id="L221">			final ZipOutputStream zipOutputStream = new ZipOutputStream(response.getOutputStream());</span>
+<span class="fc" id="L222">			ZipEntry zipEntry = null;</span>
+<span class="fc" id="L223">			InputStream inputStream = null;</span>
 
 			try {
-<span class="fc bfc" id="L225" title="All 2 branches covered.">				for (File file : policyDir.listFiles()) {</span>
-<span class="fc" id="L226">					zipEntry = new ZipEntry(file.getName());</span>
+<span class="fc bfc" id="L226" title="All 2 branches covered.">				for (File file : policyDir.listFiles()) {</span>
+<span class="fc" id="L227">					zipEntry = new ZipEntry(file.getName());</span>
 
-<span class="fc" id="L228">					inputStream = new FileInputStream(file);</span>
+<span class="fc" id="L229">					inputStream = new FileInputStream(file);</span>
 
-<span class="fc" id="L230">					zipOutputStream.putNextEntry(zipEntry);</span>
-<span class="fc" id="L231">					byte[] bytes = new byte[BUFFER_SIZE];</span>
+<span class="fc" id="L231">					zipOutputStream.putNextEntry(zipEntry);</span>
+<span class="fc" id="L232">					byte[] bytes = new byte[BUFFER_SIZE];</span>
 					int length;
-<span class="fc bfc" id="L233" title="All 2 branches covered.">					while ((length = inputStream.read(bytes)) &gt;= 0) {</span>
-<span class="fc" id="L234">						zipOutputStream.write(bytes, 0, length);</span>
+<span class="fc bfc" id="L234" title="All 2 branches covered.">					while ((length = inputStream.read(bytes)) &gt;= 0) {</span>
+<span class="fc" id="L235">						zipOutputStream.write(bytes, 0, length);</span>
 					}
 
 				}
 				// set zip size in response
-<span class="pc bpc" id="L239" title="1 of 2 branches missed.">				response.setContentLength((int) (zipEntry != null ? zipEntry.getSize() : 0));</span>
-<span class="nc" id="L240">			} catch (IOException e) {</span>
+<span class="pc bpc" id="L240" title="1 of 2 branches missed.">				response.setContentLength((int) (zipEntry != null ? zipEntry.getSize() : 0));</span>
+<span class="nc" id="L241">			} catch (IOException e) {</span>
 			} finally {
-<span class="pc bpc" id="L242" title="1 of 2 branches missed.">				if (inputStream != null) {</span>
-<span class="fc" id="L243">					inputStream.close();</span>
+<span class="pc bpc" id="L243" title="1 of 2 branches missed.">				if (inputStream != null) {</span>
+<span class="fc" id="L244">					inputStream.close();</span>
 				}
-<span class="pc bpc" id="L245" title="1 of 2 branches missed.">				if (zipOutputStream != null) {</span>
-<span class="fc" id="L246">					zipOutputStream.close();</span>
+<span class="pc bpc" id="L246" title="1 of 2 branches missed.">				if (zipOutputStream != null) {</span>
+<span class="fc" id="L247">					zipOutputStream.close();</span>
 				}
 			}
 
-<span class="fc" id="L250">		};</span>
+<span class="fc" id="L251">		};</span>
 		
 
-<span class="fc" id="L253">		response.setContentType(&quot;application/zip&quot;);</span>
-<span class="fc" id="L254">		response.setHeader(&quot;Content-Disposition&quot;, &quot;attachment; filename=policy.zip&quot;);</span>
-<span class="fc" id="L255">		response.addHeader(&quot;Pragma&quot;, &quot;no-cache&quot;);</span>
-<span class="fc" id="L256">		response.addHeader(&quot;Expires&quot;, &quot;0&quot;);</span>
-<span class="fc" id="L257">		return ResponseEntity.ok(streamResponseBody);</span>
+<span class="fc" id="L254">		response.setContentType(&quot;application/zip&quot;);</span>
+<span class="fc" id="L255">		response.setHeader(&quot;Content-Disposition&quot;, &quot;attachment; filename=policy.zip&quot;);</span>
+<span class="fc" id="L256">		response.addHeader(&quot;Pragma&quot;, &quot;no-cache&quot;);</span>
+<span class="fc" id="L257">		response.addHeader(&quot;Expires&quot;, &quot;0&quot;);</span>
+<span class="fc" id="L258">		return ResponseEntity.ok(streamResponseBody);</span>
 	}
 		
 	
 	@PostMapping(value = &quot;/sifis/check&quot;)
 	@ResponseStatus(value = HttpStatus.OK)
 	public RuleProblems checkRule(@RequestBody Rule rule, Principal user) throws OWLOntologyCreationException, InterruptedException{
-<span class="fc" id="L264">		RuleProblems ruleProblems = new RuleProblems();</span>
+<span class="fc" id="L265">		RuleProblems ruleProblems = new RuleProblems();</span>
 		
-<span class="fc" id="L266">		List&lt;Rule&gt; rulesBefore = new ArrayList&lt;Rule&gt;();</span>
-<span class="fc" id="L267">		List&lt;Rule&gt; rulesAfter = dbService.getRulesByType(&quot;sifis&quot;, user.getName());</span>
-<span class="fc bfc" id="L268" title="All 2 branches covered.">		for (Rule r : rulesAfter) {</span>
-<span class="pc bpc" id="L269" title="1 of 2 branches missed.">			if(r.getDbId() != rule.getDbId()) {</span>
-<span class="fc" id="L270">				rulesBefore.add(r);</span>
+<span class="fc" id="L267">		List&lt;Rule&gt; rulesBefore = new ArrayList&lt;Rule&gt;();</span>
+<span class="fc" id="L268">		List&lt;Rule&gt; rulesAfter = dbService.getRulesByType(&quot;sifis&quot;, user.getName());</span>
+<span class="fc bfc" id="L269" title="All 2 branches covered.">		for (Rule r : rulesAfter) {</span>
+<span class="fc bfc" id="L270" title="All 2 branches covered.">			if(r.getDbId() != rule.getDbId()) {</span>
+<span class="fc" id="L271">				rulesBefore.add(r);</span>
 			} else {
-<span class="nc" id="L272">				ruleProblems.setRule(r);</span>
+<span class="fc" id="L273">				ruleProblems.setRule(r);</span>
 			}
-<span class="fc" id="L274">		}</span>
+<span class="fc" id="L275">		}</span>
 
-<span class="fc" id="L276">		ExtendedPetriNet net = (ExtendedPetriNet) petriNetService.getNet(user.getName(),rulesAfter,true);</span>
+<span class="fc" id="L277">		ExtendedPetriNet net = (ExtendedPetriNet) petriNetService.getNet(user.getName(),rulesAfter,true);</span>
 		
 		//search for loops
-<span class="fc" id="L279">		List&lt;List&lt;Place&gt;&gt; cycles = net.getCycle(rule, rulesAfter);</span>
+<span class="fc" id="L280">		List&lt;List&lt;Place&gt;&gt; cycles = net.getCycle(rule, rulesAfter);</span>
 		
-<span class="pc bpc" id="L281" title="2 of 4 branches missed.">		if(cycles != null &amp;&amp; cycles.size() &gt; 0){</span>
+<span class="pc bpc" id="L282" title="2 of 4 branches missed.">		if(cycles != null &amp;&amp; cycles.size() &gt; 0){</span>
 			//there are cycles!
 			
-<span class="nc bnc" id="L284" title="All 2 branches missed.">			for(List&lt;Place&gt; cycle : cycles){</span>
-<span class="nc" id="L285">				List&lt;Rule&gt; loop = new LinkedList&lt;Rule&gt;();</span>
+<span class="nc bnc" id="L285" title="All 2 branches missed.">			for(List&lt;Place&gt; cycle : cycles){</span>
+<span class="nc" id="L286">				List&lt;Rule&gt; loop = new LinkedList&lt;Rule&gt;();</span>
 				
-<span class="nc" id="L287">				Collections.reverse(cycle);</span>
-<span class="nc" id="L288">				Iterator&lt;Place&gt; it = cycle.iterator();</span>
-<span class="nc" id="L289">				boolean involved = false;</span>
-<span class="nc bnc" id="L290" title="All 2 branches missed.">				while(it.hasNext()){</span>
-<span class="nc" id="L291">					Rule r = new Rule();</span>
-<span class="nc" id="L292">					r.setTrigger(((TriggerPlace)it.next()).getTrigger());</span>
-<span class="nc" id="L293">					r.setAction(((ActionPlace)it.next()).getAction());</span>
+<span class="nc" id="L288">				Collections.reverse(cycle);</span>
+<span class="nc" id="L289">				Iterator&lt;Place&gt; it = cycle.iterator();</span>
+<span class="nc" id="L290">				boolean involved = false;</span>
+<span class="nc bnc" id="L291" title="All 2 branches missed.">				while(it.hasNext()){</span>
+<span class="nc" id="L292">					Rule r = new Rule();</span>
+<span class="nc" id="L293">					r.setTrigger(((TriggerPlace)it.next()).getTrigger());</span>
+<span class="nc" id="L294">					r.setAction(((ActionPlace)it.next()).getAction());</span>
 					
-<span class="nc bnc" id="L295" title="All 2 branches missed.">					for(Rule ra : rulesAfter){</span>
-<span class="nc bnc" id="L296" title="All 4 branches missed.">						if(r.getTrigger().equals(ra.getTrigger()) &amp;&amp; r.getAction().equals(ra.getAction())){</span>
-<span class="nc" id="L297">							loop.add(ra);</span>
-<span class="nc bnc" id="L298" title="All 4 branches missed.">							if(r.getTrigger().equals(rule.getTrigger()) &amp;&amp; r.getAction().equals(rule.getAction())){</span>
-<span class="nc" id="L299">								involved = true;</span>
+<span class="nc bnc" id="L296" title="All 2 branches missed.">					for(Rule ra : rulesAfter){</span>
+<span class="nc bnc" id="L297" title="All 4 branches missed.">						if(r.getTrigger().equals(ra.getTrigger()) &amp;&amp; r.getAction().equals(ra.getAction())){</span>
+<span class="nc" id="L298">							loop.add(ra);</span>
+<span class="nc bnc" id="L299" title="All 4 branches missed.">							if(r.getTrigger().equals(rule.getTrigger()) &amp;&amp; r.getAction().equals(rule.getAction())){</span>
+<span class="nc" id="L300">								involved = true;</span>
 							}	
 						}
-<span class="nc" id="L302">					}</span>
-<span class="nc" id="L303">				}</span>
+<span class="nc" id="L303">					}</span>
+<span class="nc" id="L304">				}</span>
 				//Collections.reverse(loop);
 				//return the loop only if the saved rule is involved
-<span class="nc bnc" id="L306" title="All 2 branches missed.">				if(involved)</span>
-<span class="nc" id="L307">					ruleProblems.addLoop(loop);</span>
-<span class="nc" id="L308">			}</span>
+<span class="nc bnc" id="L307" title="All 2 branches missed.">				if(involved)</span>
+<span class="nc" id="L308">					ruleProblems.addLoop(loop);</span>
+<span class="nc" id="L309">			}</span>
 		}
-<span class="pc bpc" id="L310" title="1 of 2 branches missed.">		if(ruleProblems.getLoops() == null){</span>
+<span class="pc bpc" id="L311" title="1 of 2 branches missed.">		if(ruleProblems.getLoops() == null){</span>
 			//search for inconsistencies and redundancies
 		
 			Trigger startTrigger;
-<span class="pc bpc" id="L314" title="1 of 2 branches missed.">			if(ruleProblems.getLoops() == null)</span>
-<span class="fc" id="L315">				startTrigger = net.getRoot(rule);</span>
+<span class="pc bpc" id="L315" title="1 of 2 branches missed.">			if(ruleProblems.getLoops() == null)</span>
+<span class="fc" id="L316">				startTrigger = net.getRoot(rule);</span>
 			else
-<span class="nc" id="L317">				startTrigger = rule.getTrigger();</span>
+<span class="nc" id="L318">				startTrigger = rule.getTrigger();</span>
 			
-<span class="fc" id="L319">			ruleProblems.setStartTrigger(startTrigger);</span>
-<span class="fc" id="L320">			Rule[] simulatedRules = net.getSimualtedRules(startTrigger);</span>
-<span class="fc" id="L321">			List&lt;Rule&gt; simulatedRulesList = Arrays.asList(simulatedRules);</span>
-<span class="pc bpc" id="L322" title="1 of 2 branches missed.">			if(simulatedRulesList.size() &gt; 40){</span>
-<span class="nc" id="L323">				simulatedRulesList = simulatedRulesList.subList(0, 40);</span>
-<span class="nc" id="L324">				simulatedRules = new Rule[40];</span>
-<span class="nc" id="L325">				int i = 0;</span>
-<span class="nc bnc" id="L326" title="All 2 branches missed.">				for(Rule r : simulatedRulesList)</span>
-<span class="nc" id="L327">					simulatedRules[i++] = r;</span>
+<span class="fc" id="L320">			ruleProblems.setStartTrigger(startTrigger);</span>
+<span class="fc" id="L321">			Rule[] simulatedRules = net.getSimualtedRules(startTrigger);</span>
+<span class="fc" id="L322">			List&lt;Rule&gt; simulatedRulesList = Arrays.asList(simulatedRules);</span>
+<span class="pc bpc" id="L323" title="1 of 2 branches missed.">			if(simulatedRulesList.size() &gt; 40){</span>
+<span class="nc" id="L324">				simulatedRulesList = simulatedRulesList.subList(0, 40);</span>
+<span class="nc" id="L325">				simulatedRules = new Rule[40];</span>
+<span class="nc" id="L326">				int i = 0;</span>
+<span class="nc bnc" id="L327" title="All 2 branches missed.">				for(Rule r : simulatedRulesList)</span>
+<span class="nc" id="L328">					simulatedRules[i++] = r;</span>
 			}
 			
 			//Action ruleAction = rule.getAction();
 			
-<span class="fc bfc" id="L332" title="All 2 branches covered.">			for(int i = 0; i &lt; simulatedRules.length; i++) {</span>
-<span class="fc" id="L333">				Rule r1 = simulatedRules[i];</span>
-<span class="fc" id="L334">				Action a1 = simulatedRules[i].getAction();</span>
-<span class="fc" id="L335">				List&lt;Rule&gt; redundant = new LinkedList&lt;Rule&gt;();</span>
-<span class="fc" id="L336">				List&lt;Rule&gt; inconsistent = new LinkedList&lt;Rule&gt;();</span>
-<span class="fc" id="L337">				inconsistent.add(r1);</span>
-<span class="fc" id="L338">				redundant.add(r1);</span>
+<span class="fc bfc" id="L333" title="All 2 branches covered.">			for(int i = 0; i &lt; simulatedRules.length; i++) {</span>
+<span class="fc" id="L334">				Rule r1 = simulatedRules[i];</span>
+<span class="fc" id="L335">				Action a1 = simulatedRules[i].getAction();</span>
+<span class="fc" id="L336">				List&lt;Rule&gt; redundant = new LinkedList&lt;Rule&gt;();</span>
+<span class="fc" id="L337">				List&lt;Rule&gt; inconsistent = new LinkedList&lt;Rule&gt;();</span>
+<span class="fc" id="L338">				inconsistent.add(r1);</span>
+<span class="fc" id="L339">				redundant.add(r1);</span>
 				
-<span class="pc bpc" id="L340" title="1 of 4 branches missed.">				for(int j = 0; j &lt; simulatedRules.length &amp;&amp; j&lt;100; j++){</span>
-<span class="fc bfc" id="L341" title="All 2 branches covered.">					if(j!=i){</span>
-<span class="fc" id="L342">						Rule r2 = simulatedRules[j];</span>
-<span class="fc" id="L343">						Action a2 = simulatedRules[j].getAction();</span>
+<span class="pc bpc" id="L341" title="1 of 4 branches missed.">				for(int j = 0; j &lt; simulatedRules.length &amp;&amp; j&lt;100; j++){</span>
+<span class="fc bfc" id="L342" title="All 2 branches covered.">					if(j!=i){</span>
+<span class="fc" id="L343">						Rule r2 = simulatedRules[j];</span>
+<span class="fc" id="L344">						Action a2 = simulatedRules[j].getAction();</span>
 						
-<span class="pc bpc" id="L345" title="1 of 2 branches missed.">						if(owlService.equalsML(a1,a2)){</span>
-<span class="fc" id="L346">							redundant.add(r2);</span>
+<span class="pc bpc" id="L346" title="1 of 2 branches missed.">						if(owlService.equalsML(a1,a2)){</span>
+<span class="nc" id="L347">							redundant.add(r2);</span>
 						}
 						else{
-<span class="nc" id="L349">							inconsistent.add(r2);</span>
+<span class="fc" id="L350">							inconsistent.add(r2);</span>
 						}
 						
 					}
 				}
 				
-<span class="pc bpc" id="L355" title="4 of 6 branches missed.">				if(inconsistent != null &amp;&amp; inconsistent.size() &gt; 1 &amp;&amp; !ruleProblems.containsInconsistency(inconsistent)) ruleProblems.addInconsistentRules(inconsistent);</span>
-<span class="pc bpc" id="L356" title="2 of 6 branches missed.">				if(redundant != null &amp;&amp; redundant.size() &gt; 1 &amp;&amp; !ruleProblems.containsRedundancy(redundant)) ruleProblems.addRedundantRules(redundant);</span>
-<span class="fc" id="L357">				Trigger lastTrigger = simulatedRules[0].getTrigger();</span>
-<span class="fc" id="L358">				List&lt;Rule&gt; temp = new LinkedList&lt;Rule&gt;();</span>
+<span class="pc bpc" id="L356" title="1 of 6 branches missed.">				if(inconsistent != null &amp;&amp; inconsistent.size() &gt; 1 &amp;&amp; !ruleProblems.containsInconsistency(inconsistent)) ruleProblems.addInconsistentRules(inconsistent);</span>
+<span class="pc bpc" id="L357" title="4 of 6 branches missed.">				if(redundant != null &amp;&amp; redundant.size() &gt; 1 &amp;&amp; !ruleProblems.containsRedundancy(redundant)) ruleProblems.addRedundantRules(redundant);</span>
+<span class="fc" id="L358">				Trigger lastTrigger = simulatedRules[0].getTrigger();</span>
+<span class="fc" id="L359">				List&lt;Rule&gt; temp = new LinkedList&lt;Rule&gt;();</span>
 
-<span class="fc bfc" id="L360" title="All 2 branches covered.">				for(Rule simulatedRule : simulatedRulesList){</span>
+<span class="fc bfc" id="L361" title="All 2 branches covered.">				for(Rule simulatedRule : simulatedRulesList){</span>
 					
-<span class="pc bpc" id="L362" title="1 of 2 branches missed.">					if(simulatedRule.getTrigger().equals(lastTrigger)){</span>
-<span class="fc" id="L363">						temp.add(simulatedRule);</span>
-<span class="fc" id="L364">						continue;</span>
+<span class="pc bpc" id="L363" title="1 of 2 branches missed.">					if(simulatedRule.getTrigger().equals(lastTrigger)){</span>
+<span class="fc" id="L364">						temp.add(simulatedRule);</span>
+<span class="fc" id="L365">						continue;</span>
 					}
-<span class="nc" id="L366">					simulatedRule.setParents(petriNetService.getParents(simulatedRule, temp));</span>
-<span class="nc" id="L367">					temp.add(simulatedRule);</span>
-<span class="nc" id="L368">					lastTrigger = simulatedRule.getTrigger();</span>
-<span class="nc" id="L369">				}</span>
+<span class="nc" id="L367">					simulatedRule.setParents(petriNetService.getParents(simulatedRule, temp));</span>
+<span class="nc" id="L368">					temp.add(simulatedRule);</span>
+<span class="nc" id="L369">					lastTrigger = simulatedRule.getTrigger();</span>
+<span class="nc" id="L370">				}</span>
 				
 			
-<span class="fc" id="L372">				ruleProblems.setExecutedRules(simulatedRulesList);		</span>
+<span class="fc" id="L373">				ruleProblems.setExecutedRules(simulatedRulesList);		</span>
 			}
 		}
 			
 		
 
-<span class="fc" id="L378">		return ruleProblems;</span>
+<span class="fc" id="L379">		return ruleProblems;</span>
 	}
 	
 
