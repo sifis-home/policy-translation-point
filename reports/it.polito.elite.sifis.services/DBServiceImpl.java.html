@@ -294,74 +294,19 @@ import it.polito.elite.sifis.repositories.TriggerRepository;
 <span class="fc" id="L294">		ruleRepository.delete(rule);</span>
 <span class="fc" id="L295">	}</span>
 	
-	@Override
-	public void deleteAllRules(String username) throws OWLOntologyCreationException, InterruptedException {
-<span class="nc" id="L299">		User u = userService.findUserByUsername(username);</span>
-<span class="nc" id="L300">		List&lt;Dbrule&gt; rules = ruleRepository.findByUser(u);</span>
-<span class="nc bnc" id="L301" title="All 2 branches missed.">		for(Dbrule r : rules) {</span>
-<span class="nc" id="L302">			ruleRepository.delete(r);</span>
-<span class="nc" id="L303">		}</span>
-<span class="nc" id="L304">	}</span>
-	@Override
-	public List&lt;Dbentity&gt; getEntities(String username) {
-<span class="nc" id="L307">		User u = userService.findUserByUsername(username);</span>
-<span class="nc" id="L308">		return this.entityRepository.findByUser(u);</span>
-	}
-
-	@Override
-	public void deleteAllEntities(String username) {
-<span class="nc" id="L313">		User u = userService.findUserByUsername(username);</span>
-<span class="nc" id="L314">		List&lt;Dbentity&gt; entities = entityRepository.findByUser(u);</span>
-<span class="nc bnc" id="L315" title="All 2 branches missed.">		for(Dbentity e : entities)</span>
-<span class="nc" id="L316">			entityRepository.delete(e);</span>
-<span class="nc" id="L317">	}</span>
+	
+	
 
 	@Override
 	public Set&lt;Trigger&gt; getDefinedTriggersByType(String type, String username) throws OWLOntologyCreationException, InterruptedException {
-<span class="nc" id="L321">		List&lt;Rule&gt; rules = this.getRulesByType(type, username);</span>
-<span class="nc" id="L322">		Set&lt;Trigger&gt; triggers = new HashSet&lt;Trigger&gt;();</span>
-<span class="nc bnc" id="L323" title="All 2 branches missed.">		for(Rule rule : rules)</span>
-<span class="nc" id="L324">			triggers.add(rule.getTrigger());</span>
-<span class="nc" id="L325">		return triggers;</span>
+<span class="nc" id="L302">		List&lt;Rule&gt; rules = this.getRulesByType(type, username);</span>
+<span class="nc" id="L303">		Set&lt;Trigger&gt; triggers = new HashSet&lt;Trigger&gt;();</span>
+<span class="nc bnc" id="L304" title="All 2 branches missed.">		for(Rule rule : rules)</span>
+<span class="nc" id="L305">			triggers.add(rule.getTrigger());</span>
+<span class="nc" id="L306">		return triggers;</span>
 	}
 
-	@Override
-	public Rule getRule(Long ruleId, String username) throws OWLOntologyCreationException, InterruptedException {
-<span class="nc" id="L330">		Dbrule dbRule = ruleRepository.findById(ruleId).get();</span>
-<span class="nc" id="L331">		Rule rule = new Rule();</span>
-<span class="nc" id="L332">		rule.setDbId(dbRule.getId());</span>
-<span class="nc" id="L333">		Trigger trigger = new Trigger();</span>
-<span class="nc" id="L334">		Action action = new Action();</span>
-<span class="nc" id="L335">		Dbtrigger dbTrigger = dbRule.getTriggers().iterator().next();</span>
-<span class="nc" id="L336">		Dbaction dbAction = dbRule.getActions().iterator().next();</span>
-		
-<span class="nc" id="L338">		trigger = owlService.getTrigger(dbTrigger.getUrl(), username);</span>
-<span class="nc" id="L339">		action = owlService.getAction(dbAction.getUrl(), username);</span>
-
-<span class="nc bnc" id="L341" title="All 2 branches missed.">		for(Dbdetail db : dbTrigger.getDetails()){</span>
-<span class="nc bnc" id="L342" title="All 2 branches missed.">			for(Detail d : trigger.getDetails()){</span>
-<span class="nc bnc" id="L343" title="All 2 branches missed.">				if(d.getType().equals(&quot;entity&quot;))</span>
-<span class="nc" id="L344">					d.setValue(dbTrigger.getEntity().getUrl());</span>
-<span class="nc bnc" id="L345" title="All 6 branches missed.">				if(d.getURL() != null &amp;&amp; db.getUrl() != null &amp;&amp; d.getURL().equals(db.getUrl())){</span>
-<span class="nc" id="L346">					d.setValue(db.getValue());</span>
-				}
-<span class="nc" id="L348">			}</span>
-<span class="nc" id="L349">		}</span>
-<span class="nc bnc" id="L350" title="All 2 branches missed.">		for(Dbdetail db : dbAction.getDetails()){</span>
-<span class="nc bnc" id="L351" title="All 2 branches missed.">			for(Detail d : action.getDetails()){</span>
-<span class="nc bnc" id="L352" title="All 2 branches missed.">				if(d.getType().equals(&quot;entity&quot;))</span>
-<span class="nc" id="L353">					d.setValue(dbAction.getEntity().getUrl());</span>
-<span class="nc bnc" id="L354" title="All 6 branches missed.">				else if(d.getURL() != null &amp;&amp; db.getUrl() != null &amp;&amp; d.getURL().equals(db.getUrl())){</span>
-<span class="nc" id="L355">					d.setValue(db.getValue());</span>
-				}
-				
-<span class="nc" id="L358">			}</span>
-<span class="nc" id="L359">		}</span>
-<span class="nc" id="L360">		rule.setAction(action);</span>
-<span class="nc" id="L361">		rule.setTrigger(trigger);</span>
-<span class="nc" id="L362">		return rule;</span>
-	}
-
+	
 	
 
 }

@@ -6,7 +6,7 @@ sifis,it.polito.elite.sifis.entities.petrinet,CopyTransition.Type,0,24,0,0,0,3,0
 sifis,it.polito.elite.sifis.entities.petrinet,TriggerTransition,147,0,10,0,40,0,14,0,9,0
 sifis,it.polito.elite.sifis.entities.petrinet,ActionPlace,8,14,0,0,3,6,1,3,1,3
 sifis,it.polito.elite.sifis.entities.petrinet,RestSimulator,101,0,12,0,31,0,12,0,6,0
-sifis,it.polito.elite.sifis.entities.petrinet,ExtendedPetriNet,52,212,7,11,20,54,11,15,5,12
+sifis,it.polito.elite.sifis.entities.petrinet,ExtendedPetriNet,53,211,8,10,21,53,12,14,5,12
 sifis,it.polito.elite.sifis.entities.petrinet,CopyTransition,101,119,7,11,30,30,14,7,9,3
 sifis,it.polito.elite.sifis.entities.petrinet,OutputArc,36,27,0,0,10,10,4,3,4,3
 sifis,it.polito.elite.sifis.entities.petrinet,Token,103,49,9,3,26,14,13,5,7,5
@@ -43,7 +43,7 @@ sifis,it.polito.elite.sifis.services,XACMLServiceImpl,892,995,50,25,219,249,43,1
 sifis,it.polito.elite.sifis.services,OWLServiceImpl,1128,2326,85,83,183,354,71,41,10,18
 sifis,it.polito.elite.sifis.services,UserServiceImpl,0,43,0,0,0,10,0,4,0,4
 sifis,it.polito.elite.sifis.services,PetriNetServiceImpl,434,400,52,26,94,85,35,14,5,5
-sifis,it.polito.elite.sifis.services,DBServiceImpl,526,499,82,38,101,110,58,12,6,4
+sifis,it.polito.elite.sifis.services,DBServiceImpl,306,499,54,38,60,110,40,12,2,4
 sifis,it.polito.elite.sifis.entities.owl,RuleProblems,86,73,18,6,24,21,18,13,7,12
 sifis,it.polito.elite.sifis.entities.owl,Role,14,3,0,0,6,1,4,1,4,1
 sifis,it.polito.elite.sifis.entities.owl,Rule,152,178,56,14,41,44,35,20,1,19
