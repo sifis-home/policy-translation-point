@@ -1,9 +1,9 @@
 name: policy-translation-point
 
 on:
-  push:
-    branches:
-      - master
+  #push:
+  #  branches:
+  #    - master
 
 jobs:
 

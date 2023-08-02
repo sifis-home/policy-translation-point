@@ -15,6 +15,11 @@ jobs:
     permissions:
       contents: write
 
+    env:
+      DB_DATABASE: sifis_ptp
+      DB_USER: root
+      DB_PASSWORD: root
+      
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -25,6 +30,12 @@ jobs:
           architecture: x64
           distribution: 'zulu'
           cache: 'maven'
+
+      - name: Set up MySQL
+        run: |
+          sudo /etc/init.d/mysql start
+          mysql -e 'CREATE DATABASE ${{ env.DB_DATABASE }};' -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD}} 
+          mysql -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD}}  < schema.sql
 
       - name: Create the (jar) packages and libraries
         run: |
