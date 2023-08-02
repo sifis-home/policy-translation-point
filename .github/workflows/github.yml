@@ -86,19 +86,6 @@ jobs:
           distribution: 'zulu'
           cache: 'maven'
           
-      # - name: Prepare Dockerfiles and files for Contexts
-      #   run: |
-      #     mvn -N wrapper:wrapper
-         
-      # - name: Upload artifacts for Docker Image building
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: files-for-docker
-      #     retention-days: 5
-      #     if-no-files-found: error
-      #     path: |
-      #       ./* 
-
   # Build multiarch Docker Images and push as GitHub Packages
   docker-image-push:
 
@@ -107,11 +94,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # - name: Download artifacts for Docker Image building
-      #   uses: actions/download-artifact@v3
-      #   with:
-      #     name: files-for-docker
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
