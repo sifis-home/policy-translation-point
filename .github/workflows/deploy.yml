@@ -51,7 +51,7 @@ jobs:
         run: |
           ARCHIVE_NAME="policy-translation-point-${{ steps.tagName.outputs.tag }}"
           ARCHIVE_FILE="${ARCHIVE_NAME}.zip"
-          zip -r ${ARCHIVE_FILE} apps/sifis-0.0.1-SNAPSHOT.jar
+          zip -r ${ARCHIVE_FILE} apps/PTP/*.jar
 
       - name: Create a release
         uses: softprops/action-gh-release@v1
