@@ -19,7 +19,7 @@ jobs:
       DB_DATABASE: sifis_ptp
       DB_USER: root
       DB_PASSWORD: root
-      
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -51,7 +51,7 @@ jobs:
         run: |
           ARCHIVE_NAME="policy-translation-point-${{ steps.tagName.outputs.tag }}"
           ARCHIVE_FILE="${ARCHIVE_NAME}.zip"
-          zip -r ${ARCHIVE_FILE} apps/*.jar
+          zip -r ${ARCHIVE_FILE} apps/sifis-0.0.1-SNAPSHOT.jar
 
       - name: Create a release
         uses: softprops/action-gh-release@v1
