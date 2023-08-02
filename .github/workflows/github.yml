@@ -89,10 +89,7 @@ jobs:
       - name: Prepare Dockerfiles and files for Contexts
         run: |
           mvn -N wrapper:wrapper
-          mkdir -p docker-build
-          cd docker-build
-          cp -r ../* .
-             
+         
       - name: Upload artifacts for Docker Image building
         uses: actions/upload-artifact@v3
         with:
@@ -100,7 +97,7 @@ jobs:
           retention-days: 5
           if-no-files-found: error
           path: |
-            ./docker-build/* 
+            ./* 
 
   # Build multiarch Docker Images and push as GitHub Packages
   docker-image-push:
