@@ -39,7 +39,7 @@ jobs:
           mysql -e 'CREATE DATABASE ${{ env.DB_DATABASE }};' -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD}} 
           mysql -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD}}  < schema.sql
 
-      - name: Package ACE entities
+      - name: Package PTP entities
         run: |
           ./scripts/build-ptp.sh
 
@@ -71,96 +71,66 @@ jobs:
 
   
   # Build files necessary for building Docker Images (Dockerfiles and Contexts)
-  # build-for-docker:
+  build-for-docker:
 
-  #   runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
-  #   steps:
+    steps:
     
-  #     - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-  #     - uses: actions/setup-java@v3
-  #       with:
-  #         java-version: 8.0.x
-  #         architecture: x64
-  #         distribution: 'zulu'
-  #         cache: 'maven'
+      - uses: actions/setup-java@v3
+        with:
+          java-version: 11.0.x
+          architecture: x64
+          distribution: 'zulu'
+          cache: 'maven'
           
-  #     - name: Prepare Dockerfiles and files for Contexts
-  #       run: |
-  #         ./scripts/build-for-docker.sh
+      # - name: Prepare Dockerfiles and files for Contexts
+      #   run: |
+      #     ./scripts/build-for-docker.sh
              
-  #     - name: Upload artifacts for Docker Image building
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: files-for-docker
-  #         retention-days: 5
-  #         if-no-files-found: error
-  #         path: |
-  #           ./docker-build/*  
+      # - name: Upload artifacts for Docker Image building
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: files-for-docker
+      #     retention-days: 5
+      #     if-no-files-found: error
+      #     path: |
+      #       ./docker-build/*  
 
-  # # Build multiarch Docker Images and push as GitHub Packages
-  # docker-image-push:
+  # Build multiarch Docker Images and push as GitHub Packages
+  docker-image-push:
 
-  #   if: ${{ github.repository == 'sifis-home/ace-entities' }}
-  #   needs: [build-and-test, build-for-docker]
-  #   runs-on: ubuntu-latest
+    if: ${{ github.repository == 'sifis-home/policy-translation-point' }}
+    needs: [build-and-test] #, build-for-docker]
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - name: Download artifacts for Docker Image building
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: files-for-docker
+    steps:
+      - name: Download artifacts for Docker Image building
+        uses: actions/download-artifact@v3
+        with:
+          name: files-for-docker
 
-  #     - name: Set up QEMU
-  #       uses: docker/setup-qemu-action@v2
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
 
-  #     - name: Set up Docker Buildx
-  #       uses: docker/setup-buildx-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-  #     - name: Login to GitHub container registry (ghcr.io)
-  #       uses: docker/login-action@v2
-  #       with:
-  #         registry: ghcr.io
-  #         username: ${{ github.actor }}
-  #         password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Login to GitHub container registry (ghcr.io)
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-  #     - name: Build and push image (Authorization Server)
-  #       uses: docker/build-push-action@v4
-  #       with:
-  #         context: ace-entities/.
-  #         file: ace-entities/Dockerfile-AceAS
-  #         platforms: linux/amd64, linux/arm64, linux/arm
-  #         push: true
-  #         tags: ghcr.io/sifis-home/ace-authorization-server:latest
-  #         outputs: type=registry, annotation-index.org.opencontainers.image.description=ace-entities - ACE Authorization Server (includes revoked token notification and UCS). Configured with DHT logging enabled.
-
-  #     - name: Build and push image (Resource Server)
-  #       uses: docker/build-push-action@v4
-  #       with:
-  #         context: ace-entities/.
-  #         file: ace-entities/Dockerfile-AceRS
-  #         platforms: linux/amd64, linux/arm64, linux/arm
-  #         push: true
-  #         tags: ghcr.io/sifis-home/ace-resource-server:latest
-  #         outputs: type=registry, annotation-index.org.opencontainers.image.description=ace-entities - ACE Resource Server. Configured with CoAP Observe option enabled for the /trl endpoint.
-
-  #     - name: Build and push image (Client)
-  #       uses: docker/build-push-action@v4
-  #       with:
-  #         context: ace-entities/.
-  #         file: ace-entities/Dockerfile-AceClient
-  #         platforms: linux/amd64, linux/arm64, linux/arm
-  #         push: true
-  #         tags: ghcr.io/sifis-home/ace-client:latest
-  #         outputs: type=registry, annotation-index.org.opencontainers.image.description=ace-entities - ACE Client. Configured with CoAP Observe option enabled for the /trl endpoint.
-
-  #     - name: Build and push image (Client DHT)
-  #       uses: docker/build-push-action@v4
-  #       with:
-  #         context: ace-entities/.
-  #         file: ace-entities/Dockerfile-AceClientDht
-  #         platforms: linux/amd64, linux/arm64, linux/arm
-  #         push: true
-  #         tags: ghcr.io/sifis-home/ace-client-dht:latest
-  #         outputs: type=registry, annotation-index.org.opencontainers.image.description=ace-entities - ACE Client DHT. Configured with CoAP Observe option enabled for the /trl endpoint; configured with DHT connection enabled.
+      - name: Build and push image 
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: Dockerfile
+          platforms: linux/amd64, linux/arm64, linux/arm
+          push: true
+          tags: ghcr.io/sifis-home/policy-translation-point:latest
+          outputs: type=registry, annotation-index.org.opencontainers.image.description=Policy Translation Point.

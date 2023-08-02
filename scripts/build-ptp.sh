@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# Build ace-entities
-
+# Build Policy Translation Point
 
 # Fail script with error if any command fails
 set -e
