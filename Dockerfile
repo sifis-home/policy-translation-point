@@ -1,7 +1,6 @@
 FROM adoptopenjdk/openjdk11
 WORKDIR /app
-
-ADD . /app/
+COPY README.md ./
 
 COPY .mvn/ .mvn
 COPY mvnw pom.xml ./
