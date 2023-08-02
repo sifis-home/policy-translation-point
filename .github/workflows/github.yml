@@ -88,7 +88,7 @@ jobs:
           
       - name: Prepare Dockerfiles and files for Contexts
         run: |
-          mkdir .mvn
+          mvn -N wrapper:wrapper
              
       # - name: Upload artifacts for Docker Image building
       #   uses: actions/upload-artifact@v3
@@ -103,7 +103,7 @@ jobs:
   docker-image-push:
 
     if: ${{ github.repository == 'sifis-home/policy-translation-point' }}
-    needs: [build-and-test, build-for-docker]
+    needs: [build-and-test] #, build-for-docker]
     runs-on: ubuntu-latest
 
     steps:
@@ -124,6 +124,10 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Prepare Dockerfiles and files for Contexts
+        run: |
+          mvn -N wrapper:wrapper
 
       - name: Build and push image 
         uses: docker/build-push-action@v4
