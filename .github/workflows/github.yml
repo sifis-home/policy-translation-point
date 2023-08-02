@@ -86,9 +86,9 @@ jobs:
           distribution: 'zulu'
           cache: 'maven'
           
-      # - name: Prepare Dockerfiles and files for Contexts
-      #   run: |
-      #     ./scripts/build-for-docker.sh
+      - name: Prepare Dockerfiles and files for Contexts
+        run: |
+          mvn -N wrapper:wrapper
              
       # - name: Upload artifacts for Docker Image building
       #   uses: actions/upload-artifact@v3
@@ -103,7 +103,7 @@ jobs:
   docker-image-push:
 
     if: ${{ github.repository == 'sifis-home/policy-translation-point' }}
-    needs: [build-and-test] #, build-for-docker]
+    needs: [build-and-test, build-for-docker]
     runs-on: ubuntu-latest
 
     steps:
