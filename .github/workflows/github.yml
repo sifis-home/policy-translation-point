@@ -107,10 +107,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download artifacts for Docker Image building
-        uses: actions/download-artifact@v3
-        with:
-          name: files-for-docker
+      # - name: Download artifacts for Docker Image building
+      #   uses: actions/download-artifact@v3
+      #   with:
+      #     name: files-for-docker
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
