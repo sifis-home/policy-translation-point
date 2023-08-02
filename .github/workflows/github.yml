@@ -125,9 +125,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: Prepare Dockerfiles and files for Contexts
-      #   run: |
-      #     mvn -N wrapper:wrapper
+      - name: Prepare Dockerfiles and files for Contexts
+        run: |
+          ls
+          ls ../
 
       - name: Build and push image 
         uses: docker/build-push-action@v4
