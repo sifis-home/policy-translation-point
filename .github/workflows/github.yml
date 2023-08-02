@@ -127,7 +127,7 @@ jobs:
 
       - name: Prepare Dockerfiles and files for Contexts
         run: |
-          ls
+          ls -la
 
       - name: Build and push image 
         uses: docker/build-push-action@v4
