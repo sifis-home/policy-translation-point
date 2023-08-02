@@ -114,11 +114,11 @@ public class ExtendedPetriNet extends PetriNet{
 		//get the root of the connected component
 <span class="fc" id="L115">		Place root = null;</span>
 <span class="pc bpc" id="L116" title="1 of 2 branches missed.">		for(Place p : connectedComponent){</span>
-<span class="pc bpc" id="L117" title="1 of 2 branches missed.">			if(this.graph.inDegreeOf(p) == 0){</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">			if(this.graph.inDegreeOf(p) == 0){</span>
 <span class="fc" id="L118">				root = p;</span>
 <span class="fc" id="L119">				break;</span>
 			}
-<span class="nc" id="L121">		}</span>
+<span class="fc" id="L121">		}</span>
 		//insert a token in the root and simulate the net
 <span class="pc bpc" id="L123" title="2 of 4 branches missed.">		if(root != null &amp;&amp; root instanceof TriggerPlace)</span>
 <span class="fc" id="L124">			return ((TriggerPlace)root).getTrigger();</span>
