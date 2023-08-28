@@ -58,24 +58,18 @@ public class DHTServiceImpl implements DHTService {
 <span class="fc" id="L58">	    JSONObject value = new JSONObject();</span>
 <span class="fc" id="L59">	    value.put(&quot;timestamp&quot;, timestamp.getTime());</span>
 <span class="fc" id="L60">	    value.put(&quot;command&quot;, command);</span>
+	    	    
+<span class="fc" id="L62">	    HttpHeaders headers = new HttpHeaders();</span>
+<span class="fc" id="L63">	    headers.setContentType(MediaType.APPLICATION_JSON);</span>
 	    
-<span class="fc" id="L62">	    JSONObject request = new JSONObject();</span>
-<span class="fc" id="L63">	    request.put(&quot;value&quot;, value);</span>
-	    
-<span class="fc" id="L65">	    JSONObject toSend = new JSONObject();</span>
-<span class="fc" id="L66">	    toSend.put(&quot;RequestPubMessage&quot;, request);</span>
-	    
-<span class="fc" id="L68">	    HttpHeaders headers = new HttpHeaders();</span>
-<span class="fc" id="L69">	    headers.setContentType(MediaType.APPLICATION_JSON);</span>
-	    
-<span class="fc" id="L71">	    HttpEntity&lt;String&gt; req = </span>
-<span class="fc" id="L72">	    	      new HttpEntity&lt;String&gt;(toSend.toString(), headers);</span>
+<span class="fc" id="L65">	    HttpEntity&lt;String&gt; req = </span>
+<span class="fc" id="L66">	    	      new HttpEntity&lt;String&gt;(value.toString(), headers);</span>
 	    
 	    try {
-<span class="nc" id="L75">		    String res = restTemplate.postForObject(prop.getProperty(&quot;dhtEndpoint&quot;) + &quot;pub&quot;, req, String.class);</span>
-<span class="nc" id="L76">		    return res;</span>
-<span class="fc" id="L77">	    } catch(Throwable t) {</span>
-<span class="fc" id="L78">	    	return null;</span>
+<span class="nc" id="L69">		    String res = restTemplate.postForObject(prop.getProperty(&quot;dhtEndpoint&quot;) + &quot;pub&quot;, req, String.class);</span>
+<span class="nc" id="L70">		    return res;</span>
+<span class="fc" id="L71">	    } catch(Throwable t) {</span>
+<span class="fc" id="L72">	    	return null;</span>
 	    }
 	}
 

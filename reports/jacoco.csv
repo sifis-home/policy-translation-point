@@ -35,7 +35,7 @@ sifis,it.polito.elite.sifis,MyLogoutHandler,23,3,0,0,7,1,1,1,1,1
 sifis,it.polito.elite.sifis,RootConfig,0,38,0,0,0,10,0,9,0,9
 sifis,it.polito.elite.sifis,MyLogoutSuccessHandler,4,3,0,0,2,1,1,1,1,1
 sifis,it.polito.elite.sifis,SifisApplication,14,3,0,0,3,1,2,1,2,1
-sifis,it.polito.elite.sifis.services,DHTServiceImpl,16,145,0,0,2,34,0,3,0,3
+sifis,it.polito.elite.sifis.services,DHTServiceImpl,16,127,0,0,2,30,0,3,0,3
 sifis,it.polito.elite.sifis.services,CustomUserDetailsService,6,15,1,1,1,4,1,2,0,2
 sifis,it.polito.elite.sifis.services,DBServiceImpl.new Comparator() {...},6,6,0,0,1,1,1,1,1,1
 sifis,it.polito.elite.sifis.services,DBServiceImpl.new Comparator() {...},0,12,0,0,0,2,0,2,0,2
