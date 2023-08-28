@@ -58,18 +58,12 @@ public class DHTServiceImpl implements DHTService {
 	    JSONObject value = new JSONObject();
 	    value.put("timestamp", timestamp.getTime());
 	    value.put("command", command);
-	    
-	    JSONObject request = new JSONObject();
-	    request.put("value", value);
-	    
-	    JSONObject toSend = new JSONObject();
-	    toSend.put("RequestPubMessage", request);
-	    
+	    	    
 	    HttpHeaders headers = new HttpHeaders();
 	    headers.setContentType(MediaType.APPLICATION_JSON);
 	    
 	    HttpEntity<String> req = 
-	    	      new HttpEntity<String>(toSend.toString(), headers);
+	    	      new HttpEntity<String>(value.toString(), headers);
 	    
 	    try {
 		    String res = restTemplate.postForObject(prop.getProperty("dhtEndpoint") + "pub", req, String.class);
