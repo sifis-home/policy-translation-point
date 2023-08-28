@@ -38,7 +38,7 @@ CREATE TABLE `dbaction` (
   KEY `FKd5vfgowbh3hdt1uaba4t7qjwi` (`rule_id`),
   CONSTRAINT `FKd5vfgowbh3hdt1uaba4t7qjwi` FOREIGN KEY (`rule_id`) REFERENCES `dbrule` (`id`),
   CONSTRAINT `FKsl5cmjqqs05opu20pba04bha` FOREIGN KEY (`entity_id`) REFERENCES `dbentity` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 
 
@@ -60,7 +60,7 @@ CREATE TABLE `dbdetail` (
   KEY `FKcfjqa7dgvs79vnnjwwsifyf52` (`trigger_id`),
   CONSTRAINT `FK98vv5q2ff5eoewks0mbrqt2lw` FOREIGN KEY (`action_id`) REFERENCES `dbaction` (`id`),
   CONSTRAINT `FKcfjqa7dgvs79vnnjwwsifyf52` FOREIGN KEY (`trigger_id`) REFERENCES `dbtrigger` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 
 
@@ -76,7 +76,7 @@ CREATE TABLE `dbentity` (
   PRIMARY KEY (`id`),
   KEY `FK4j62tn3hvd09b7pa2n7qyvk6u` (`user_id`),
   CONSTRAINT `FK4j62tn3hvd09b7pa2n7qyvk6u` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 
 
@@ -95,7 +95,7 @@ CREATE TABLE `dbrule` (
   PRIMARY KEY (`id`),
   KEY `FKrthas252irlmwocm22hevsmlr` (`user_id`),
   CONSTRAINT `FKrthas252irlmwocm22hevsmlr` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 
 
@@ -114,8 +114,7 @@ CREATE TABLE `dbtrigger` (
   KEY `FK9cacof68w3dr6peeey1n4mxrv` (`rule_id`),
   CONSTRAINT `FK5ndxaxil4q8g9v1pt1qhwokr9` FOREIGN KEY (`entity_id`) REFERENCES `dbentity` (`id`),
   CONSTRAINT `FK9cacof68w3dr6peeey1n4mxrv` FOREIGN KEY (`rule_id`) REFERENCES `dbrule` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 
 # Dump of table hibernate_sequence
@@ -125,7 +124,7 @@ DROP TABLE IF EXISTS `hibernate_sequence`;
 
 CREATE TABLE `hibernate_sequence` (
   `next_val` bigint DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 LOCK TABLES `hibernate_sequence` WRITE;
 /*!40000 ALTER TABLE `hibernate_sequence` DISABLE KEYS */;
@@ -147,7 +146,7 @@ CREATE TABLE `role` (
   `role_id` bigint NOT NULL,
   `role` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`role_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 LOCK TABLES `role` WRITE;
 /*!40000 ALTER TABLE `role` DISABLE KEYS */;
@@ -175,7 +174,7 @@ CREATE TABLE `user` (
   `username` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `UK_kiqfjabx9puw3p1eg7kily8kg` (`password`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
@@ -200,7 +199,7 @@ CREATE TABLE `user_role` (
   KEY `FKa68196081fvovjhkek5m97n3y` (`role_id`),
   CONSTRAINT `FK859n2jvi8ivhui0rl0esws6o` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`),
   CONSTRAINT `FKa68196081fvovjhkek5m97n3y` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 LOCK TABLES `user_role` WRITE;
 /*!40000 ALTER TABLE `user_role` DISABLE KEYS */;
