@@ -47,29 +47,31 @@ public class DHTServiceImpl implements DHTService {
 	    
 <span class="fc" id="L48">	    JSONObject messageExt = new JSONObject();</span>
 <span class="fc" id="L49">	    messageExt.put(&quot;message&quot;, message);</span>
+<span class="fc" id="L50">	    messageExt.put(&quot;id&quot;, &quot;pap-&quot;+UUID.randomUUID());</span>
+<span class="fc" id="L51">	    messageExt.put(&quot;topic_name&quot;, &quot;topic-name&quot;);</span>
+<span class="fc" id="L52">	    messageExt.put(&quot;topic_uuid&quot;, &quot;topic-uuid-the-ucs-is-subscribed-to&quot;);</span>
 
-<span class="fc" id="L51">	    JSONObject command = new JSONObject();</span>
-<span class="fc" id="L52">	    command.put(&quot;command_type&quot;, &quot;pap-command&quot;);</span>
-<span class="fc" id="L53">	    command.put(&quot;id&quot;, &quot;pap-&quot;+UUID.randomUUID());</span>
-<span class="fc" id="L54">	    command.put(&quot;topic_name&quot;, &quot;topic-name&quot;);</span>
-<span class="fc" id="L55">	    command.put(&quot;topic_uuid&quot;, &quot;topic-uuid-the-ucs-is-subscribed-to&quot;);</span>
-<span class="fc" id="L56">	    command.put(&quot;value&quot;, messageExt);</span>
+<span class="fc" id="L54">	    JSONObject command = new JSONObject();</span>
+<span class="fc" id="L55">	    command.put(&quot;command_type&quot;, &quot;pap-command&quot;);</span>
 	    
-<span class="fc" id="L58">	    JSONObject value = new JSONObject();</span>
-<span class="fc" id="L59">	    value.put(&quot;timestamp&quot;, timestamp.getTime());</span>
-<span class="fc" id="L60">	    value.put(&quot;command&quot;, command);</span>
+<span class="fc" id="L57">	    command.put(&quot;value&quot;, messageExt);</span>
+	    
+<span class="fc" id="L59">	    JSONObject value = new JSONObject();</span>
+<span class="fc" id="L60">	    value.put(&quot;timestamp&quot;, timestamp.getTime());</span>
+<span class="fc" id="L61">	    value.put(&quot;command&quot;, command);</span>
 	    	    
-<span class="fc" id="L62">	    HttpHeaders headers = new HttpHeaders();</span>
-<span class="fc" id="L63">	    headers.setContentType(MediaType.APPLICATION_JSON);</span>
+<span class="fc" id="L63">	    HttpHeaders headers = new HttpHeaders();</span>
+<span class="fc" id="L64">	    headers.setContentType(MediaType.APPLICATION_JSON);</span>
 	    
-<span class="fc" id="L65">	    HttpEntity&lt;String&gt; req = </span>
-<span class="fc" id="L66">	    	      new HttpEntity&lt;String&gt;(value.toString(), headers);</span>
+	    
+<span class="fc" id="L67">	    HttpEntity&lt;String&gt; req = </span>
+<span class="fc" id="L68">	    	      new HttpEntity&lt;String&gt;(value.toString(), headers);</span>
 	    
 	    try {
-<span class="nc" id="L69">		    String res = restTemplate.postForObject(prop.getProperty(&quot;dhtEndpoint&quot;) + &quot;pub&quot;, req, String.class);</span>
-<span class="nc" id="L70">		    return res;</span>
-<span class="fc" id="L71">	    } catch(Throwable t) {</span>
-<span class="fc" id="L72">	    	return null;</span>
+<span class="nc" id="L71">		    String res = restTemplate.postForObject(prop.getProperty(&quot;dhtEndpoint&quot;) + &quot;pub&quot;, req, String.class);</span>
+<span class="nc" id="L72">		    return res;</span>
+<span class="fc" id="L73">	    } catch(Throwable t) {</span>
+<span class="fc" id="L74">	    	return null;</span>
 	    }
 	}
 
