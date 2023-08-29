@@ -47,12 +47,13 @@ public class DHTServiceImpl implements DHTService {
 	    
 	    JSONObject messageExt = new JSONObject();
 	    messageExt.put("message", message);
+	    messageExt.put("id", "pap-"+UUID.randomUUID());
+	    messageExt.put("topic_name", "topic-name");
+	    messageExt.put("topic_uuid", "topic-uuid-the-ucs-is-subscribed-to");
 
 	    JSONObject command = new JSONObject();
 	    command.put("command_type", "pap-command");
-	    command.put("id", "pap-"+UUID.randomUUID());
-	    command.put("topic_name", "topic-name");
-	    command.put("topic_uuid", "topic-uuid-the-ucs-is-subscribed-to");
+	    
 	    command.put("value", messageExt);
 	    
 	    JSONObject value = new JSONObject();
@@ -61,6 +62,7 @@ public class DHTServiceImpl implements DHTService {
 	    	    
 	    HttpHeaders headers = new HttpHeaders();
 	    headers.setContentType(MediaType.APPLICATION_JSON);
+	    
 	    
 	    HttpEntity<String> req = 
 	    	      new HttpEntity<String>(value.toString(), headers);

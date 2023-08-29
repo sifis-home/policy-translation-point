@@ -42,7 +42,7 @@ and install a MySQL client and an HTTP client through the following command:
 ```
 You now have a MySQL client as well as an SQL file in `/tmp/schema.sql` that you can import:
 ```
-# mysql -h ptp-db -u root -p sifis-ptp < /tmp/schema.sql
+# mysql -h ptp-db -u root -p sifis_ptp < /tmp/schema.sql
 ```
 The SQL schema should now be created, you can exit from the container by hitting `CTRL+P`  `CTRL+Q` successively in order to detach STDIN, STDOUT and STDERR from the container which will bring you back to your local shell session.
 
